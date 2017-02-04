@@ -10,7 +10,7 @@ import Data exposing (..)
 main : Program Never Model Msg
 main =
     Html.beginnerProgram
-        { model = model
+        { model = initModel
         , update = update
         , view = view
         }
@@ -28,8 +28,8 @@ type alias Model =
     }
 
 
-model : Model
-model =
+initModel : Model
+initModel =
     { teams = Array.fromList Data.teams
     , undrafted = Data.players
     , drafted = []
@@ -58,10 +58,7 @@ update msg model =
             draftPlayer player model
 
         Reset ->
-            { model
-                | undrafted = Data.players
-                , drafted = []
-            }
+            initModel
 
 
 draftPlayer : Player -> Model -> Model
@@ -91,9 +88,13 @@ updateDraftOrder model =
 
 addPlayer : Player -> Model -> Array Team
 addPlayer player model =
-    case Array.get model.currentTeamIndex model.teams of
+    case currentTeam model of
         Just team ->
-            Array.set model.currentTeamIndex { team | players = player :: team.players } model.teams
+            let
+                updated =
+                    { team | players = player :: team.players }
+            in
+                Array.set model.currentTeamIndex updated model.teams
 
         Nothing ->
             model.teams
@@ -120,16 +121,34 @@ view model =
 
 viewCurrentTeam : Model -> Html Msg
 viewCurrentTeam model =
-    let
-        name =
-            case currentTeam model of
-                Just team ->
-                    team.name
+    case currentTeam model of
+        Just team ->
+            viewTeam team
 
-                Nothing ->
-                    "Unknown Team!"
+        Nothing ->
+            h3 [] [ text "Unknown Team!" ]
+
+
+viewTeam : Team -> Html Msg
+viewTeam team =
+    let
+        playerList =
+            team.gm :: team.players
+                |> viewRoster
     in
-        h3 [] [ text name ]
+        div []
+            <| [ h3 [] [ text team.name ] ]
+            ++ playerList
+
+
+viewRoster : List Player -> List (Html Msg)
+viewRoster players =
+    List.map viewPlayer players
+
+
+viewPlayer : Player -> Html Msg
+viewPlayer player =
+    div [] [ text player ]
 
 
 displayTeams : List Team -> Html Msg
