@@ -133,17 +133,12 @@ viewTeam : Team -> Html Msg
 viewTeam team =
     let
         playerList =
-            team.gm :: team.players
-                |> viewRoster
+            List.map viewPlayer team.players
     in
-        div []
-            <| [ h3 [] [ text team.name ] ]
-            ++ playerList
-
-
-viewRoster : List Player -> List (Html Msg)
-viewRoster players =
-    List.map viewPlayer players
+        div [] <|
+            [ h3 [] [ text team.name ] ]
+                ++ [ viewPlayer team.gm ]
+                ++ playerList
 
 
 viewPlayer : Player -> Html Msg
@@ -153,11 +148,9 @@ viewPlayer player =
 
 displayTeams : List Team -> Html Msg
 displayTeams teams =
-    div segment
-        ([ h2 [] [ text "Teams" ]
-         ]
-            ++ (List.map teamItem teams)
-        )
+    div segment <|
+        [ h2 [] [ text "Teams" ] ]
+            ++ (List.map viewTeam teams)
 
 
 teamItem : Team -> Html Msg
