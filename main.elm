@@ -92,7 +92,7 @@ addPlayer player model =
         Just team ->
             let
                 updated =
-                    { team | players = player :: team.players }
+                    { team | players = team.players ++ [ player ] }
             in
                 Array.set model.currentTeamIndex updated model.teams
 
