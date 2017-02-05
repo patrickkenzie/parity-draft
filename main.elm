@@ -1,6 +1,5 @@
 module Main exposing (..)
 
-import Array exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -21,25 +20,25 @@ main =
 
 
 type alias Model =
-    { teams : Array Team
-    , undrafted : List Player
-    , drafted : List Player
-    , currentTeamIndex : Int
+    { undraftedPlayers : List Player
+    , draftedPlayers : List Player
+    , waitingTeams : List Team
+    , draftedTeams : List Team
     }
 
 
 initModel : Model
 initModel =
-    { teams = Array.fromList Data.teams
-    , undrafted = Data.players
-    , drafted = []
-    , currentTeamIndex = 0
+    { undraftedPlayers = Data.players
+    , draftedPlayers = []
+    , waitingTeams = Data.teams
+    , draftedTeams = []
     }
 
 
 currentTeam : Model -> Maybe Team
 currentTeam model =
-    Array.get model.currentTeamIndex model.teams
+    List.head model.waitingTeams
 
 
 
@@ -65,39 +64,56 @@ draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
         remaining =
-            List.filter (\p -> p /= player) model.undrafted
+            List.filter (\p -> p /= player) model.undraftedPlayers
 
-        teams =
-            addPlayer player model
+        draftingTeam =
+            currentTeam model
+                |> addPlayer player
+
+        ( newWaiting, newDrafted ) =
+            updateTeams draftingTeam model
     in
         { model
-            | undrafted = remaining
-            , drafted = player :: model.drafted
-            , currentTeamIndex = updateDraftOrder model
-            , teams = teams
+            | undraftedPlayers = remaining
+            , draftedPlayers = player :: model.draftedPlayers
+            , waitingTeams = newWaiting
+            , draftedTeams = newDrafted
         }
 
 
-updateDraftOrder : Model -> Int
-updateDraftOrder model =
-    if model.currentTeamIndex + 1 >= (Array.length model.teams) then
-        0
-    else
-        model.currentTeamIndex + 1
+updateTeams : Maybe Team -> Model -> ( List Team, List Team )
+updateTeams team model =
+    let
+        drafted =
+            case team of
+                Just team ->
+                    team :: model.draftedTeams
+
+                Nothing ->
+                    model.draftedTeams
+
+        waiting =
+            case List.tail model.waitingTeams of
+                Just rest ->
+                    rest
+
+                Nothing ->
+                    []
+    in
+        if List.isEmpty waiting then
+            ( drafted, waiting )
+        else
+            ( waiting, drafted )
 
 
-addPlayer : Player -> Model -> Array Team
-addPlayer player model =
-    case currentTeam model of
+addPlayer : Player -> Maybe Team -> Maybe Team
+addPlayer player team =
+    case team of
         Just team ->
-            let
-                updated =
-                    { team | players = team.players ++ [ player ] }
-            in
-                Array.set model.currentTeamIndex updated model.teams
+            Just { team | players = team.players ++ [ player ] }
 
         Nothing ->
-            model.teams
+            team
 
 
 
@@ -112,10 +128,11 @@ view model =
             [ button [ onClick Reset ] [ text "Reset" ]
             ]
         , viewCurrentTeam model
-        , displayTeams (Array.toList model.teams)
-        , playerList "Player List" True model.undrafted
-        , playerList "Draft History" False model.drafted
-        , playerList "Draft Order" False (List.reverse model.drafted)
+        , displayTeams "Up Next" model.waitingTeams
+        , displayTeams "Previous" model.draftedTeams
+        , playerList "Player List" True model.undraftedPlayers
+        , playerList "Draft History" False model.draftedPlayers
+        , playerList "Draft Order" False (List.reverse model.draftedPlayers)
         ]
 
 
@@ -146,10 +163,10 @@ viewPlayer player =
     div [] [ text player ]
 
 
-displayTeams : List Team -> Html Msg
-displayTeams teams =
+displayTeams : String -> List Team -> Html Msg
+displayTeams title teams =
     div segment <|
-        [ h2 [] [ text "Teams" ] ]
+        [ h2 [] [ text title ] ]
             ++ (List.map viewTeam teams)
 
 
