@@ -133,6 +133,7 @@ view model =
         , playerList "Player List" True model.undraftedPlayers
         , playerList "Draft History" False model.draftedPlayers
         , playerList "Draft Order" False (List.reverse model.draftedPlayers)
+        , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
         ]
 
 
@@ -202,14 +203,4 @@ draftablePlayer player draftable =
 
 segment : List (Attribute msg)
 segment =
-    [ style
-        [ ( "width", "200px" )
-        , ( "display", "inline-block" )
-        , ( "vertical-align", "top" )
-        , ( "background-color", "lightgreen" )
-        , ( "border", "solid 2px green" )
-        , ( "margin", "1em" )
-        , ( "padding", "1em" )
-        ]
-    , class "segment"
-    ]
+    [ class "segment"]
