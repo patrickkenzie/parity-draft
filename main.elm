@@ -24,6 +24,7 @@ type alias Model =
     , draftedPlayers : List Player
     , waitingTeams : List Team
     , draftedTeams : List Team
+    , round : Int
     }
 
 
@@ -33,6 +34,7 @@ initModel =
     , draftedPlayers = []
     , waitingTeams = Data.teams
     , draftedTeams = []
+    , round = 1
     }
 
 
@@ -71,18 +73,25 @@ draftPlayer player model =
                 |> addPlayer player
 
         ( newWaiting, newDrafted ) =
-            updateTeams draftingTeam model
+            updateRound draftingTeam model
+
+        round = if List.isEmpty newDrafted
+                then
+                    model.round + 1
+                else
+                    model.round
     in
         { model
             | undraftedPlayers = remaining
             , draftedPlayers = player :: model.draftedPlayers
             , waitingTeams = newWaiting
             , draftedTeams = newDrafted
+            , round = round
         }
 
 
-updateTeams : Maybe Team -> Model -> ( List Team, List Team )
-updateTeams team model =
+updateRound : Maybe Team -> Model -> ( List Team, List Team )
+updateRound team model =
     let
         drafted =
             case team of
@@ -129,12 +138,16 @@ view model =
             ]
         , viewCurrentTeam model
         , displayTeams "Up Next" model.waitingTeams
-        , displayTeams "Drafted" model.draftedTeams
+        , displayTeams (viewRound model) model.draftedTeams
         , draftList model.undraftedPlayers
         , playerList "Draft History" model.draftedPlayers
         , playerList "Draft Order" (List.reverse model.draftedPlayers)
         , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
         ]
+
+viewRound : Model -> String
+viewRound model =
+    "Round " ++ toString model.round
 
 viewCurrentTeam : Model -> Html Msg
 viewCurrentTeam model =
