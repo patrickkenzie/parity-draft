@@ -129,13 +129,12 @@ view model =
             ]
         , viewCurrentTeam model
         , displayTeams "Up Next" model.waitingTeams
-        , displayTeams "Previous" model.draftedTeams
-        , playerList "Player List" True model.undraftedPlayers
-        , playerList "Draft History" False model.draftedPlayers
-        , playerList "Draft Order" False (List.reverse model.draftedPlayers)
+        , displayTeams "Drafted" model.draftedTeams
+        , draftList model.undraftedPlayers
+        , playerList "Draft History" model.draftedPlayers
+        , playerList "Draft Order" (List.reverse model.draftedPlayers)
         , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
         ]
-
 
 viewCurrentTeam : Model -> Html Msg
 viewCurrentTeam model =
@@ -175,30 +174,34 @@ teamItem : Team -> Html Msg
 teamItem team =
     li [] [ text team.name ]
 
+draftList : List Player -> Html Msg
+draftList players =
+    div segment
+        [ h2 [] [ text "Players"]
+        , ol [] (List.map draftablePlayer players)
+        ]
 
-playerList : String -> Bool -> List Player -> Html Msg
-playerList title active players =
+playerList : String -> List Player -> Html Msg
+playerList title players =
     div segment
         [ h2 [] [ text title ]
-        , displayPlayers active players
+        , displayPlayers players
         ]
 
 
-displayPlayers : Bool -> List Player -> Html Msg
-displayPlayers draftable players =
-    ol [] (List.map (\p -> draftablePlayer p draftable) players)
+displayPlayers : List Player -> Html Msg
+displayPlayers  players =
+    ol [] (List.map draftedPlayer players)
 
 
-draftablePlayer : Player -> Bool -> Html Msg
-draftablePlayer player draftable =
-    let
-        action =
-            if draftable then
-                [ onClick (Draft player) ]
-            else
-                []
-    in
-        li action [ text player ]
+draftedPlayer : Player -> Html Msg
+draftedPlayer player =
+    li [] [ text player ]
+
+
+draftablePlayer : Player -> Html Msg
+draftablePlayer player  =
+        li [ onClick (Draft player) ] [ text player ]
 
 
 segment : List (Attribute msg)
