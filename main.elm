@@ -119,7 +119,7 @@ addPlayer : Player -> Maybe Team -> Maybe Team
 addPlayer player team =
     case team of
         Just team ->
-            Just { team | players = team.players ++ [ player ] }
+            Just { team | players = player :: team.players }
 
         Nothing ->
             team
@@ -187,7 +187,8 @@ viewTeamWithRoster : Team -> Html Msg
 viewTeamWithRoster team =
     let
         playerList =
-            List.map viewPlayer (team.gm :: team.players)
+            List.reverse team.players |>
+            List.map viewPlayer
     in
         viewTeam playerList team
 
