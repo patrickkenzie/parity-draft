@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Data exposing (..)
 import Players exposing (..)
-
+import Format
 
 
 main : Program Never Model Msg
@@ -178,7 +178,6 @@ viewTeamWithLatest team =
 
                 Nothing ->
                     []
-
     in
         viewTeam playerList team
 
@@ -187,25 +186,41 @@ viewTeamWithRoster : Team -> Html Msg
 viewTeamWithRoster team =
     let
         playerList =
-            List.reverse team.players |>
-            List.map viewPlayer
+            List.reverse team.players
+                |> List.map viewPlayer
     in
         viewTeam playerList team
 
 
 viewPlayer : Player -> Html Msg
 viewPlayer player =
-    viewPlayerWithAttributes [] player
+    viewPlayerDetail [] False player
 
 
-viewPlayerWithAttributes : List (Attribute Msg) -> Player -> Html Msg
-viewPlayerWithAttributes attributes player =
-    let className = if player.gender == Female then
-                  "female"
-                  else
-                    "male"
+viewPlayerDetail : List (Attribute Msg) -> Bool -> Player -> Html Msg
+viewPlayerDetail attributes details player =
+    let
+        className =
+            if player.gender == Female then
+                "female"
+            else
+                "male"
+
+        rating =
+            span [ class "rating" ] [ text (toString player.rating) ]
+
+        salary =
+            span [ class "salary" ] (rating :: [ text (Format.formatSalary player.salary) ])
+
+        content =
+            if details then
+                [ text player.name
+                , salary
+                ]
+            else
+                [ text player.name ]
     in
-      li ([ class className ] ++ attributes) [ text player.name ]
+        li ([ class className ] ++ attributes) content
 
 
 viewTeamNames : String -> List Team -> Html Msg
@@ -229,13 +244,13 @@ playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
 playerList title view players =
     div segment
         [ h2 [] [ text title ]
-        , ol [ class "playerList" ] (List.map view players)
+        , ol [ class "players" ] (List.map view players)
         ]
 
 
 draftablePlayer : Player -> Html Msg
 draftablePlayer player =
-    viewPlayerWithAttributes [ class "draftable", onClick (Draft player) ] player
+    viewPlayerDetail [ class "draftable", onClick (Draft player) ] True player
 
 
 segment : List (Attribute msg)
@@ -245,4 +260,4 @@ segment =
 
 playerListAttributes : List (Attribute msg)
 playerListAttributes =
-    [ class "playerList" ]
+    [ class "players" ]

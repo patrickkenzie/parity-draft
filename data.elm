@@ -18,7 +18,6 @@ type alias Team =
     , players : List Player
     }
 
-
 teams : List Team
 teams =
     [ { gm = "Boss"

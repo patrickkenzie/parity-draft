@@ -35,21 +35,24 @@ h3 {
     font-weight: bold;
 }
 
-.playerList {
+.players {
     margin-left: 0;
     padding-left: 0em;
     list-style-type: none;
 
 }
 
-.playerList li {
+.players li {
     margin: 10px 0;
-    padding: 10px;
+    padding: 5px;
     width: 100%;
-    border: solid 1px black;
+    border: solid 1px grey;
 }
 
-.draftable {
+.players .draftable {
+    padding: 10px;
+    font-weight: bold;
+    border-color: black;
 }
 
 .male {
@@ -66,7 +69,7 @@ h3 {
 }
 
 .segment {
-    width: 20%;
+    min-width: 200px;
     display: inline-block;
     vertical-align: top;
     border: solid 2px black;
@@ -74,5 +77,13 @@ h3 {
     padding: 1em;
 }
 
-.tab {
+.rating {
+    float:right;
+}
+
+.salary {
+    font-size: 0.75em;
+    font-weight: normal;
+    display: block;
+    margin-left: 2em;
 }
