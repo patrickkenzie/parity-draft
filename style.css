@@ -32,15 +32,34 @@ h3 {
     font-weight: bold;
 }
 
-.playerList button {
-    width: 100%;
-    padding: 0.1em 0.2em;
-    border: solid 1px black;
-    background-color: grey;
+.playerList {
+    margin-left: 0;
+    padding-left: 0em;
+    list-style-type: none;
+
 }
 
-.playerList button:hover {
-    background-color: lightgrey;
+.playerList li {
+    margin: 10px;
+}
+
+.draftable {
+    width: 100%;
+    padding: 10px;
+    border: solid 1px black;
+    //background-color: lightgrey;
+}
+
+.male {
+    background-color: #95d4e6;
+}
+
+.female {
+    background-color: #ffccf9;
+}
+
+.draftable:hover {
+    background-color: #95e6a9;
     cursor: pointer;
 }
 

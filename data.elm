@@ -1,12 +1,21 @@
 module Data exposing (..)
 
 
+type Gender
+    = Female
+    | Male
+
+
 type alias Player =
-    String
+    { name : String
+    , gender : Gender
+    , rating : Int
+    , salary : Int
+    }
 
 
 type alias Team =
-    { gm : Player
+    { gm : String
     , name : String
     , players : List Player
     }
@@ -51,7 +60,18 @@ teams =
 
 players : List Player
 players =
-    [ "That Guy"
-    , "Also Her"
+    [ { name = "That Guy", gender = Male, rating = 7, salary = 1045404 }
+    , { name = "Also Her", gender = Female, rating = 6, salary = 1134504 }
     ]
-        ++ List.map (\n -> "Player " ++ toString n) (List.range 1 30)
+        ++ List.map (\n -> "Player " ++ toString n |> makeMalePlayer) (List.range 1 30)
+        ++ List.map (\n -> "Player " ++ toString n |> makeFemalePlayer) (List.range 1 20)
+
+
+makeMalePlayer : String -> Player
+makeMalePlayer name =
+    { name = name, gender = Male, rating = 6, salary = 1031459 }
+
+
+makeFemalePlayer : String -> Player
+makeFemalePlayer name =
+    { name = name, gender = Female, rating = 6, salary = 1031459 }

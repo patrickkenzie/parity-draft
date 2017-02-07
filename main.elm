@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Data exposing (..)
 
 
+
 main : Program Never Model Msg
 main =
     Html.beginnerProgram
@@ -136,7 +137,7 @@ view model =
         , viewCurrentTeam model
         , viewTeamNames "Up Next" model.waitingTeams
         , playerList "Players" draftablePlayer model.undraftedPlayers
-        , viewTeamLastDrafted (viewRound model) model.draftedTeams
+        , viewTeamsLastDrafted (viewRound model) model.draftedTeams
         , playerList "Draft History" viewPlayer model.draftedPlayers
         , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
         , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
@@ -169,16 +170,14 @@ viewTeam playerList team =
 viewTeamWithLatest : Team -> Html Msg
 viewTeamWithLatest team =
     let
-        player =
+        playerList =
             case List.head team.players of
                 Just player ->
-                    player
+                    [ viewPlayer player ]
 
                 Nothing ->
-                    team.gm
+                    []
 
-        playerList =
-            [ viewPlayer player ]
     in
         viewTeam playerList team
 
@@ -195,7 +194,17 @@ viewTeamWithRoster team =
 
 viewPlayer : Player -> Html Msg
 viewPlayer player =
-    li [] [ text player ]
+    viewPlayerWithAttributes [] player
+
+
+viewPlayerWithAttributes : List (Attribute Msg) -> Player -> Html Msg
+viewPlayerWithAttributes attributes player =
+    let className = if player.gender == Female then
+                  "female"
+                  else
+                    "male"
+    in
+      li ([ class className ] ++ attributes) [ text player.name ]
 
 
 viewTeamNames : String -> List Team -> Html Msg
@@ -203,8 +212,8 @@ viewTeamNames title teams =
     viewTeamList title teams (viewTeam [])
 
 
-viewTeamLastDrafted : String -> List Team -> Html Msg
-viewTeamLastDrafted title teams =
+viewTeamsLastDrafted : String -> List Team -> Html Msg
+viewTeamsLastDrafted title teams =
     viewTeamList title teams viewTeamWithLatest
 
 
@@ -225,7 +234,7 @@ playerList title view players =
 
 draftablePlayer : Player -> Html Msg
 draftablePlayer player =
-    li [] [ button [ onClick (Draft player) ] [ text player ] ]
+    viewPlayerWithAttributes [ class "draftable", onClick (Draft player) ] player
 
 
 segment : List (Attribute msg)
