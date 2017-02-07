@@ -10,7 +10,7 @@ body {
     color: rgba(0,0,0,.87);
 }
 
-h2 {
+h1, h2 {
     margin: 0 0 0.5em;
     border-bottom: solid 1px black;
     text-align: center;

@@ -139,7 +139,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Mock Draft" ]
-        , viewCurrentTeam model
+        --, viewCurrentTeam model
         , viewTeamNames "Up Next" model.waitingTeams
         , playerList "Players" draftablePlayer model.undraftedPlayers
         , viewTeamsLastDrafted (viewRound model) model.draftedTeams
@@ -167,7 +167,7 @@ viewCurrentTeam model =
 viewTeam : List (Html Msg) -> Team -> Html Msg
 viewTeam playerList team =
     div [ class "team" ]
-        [ h3 [] [ text team.name ]
+        [ h3 [] [ text team.gm ]
         , ul [ class "players" ] playerList
         ]
 
