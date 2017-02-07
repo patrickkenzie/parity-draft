@@ -20,35 +20,35 @@ type alias Team =
 
 teams : List Team
 teams =
-    [ { gm = "Boss"
+    [ { gm = "Jaime Boss"
       , name = "Like a Boss"
       , players = []
       }
-    , { gm = "Kindha"
+    , { gm = "Kindha Gorman"
       , name = "Katy Parity"
       , players = []
       }
-    , { gm = "Rob"
+    , { gm = "Rob Ives"
       , name = "F Bombs"
       , players = []
       }
-    , { gm = "Proulx"
+    , { gm = "Andrea Proulx"
       , name = "SOS"
       , players = []
       }
-    , { gm = "Owen"
+    , { gm = "Owen Lumley"
       , name = "Basket"
       , players = []
       }
-    , { gm = "Amos"
+    , { gm = "Amos Lee"
       , name = "Hindsight Hooligans"
       , players = []
       }
-    , { gm = "Wildgen"
+    , { gm = "Jamie Wildgen"
       , name = "Kaboom"
       , players = []
       }
-    , { gm = "Kells"
+    , { gm = "Brian Kells"
       , name = "Mike and the Milburys"
       , players = []
       }
