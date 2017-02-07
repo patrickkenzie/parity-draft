@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Data exposing (..)
+import Players exposing (..)
 
 
 
@@ -31,7 +32,7 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { undraftedPlayers = Data.players
+    { undraftedPlayers = Players.players
     , draftedPlayers = []
     , waitingTeams = Data.teams
     , draftedTeams = []
