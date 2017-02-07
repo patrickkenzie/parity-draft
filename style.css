@@ -21,6 +21,23 @@ h3 {
     margin: 1em 0em;
 }
 
+#flipOrder {
+    display: none;
+    vertical-align: middle;
+}
+
+h1 > div {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 80px;
+}
+
+h1 > div:hover #flipOrder {
+    display:inline-block;
+}
+
 ul, li.team {
     list-style-type: none;
     margin: 0;
@@ -74,9 +91,10 @@ ol {
 
 .segment {
     min-width: 200px;
+    max-width: 300px;
     display: inline-block;
     vertical-align: top;
-    margin: 1em;
+    margin: 0.75em;
     padding: 0;
 }
 

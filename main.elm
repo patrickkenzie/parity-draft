@@ -3,7 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Data exposing (..)
+import Teams exposing (..)
 import Players exposing (..)
 import Format
 
@@ -34,7 +34,7 @@ initModel : Model
 initModel =
     { undraftedPlayers = Players.players
     , draftedPlayers = []
-    , waitingTeams = Data.teams
+    , waitingTeams = Teams.teams
     , draftedTeams = []
     , round = 1
     }
@@ -138,14 +138,23 @@ addPlayer player team =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Mock Draft" ]
+        [ title
           --, viewCurrentTeam model
         , viewWaitingTeams "Up Next" model.waitingTeams
         , playerList "Players" draftablePlayer model.undraftedPlayers
-        , viewTeamsLastDrafted (viewRound model) model.draftedTeams
+          --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
+        , viewTeamsWithLatest (viewRound model) model.draftedTeams
         , playerList "Draft History" viewPlayer model.draftedPlayers
         , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
         , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
+        ]
+
+
+title : Html Msg
+title =
+    h1 []
+        [ text "Mock Draft"
+        , div [] [ button [ onClick FlipOrder, id "flipOrder" ] [ text "Invert Order" ] ]
         ]
 
 
@@ -159,18 +168,21 @@ viewTeam playerList title team =
     li [ class "team" ] (text title :: [ ul [ class "players" ] playerList ])
 
 
-viewTeamWithLatest : Team -> Html Msg
-viewTeamWithLatest team =
+viewTeamsWithLatest : String -> List Team -> Html Msg
+viewTeamsWithLatest title teams =
     let
-        playerList =
+        playerList team =
             case List.head team.players of
                 Just player ->
-                    [ viewPlayer player ]
+                    li [] [ text team.gm, viewPlayer player ]
 
                 Nothing ->
-                    []
+                    text title
+
+        teamList =
+            List.map playerList teams
     in
-        viewTeam playerList team.gm team
+        segment title "" [ ul [] teamList ]
 
 
 viewTeamWithRoster : Team -> Html Msg
@@ -233,14 +245,17 @@ viewWaitingTeams title teams =
         segment title "" (teamList :: currentTeam)
 
 
-viewTeamsLastDrafted : String -> List Team -> Html Msg
-viewTeamsLastDrafted title teams =
-    viewTeamList title teams viewTeamWithLatest
+
+{-
+   viewTeamsLastDrafted : String -> List Team -> Html Msg
+   viewTeamsLastDrafted title teams =
+       viewTeamList title teams viewTeamWithLatest
 
 
-viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
-viewTeamList title teams view =
-    segment title "upcoming" [ ul [ class "teams" ] (List.map view teams) ]
+   viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
+   viewTeamList title teams view =
+       segment title "upcoming" [ ul [ class "teams" ] (List.map view teams) ]
+-}
 
 
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
