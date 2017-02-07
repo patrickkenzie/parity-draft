@@ -3,7 +3,6 @@
 }
 
 body {
-    //background-color: #aaa;
     line-height: 1.5;
     font-family: Roboto,sans-serif;
     font-weight: 400;
@@ -59,14 +58,9 @@ ol {
     padding: 0;
 }
 
-.team li.gm {
-    font-weight: bold;
-}
-
-.players li {
-    margin: 10px 0;
+.players li, dd {
+    margin-bottom: 10px;
     padding: 2px 5px;
-    width: 100%;
     border: solid 1px grey;
     font-size: 0.8em;
     border-radius: 5px;
@@ -103,8 +97,8 @@ dt {
     max-width: 400px;
     display: inline-block;
     vertical-align: top;
-    margin: 0 1em;
-    padding: 0 10px;
+    //margin: 0 1em;
+    padding: 0 1em;
 
     max-height: 700px;
     overflow: auto;
@@ -126,4 +120,15 @@ dt {
     font-weight: normal;
     display: block;
     margin-left: 2em;
+}
+
+@media (max-width: 800px) {
+    .segment {
+        width: 50%;
+        max-width: 50%;
+    }
+
+    #draftResults > div {
+        width: 25%;
+    }
 }
