@@ -11,19 +11,24 @@ body {
 }
 
 h2 {
-    margin: 0 0 1em;
+    margin: 0 0 0.5em;
     border-bottom: solid 1px black;
     text-align: center;
 }
 
-h3 { 
-    margin: 0;
+h3 {
+    font-weight: normal;
+    margin: 0 1em 0.5em;
 }
 
-.team ul {
+ol, ul {
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 0 1em;
+}
+
+.upcoming .team:first-of-type h3 {
+    font-weight: bold;
 }
 
 .team li {
@@ -33,13 +38,6 @@ h3 {
 
 .team li.gm {
     font-weight: bold;
-}
-
-.players {
-    margin-left: 0;
-    padding-left: 0em;
-    list-style-type: none;
-
 }
 
 .players li {
@@ -74,7 +72,7 @@ h3 {
     vertical-align: top;
     border: solid 2px black;
     margin: 1em;
-    padding: 1em;
+    padding: 0;
 }
 
 .rating {

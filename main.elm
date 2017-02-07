@@ -51,6 +51,7 @@ currentTeam model =
 
 type Msg
     = Draft Player
+    | FlipOrder
     | Reset
 
 
@@ -59,6 +60,9 @@ update msg model =
     case msg of
         Draft player ->
             draftPlayer player model
+
+        FlipOrder ->
+            { model | waitingTeams = List.reverse model.waitingTeams }
 
         Reset ->
             initModel
@@ -225,24 +229,24 @@ viewPlayerDetail attributes details player =
 
 viewTeamNames : String -> List Team -> Html Msg
 viewTeamNames title teams =
-    viewTeamList title teams (viewTeam [])
+    viewTeamList title "" teams (viewTeam [])
 
 
 viewTeamsLastDrafted : String -> List Team -> Html Msg
 viewTeamsLastDrafted title teams =
-    viewTeamList title teams viewTeamWithLatest
+    viewTeamList title "" teams viewTeamWithLatest
 
 
-viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
-viewTeamList title teams view =
-    div segment <|
+viewTeamList : String -> String -> List Team -> (Team -> Html Msg) -> Html Msg
+viewTeamList title class teams view =
+    div (segment "upcoming") <|
         [ h2 [] [ text title ] ]
             ++ (List.map view teams)
 
 
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
 playerList title view players =
-    div segment
+    div (segment "")
         [ h2 [] [ text title ]
         , ol [ class "players" ] (List.map view players)
         ]
@@ -253,9 +257,9 @@ draftablePlayer player =
     viewPlayerDetail [ class "draftable", onClick (Draft player) ] True player
 
 
-segment : List (Attribute msg)
-segment =
-    [ class "segment" ]
+segment : String -> List (Attribute msg)
+segment className =
+    [ class "segment", class className ]
 
 
 playerListAttributes : List (Attribute msg)
