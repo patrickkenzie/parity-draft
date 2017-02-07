@@ -139,8 +139,8 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Mock Draft" ]
-        --, viewCurrentTeam model
-        , viewTeamNames "Up Next" model.waitingTeams
+          --, viewCurrentTeam model
+        , viewWaitingTeams "Up Next" model.waitingTeams
         , playerList "Players" draftablePlayer model.undraftedPlayers
         , viewTeamsLastDrafted (viewRound model) model.draftedTeams
         , playerList "Draft History" viewPlayer model.draftedPlayers
@@ -154,22 +154,9 @@ viewRound model =
     "Round " ++ toString model.round
 
 
-viewCurrentTeam : Model -> Html Msg
-viewCurrentTeam model =
-    case currentTeam model of
-        Just team ->
-            viewTeamWithRoster team
-
-        Nothing ->
-            h3 [] [ text "Unknown Team!" ]
-
-
-viewTeam : List (Html Msg) -> Team -> Html Msg
-viewTeam playerList team =
-    div [ class "team" ]
-        [ h3 [] [ text team.gm ]
-        , ul [ class "players" ] playerList
-        ]
+viewTeam : List (Html Msg) -> String -> Team -> Html Msg
+viewTeam playerList title team =
+    li [ class "team" ] (text title :: [ ul [ class "players" ] playerList ])
 
 
 viewTeamWithLatest : Team -> Html Msg
@@ -183,7 +170,7 @@ viewTeamWithLatest team =
                 Nothing ->
                     []
     in
-        viewTeam playerList team
+        viewTeam playerList team.gm team
 
 
 viewTeamWithRoster : Team -> Html Msg
@@ -193,7 +180,7 @@ viewTeamWithRoster team =
             List.reverse team.players
                 |> List.map viewPlayer
     in
-        viewTeam playerList team
+        viewTeam playerList "" team
 
 
 viewPlayer : Player -> Html Msg
@@ -227,29 +214,38 @@ viewPlayerDetail attributes details player =
         li ([ class className ] ++ attributes) content
 
 
-viewTeamNames : String -> List Team -> Html Msg
-viewTeamNames title teams =
-    viewTeamList title "" teams (viewTeam [])
+viewWaitingTeams : String -> List Team -> Html Msg
+viewWaitingTeams title teams =
+    let
+        currentTeam =
+            case List.head teams of
+                Just team ->
+                    [ h3 [] [ "Roster: " ++ team.gm |> text ]
+                    , viewTeamWithRoster team
+                    ]
+
+                Nothing ->
+                    []
+
+        teamList =
+            ul [ class "teams" ] (List.map (\t -> viewTeam [] t.gm t) teams)
+    in
+        segment title "" (teamList :: currentTeam)
 
 
 viewTeamsLastDrafted : String -> List Team -> Html Msg
 viewTeamsLastDrafted title teams =
-    viewTeamList title "" teams viewTeamWithLatest
+    viewTeamList title teams viewTeamWithLatest
 
 
-viewTeamList : String -> String -> List Team -> (Team -> Html Msg) -> Html Msg
-viewTeamList title class teams view =
-    div (segment "upcoming") <|
-        [ h2 [] [ text title ] ]
-            ++ (List.map view teams)
+viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
+viewTeamList title teams view =
+    segment title "upcoming" [ ul [ class "teams" ] (List.map view teams) ]
 
 
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
 playerList title view players =
-    div (segment "")
-        [ h2 [] [ text title ]
-        , ol [ class "players" ] (List.map view players)
-        ]
+    segment title "" [ ol [ class "players" ] (List.map view players) ]
 
 
 draftablePlayer : Player -> Html Msg
@@ -257,9 +253,10 @@ draftablePlayer player =
     viewPlayerDetail [ class "draftable", onClick (Draft player) ] True player
 
 
-segment : String -> List (Attribute msg)
-segment className =
-    [ class "segment", class className ]
+segment : String -> String -> List (Html Msg) -> Html Msg
+segment title className list =
+    div [ class "segment", class className ]
+        (h2 [] [ text title ] :: list)
 
 
 playerListAttributes : List (Attribute msg)
