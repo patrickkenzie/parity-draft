@@ -94,8 +94,12 @@ ol {
     cursor: pointer;
 }
 
+dt {
+    margin-bottom: 1em;
+}
+
 .segment {
-    min-width: 200px;
+    min-width: 250px;
     max-width: 400px;
     display: inline-block;
     vertical-align: top;

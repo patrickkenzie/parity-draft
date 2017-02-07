@@ -241,10 +241,20 @@ viewRound model =
 viewTeamsWithLatest : String -> List Team -> Html Msg
 viewTeamsWithLatest title teams =
     let
+        formatPlayer player =
+            let
+                className =
+                    if player.gender == Female then
+                        "female"
+                    else
+                        "male"
+            in
+                dd [ class className ] [ text player.name ]
+
         playerList team =
             case List.head team.players of
                 Just player ->
-                    li [] [ text team.gm, viewPlayer player ]
+                    dt [] [ text team.gm, formatPlayer player ]
 
                 Nothing ->
                     text title
@@ -252,7 +262,7 @@ viewTeamsWithLatest title teams =
         teamList =
             List.map playerList teams
     in
-        segment title "" [ ul [] teamList ]
+        segment title "" [ dl [] teamList ]
 
 
 viewTeamWithRoster : Bool -> Team -> Html Msg
