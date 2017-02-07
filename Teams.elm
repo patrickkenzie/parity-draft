@@ -1,16 +1,6 @@
-module Data exposing (..)
+module Teams exposing (..)
 
-type Gender
-    = Female
-    | Male
-
-
-type alias Player =
-    { name : String
-    , gender : Gender
-    , rating : Int
-    , salary : Int
-    }
+import Players exposing (Player)
 
 type alias Team =
     { gm : String
@@ -28,16 +18,8 @@ teams =
       , name = "Katy Parity"
       , players = []
       }
-    , { gm = "Rob Ives"
-      , name = "F Bombs"
-      , players = []
-      }
-    , { gm = "Andrea Proulx"
-      , name = "SOS"
-      , players = []
-      }
-    , { gm = "Owen Lumley"
-      , name = "Basket"
+    , { gm = "Brian Kells"
+      , name = "Mike and the Milburys"
       , players = []
       }
     , { gm = "Amos Lee"
@@ -48,8 +30,16 @@ teams =
       , name = "Kaboom"
       , players = []
       }
-    , { gm = "Brian Kells"
-      , name = "Mike and the Milburys"
+    , { gm = "Owen Lumley"
+      , name = "Basket"
+      , players = []
+      }
+    , { gm = "Andrea Proulx"
+      , name = "SOS"
+      , players = []
+      }
+    , { gm = "Rob Ives"
+      , name = "F Bombs"
       , players = []
       }
     ]
