@@ -25,11 +25,11 @@ teams =
       , players = []
       }
     , { gm = "Kindha"
-      , name = "Katies"
+      , name = "Katy Parity"
       , players = []
       }
     , { gm = "Rob"
-      , name = "Bombs"
+      , name = "F Bombs"
       , players = []
       }
     , { gm = "Proulx"
@@ -37,19 +37,19 @@ teams =
       , players = []
       }
     , { gm = "Owen"
-      , name = "Beardly"
+      , name = "Basket"
       , players = []
       }
     , { gm = "Amos"
-      , name = "Pretty Flair"
+      , name = "Hindsight Hooligans"
       , players = []
       }
     , { gm = "Wildgen"
-      , name = "Ageless"
+      , name = "Kaboom"
       , players = []
       }
     , { gm = "Kells"
-      , name = "Shoe Beatings"
+      , name = "Mike and the Milburys"
       , players = []
       }
     ]
