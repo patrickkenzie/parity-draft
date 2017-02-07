@@ -91,11 +91,14 @@ ol {
 
 .segment {
     min-width: 200px;
-    max-width: 300px;
+    max-width: 400px;
     display: inline-block;
     vertical-align: top;
-    margin: 0.75em;
-    padding: 0;
+    margin: 0 1em;
+    padding: 0 10px;
+
+    max-height: 750px;
+    overflow: auto;
 }
 
 .rating {

@@ -137,17 +137,32 @@ addPlayer player team =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ title
-          --, viewCurrentTeam model
-        , viewWaitingTeams "Up Next" model.waitingTeams
-        , playerList "Players" draftablePlayer model.undraftedPlayers
-          --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
-        , viewTeamsWithLatest (viewRound model) model.draftedTeams
-        , playerList "Draft History" viewPlayer model.draftedPlayers
-        , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
-        , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
-        ]
+    styles
+        :: title
+        :: viewDraftInProgress model
+        ++ viewDraftHistory model
+        |> div []
+
+
+styles : Html Msg
+styles =
+    Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
+
+
+viewDraftInProgress : Model -> List (Html Msg)
+viewDraftInProgress model =
+    [ viewWaitingTeams "Up Next" model.waitingTeams
+    , playerList "Players" draftablePlayer model.undraftedPlayers
+      --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
+    , viewTeamsWithLatest (viewRound model) model.draftedTeams
+    ]
+
+
+viewDraftHistory : Model -> List (Html Msg)
+viewDraftHistory model =
+    [ playerList "Draft History" viewPlayer model.draftedPlayers
+    , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
+    ]
 
 
 title : Html Msg
@@ -165,7 +180,9 @@ viewRound model =
 
 viewTeam : List (Html Msg) -> String -> Team -> Html Msg
 viewTeam playerList title team =
-    li [ class "team" ] (text title :: [ ul [ class "players" ] playerList ])
+    text title
+        :: [ ul [ class "players" ] playerList ]
+        |> li [ class "team" ]
 
 
 viewTeamsWithLatest : String -> List Team -> Html Msg
@@ -213,7 +230,9 @@ viewPlayerDetail attributes details player =
             span [ class "rating" ] [ text (toString player.rating) ]
 
         salary =
-            span [ class "salary" ] (rating :: [ text (Format.formatSalary player.salary) ])
+            rating
+                :: [ text (Format.formatSalary player.salary) ]
+                |> span [ class "salary" ]
 
         content =
             if details then
@@ -240,22 +259,11 @@ viewWaitingTeams title teams =
                     []
 
         teamList =
-            ul [ class "teams" ] (List.map (\t -> viewTeam [] t.gm t) teams)
+            List.map (\t -> viewTeam [] t.gm t) teams
+                |> ul [ class "teams" ]
+
     in
         segment title "" (teamList :: currentTeam)
-
-
-
-{-
-   viewTeamsLastDrafted : String -> List Team -> Html Msg
-   viewTeamsLastDrafted title teams =
-       viewTeamList title teams viewTeamWithLatest
-
-
-   viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
-   viewTeamList title teams view =
-       segment title "upcoming" [ ul [ class "teams" ] (List.map view teams) ]
--}
 
 
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
