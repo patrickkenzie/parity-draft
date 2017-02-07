@@ -75,11 +75,11 @@ draftPlayer player model =
         ( newWaiting, newDrafted ) =
             updateRound draftingTeam model
 
-        round = if List.isEmpty newDrafted
-                then
-                    model.round + 1
-                else
-                    model.round
+        round =
+            if List.isEmpty newDrafted then
+                model.round + 1
+            else
+                model.round
     in
         { model
             | undraftedPlayers = remaining
@@ -133,90 +133,105 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Mock Draft" ]
-        , div []
-            [ button [ onClick Reset ] [ text "Reset" ]
-            ]
         , viewCurrentTeam model
-        , displayTeams "Up Next" model.waitingTeams
-        , displayTeams (viewRound model) model.draftedTeams
-        , draftList model.undraftedPlayers
-        , playerList "Draft History" model.draftedPlayers
-        , playerList "Draft Order" (List.reverse model.draftedPlayers)
+        , viewTeamNames "Up Next" model.waitingTeams
+        , playerList "Players" draftablePlayer model.undraftedPlayers
+        , viewTeamLastDrafted (viewRound model) model.draftedTeams
+        , playerList "Draft History" viewPlayer model.draftedPlayers
+        , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
         , Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
         ]
+
 
 viewRound : Model -> String
 viewRound model =
     "Round " ++ toString model.round
 
+
 viewCurrentTeam : Model -> Html Msg
 viewCurrentTeam model =
     case currentTeam model of
         Just team ->
-            viewTeam team
+            viewTeamWithRoster team
 
         Nothing ->
             h3 [] [ text "Unknown Team!" ]
 
 
-viewTeam : Team -> Html Msg
-viewTeam team =
+viewTeam : List (Html Msg) -> Team -> Html Msg
+viewTeam playerList team =
+    div [ class "team" ]
+        [ h3 [] [ text team.name ]
+        , ul [ class "players" ] playerList
+        ]
+
+
+viewTeamWithLatest : Team -> Html Msg
+viewTeamWithLatest team =
+    let
+        player =
+            case List.head team.players of
+                Just player ->
+                    player
+
+                Nothing ->
+                    team.gm
+
+        playerList =
+            [ viewPlayer player ]
+    in
+        viewTeam playerList team
+
+
+viewTeamWithRoster : Team -> Html Msg
+viewTeamWithRoster team =
     let
         playerList =
-            List.map viewPlayer team.players
+            List.map viewPlayer (team.gm :: team.players)
     in
-        div [] <|
-            [ h3 [] [ text team.name ] ]
-                ++ [ viewPlayer team.gm ]
-                ++ playerList
+        viewTeam playerList team
 
 
 viewPlayer : Player -> Html Msg
 viewPlayer player =
-    div [] [ text player ]
-
-
-displayTeams : String -> List Team -> Html Msg
-displayTeams title teams =
-    div segment <|
-        [ h2 [] [ text title ] ]
-            ++ (List.map viewTeam teams)
-
-
-teamItem : Team -> Html Msg
-teamItem team =
-    li [] [ text team.name ]
-
-draftList : List Player -> Html Msg
-draftList players =
-    div segment
-        [ h2 [] [ text "Players"]
-        , ol [] (List.map draftablePlayer players)
-        ]
-
-playerList : String -> List Player -> Html Msg
-playerList title players =
-    div segment
-        [ h2 [] [ text title ]
-        , displayPlayers players
-        ]
-
-
-displayPlayers : List Player -> Html Msg
-displayPlayers  players =
-    ol [] (List.map draftedPlayer players)
-
-
-draftedPlayer : Player -> Html Msg
-draftedPlayer player =
     li [] [ text player ]
 
 
+viewTeamNames : String -> List Team -> Html Msg
+viewTeamNames title teams =
+    viewTeamList title teams (viewTeam [])
+
+
+viewTeamLastDrafted : String -> List Team -> Html Msg
+viewTeamLastDrafted title teams =
+    viewTeamList title teams viewTeamWithLatest
+
+
+viewTeamList : String -> List Team -> (Team -> Html Msg) -> Html Msg
+viewTeamList title teams view =
+    div segment <|
+        [ h2 [] [ text title ] ]
+            ++ (List.map view teams)
+
+
+playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
+playerList title view players =
+    div segment
+        [ h2 [] [ text title ]
+        , ol [ class "playerList" ] (List.map view players)
+        ]
+
+
 draftablePlayer : Player -> Html Msg
-draftablePlayer player  =
-        li [ onClick (Draft player) ] [ text player ]
+draftablePlayer player =
+    li [] [ button [ onClick (Draft player) ] [ text player ] ]
 
 
 segment : List (Attribute msg)
 segment =
-    [ class "segment"]
+    [ class "segment" ]
+
+
+playerListAttributes : List (Attribute msg)
+playerListAttributes =
+    [ class "playerList" ]

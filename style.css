@@ -7,6 +7,43 @@ body {
     color: rgba(0,0,0,.87);
 }
 
+h2 {
+    margin: 0 0 1em;
+    border-bottom: solid 1px black;
+    text-align: center;
+}
+
+h3 { 
+    margin: 0;
+}
+
+.team ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.team li {
+    margin: 0;
+    padding: 0;
+}
+
+.team li.gm {
+    font-weight: bold;
+}
+
+.playerList button {
+    width: 100%;
+    padding: 0.1em 0.2em;
+    border: solid 1px black;
+    background-color: grey;
+}
+
+.playerList button:hover {
+    background-color: lightgrey;
+    cursor: pointer;
+}
+
 .segment {
     width: 200px;
     display: inline-block;
