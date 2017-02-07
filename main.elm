@@ -207,7 +207,7 @@ viewDraftContent model =
 
 viewDraftInProgress : Model -> List (Html Msg)
 viewDraftInProgress model =
-    [ viewWaitingTeams "Up Next" model.waitingTeams
+    [ viewWaitingTeams model.waitingTeams
     , playerList "Players" draftablePlayer model.undraftedPlayers
       --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest (viewRound model) model.draftedTeams
@@ -272,15 +272,15 @@ viewTeamWithRoster format team =
             List.reverse team.players
                 |> List.map viewPlayer
 
-        ending =
+        (start, end) =
             if format then
-                [ br [] [], br [] [] ]
+                (h3 [] [text team.gm], [ br [] [], br [] [] ])
             else
-                []
+                (text "", [])
     in
-        h3 [] [ text team.gm ]
+        start
             :: [ ul [ class "players" ] playerList ]
-            ++ ending
+            ++ end
             |> div [ class "team" ]
 
 
@@ -317,22 +317,32 @@ viewPlayerDetail attributes details player =
         li ([ class className ] ++ attributes) content
 
 
-viewWaitingTeams : String -> List Team -> Html Msg
-viewWaitingTeams title teams =
+viewWaitingTeams : List Team -> Html Msg
+viewWaitingTeams teams =
     let
-        currentTeam =
+        ( currentTeam, title ) =
             case List.head teams of
                 Just team ->
-                    [ viewTeamWithRoster False team ]
+                    ( viewTeamWithRoster False team, team.gm )
 
                 Nothing ->
-                    []
+                    ( text "Unknown Team!", "Unknown!" )
 
         teamList =
-            List.map (\t -> li [] [ text t.gm ]) teams
-                |> ul [ class "teams" ]
+            case List.tail teams of
+                Just list ->
+                    List.map (\t -> li [] [ text t.gm ]) list
+                        |> ul [ class "teams" ]
+
+                Nothing ->
+                    ul [] []
+
+        upNext =
+            [ h3 [] [ text "Up Next" ], teamList ]
     in
-        segment title "" (teamList :: currentTeam)
+        currentTeam
+            :: upNext
+            |> segment title ""
 
 
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
