@@ -3,7 +3,7 @@
 }
 
 body {
-    background-color: #aaa;
+    //background-color: #aaa;
     line-height: 1.5;
     font-family: Roboto,sans-serif;
     font-weight: 400;
@@ -65,10 +65,11 @@ ol {
 
 .players li {
     margin: 10px 0;
-    padding: 5px;
+    padding: 2px 5px;
     width: 100%;
     border: solid 1px grey;
     font-size: 0.8em;
+    border-radius: 5px;
 }
 
 .players .draftable {
@@ -77,6 +78,7 @@ ol {
     font-size: 1em;
     border-color: black;
     list-style-type: none;
+    user-select: none;
 }
 
 .male {
@@ -100,7 +102,7 @@ ol {
     margin: 0 1em;
     padding: 0 10px;
 
-    max-height: 750px;
+    max-height: 700px;
     overflow: auto;
 }
 

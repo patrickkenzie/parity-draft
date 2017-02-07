@@ -221,7 +221,7 @@ viewDraftComplete model =
             model.draftedTeams ++ model.waitingTeams
 
         teamDisplay =
-            List.map viewTeamWithRoster teams
+            List.map (viewTeamWithRoster True) teams
     in
         [ div [ id "draftResults" ] teamDisplay ]
 
@@ -236,13 +236,6 @@ viewDraftHistory model =
 viewRound : Model -> String
 viewRound model =
     "Round " ++ toString model.round
-
-
-viewTeam : List (Html Msg) -> String -> Team -> Html Msg
-viewTeam playerList title team =
-    h3 [] [ text title ]
-        :: [ ul [ class "players" ] playerList ]
-        |> div [ class "team" ]
 
 
 viewTeamsWithLatest : String -> List Team -> Html Msg
@@ -262,14 +255,23 @@ viewTeamsWithLatest title teams =
         segment title "" [ ul [] teamList ]
 
 
-viewTeamWithRoster : Team -> Html Msg
-viewTeamWithRoster team =
+viewTeamWithRoster : Bool -> Team -> Html Msg
+viewTeamWithRoster format team =
     let
         playerList =
             List.reverse team.players
                 |> List.map viewPlayer
+
+        ending =
+            if format then
+                [ br [] [], br [] [] ]
+            else
+                []
     in
-        viewTeam playerList team.gm team
+        h3 [] [ text team.gm ]
+            :: [ ul [ class "players" ] playerList ]
+            ++ ending
+            |> div [ class "team" ]
 
 
 viewPlayer : Player -> Html Msg
@@ -311,7 +313,7 @@ viewWaitingTeams title teams =
         currentTeam =
             case List.head teams of
                 Just team ->
-                    [ viewTeamWithRoster team ]
+                    [ viewTeamWithRoster False team ]
 
                 Nothing ->
                     []
