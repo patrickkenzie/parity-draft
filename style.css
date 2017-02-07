@@ -21,7 +21,7 @@ h3 {
     margin: 1em 0em;
 }
 
-#flipOrder {
+h1 > div button {
     display: none;
     vertical-align: middle;
 }
@@ -30,12 +30,13 @@ h1 > div {
     position: absolute;
     top: 0;
     right: 0;
-    width: 100px;
-    height: 80px;
+    min-width: 150px;
+    min-height: 80px;
 }
 
-h1 > div:hover #flipOrder {
-    display:inline-block;
+h1 > div:hover button {
+    display: inline-block;
+    margin: 10px;
 }
 
 ul, li.team {

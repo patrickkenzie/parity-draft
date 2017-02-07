@@ -27,7 +27,12 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
+    , history : History
     }
+
+
+type History
+    = History (List Model)
 
 
 initModel : Model
@@ -37,6 +42,7 @@ initModel =
     , waitingTeams = Teams.teams
     , draftedTeams = []
     , round = 1
+    , history = History ([])
     }
 
 
@@ -52,6 +58,7 @@ currentTeam model =
 type Msg
     = Draft Player
     | FlipOrder
+    | UndoRound
     | Reset
 
 
@@ -63,6 +70,9 @@ update msg model =
 
         FlipOrder ->
             { model | waitingTeams = List.reverse model.waitingTeams }
+
+        UndoRound ->
+            popHistory model.history
 
         Reset ->
             initModel
@@ -81,11 +91,11 @@ draftPlayer player model =
         ( newWaiting, newDrafted ) =
             updateRound draftingTeam model
 
-        round =
+        ( round, history ) =
             if List.isEmpty newDrafted then
-                model.round + 1
+                ( model.round + 1, updateHistory model )
             else
-                model.round
+                ( model.round, model.history )
     in
         { model
             | undraftedPlayers = remaining
@@ -93,7 +103,34 @@ draftPlayer player model =
             , waitingTeams = newWaiting
             , draftedTeams = newDrafted
             , round = round
+            , history = history
         }
+
+
+updateHistory : Model -> History
+updateHistory model =
+    let
+        (History existing) =
+            model.history
+    in
+        History (model :: existing)
+
+
+popHistory : History -> Model
+popHistory history =
+    let
+        (History rounds) =
+            history
+    in
+        if List.isEmpty rounds then
+            initModel
+        else
+            case List.head rounds of
+                Just round ->
+                    round
+
+                Nothing ->
+                    initModel
 
 
 updateRound : Maybe Team -> Model -> ( List Team, List Team )
@@ -148,13 +185,24 @@ styles =
     Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
 
 
+title : Html Msg
+title =
+    h1 []
+        [ text "Mock Draft"
+        , div []
+            [ button [ onClick FlipOrder ] [ text "Invert Order" ]
+            , button [ onClick UndoRound ] [ text "Undo Round" ]
+            ]
+        ]
+
+
 viewDraftContent : Model -> List (Html Msg)
 viewDraftContent model =
     if List.isEmpty model.undraftedPlayers then
         viewDraftComplete model
     else
         viewDraftInProgress model
-        ++ viewDraftHistory model
+            ++ viewDraftHistory model
 
 
 viewDraftInProgress : Model -> List (Html Msg)
@@ -172,7 +220,8 @@ viewDraftComplete model =
         teams =
             model.draftedTeams ++ model.waitingTeams
 
-        teamDisplay = List.map viewTeamWithRoster teams
+        teamDisplay =
+            List.map viewTeamWithRoster teams
     in
         [ div [ id "draftResults" ] teamDisplay ]
 
@@ -184,14 +233,6 @@ viewDraftHistory model =
     ]
 
 
-title : Html Msg
-title =
-    h1 []
-        [ text "Mock Draft"
-        , div [] [ button [ onClick FlipOrder, id "flipOrder" ] [ text "Invert Order" ] ]
-        ]
-
-
 viewRound : Model -> String
 viewRound model =
     "Round " ++ toString model.round
@@ -199,7 +240,7 @@ viewRound model =
 
 viewTeam : List (Html Msg) -> String -> Team -> Html Msg
 viewTeam playerList title team =
-    h3 [] [text title ] 
+    h3 [] [ text title ]
         :: [ ul [ class "players" ] playerList ]
         |> div [ class "team" ]
 
