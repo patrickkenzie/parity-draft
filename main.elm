@@ -139,14 +139,22 @@ view : Model -> Html Msg
 view model =
     styles
         :: title
-        :: viewDraftInProgress model
-        ++ viewDraftHistory model
+        :: viewDraftContent model
         |> div []
 
 
 styles : Html Msg
 styles =
     Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
+
+
+viewDraftContent : Model -> List (Html Msg)
+viewDraftContent model =
+    if List.isEmpty model.undraftedPlayers then
+        viewDraftComplete model
+    else
+        viewDraftInProgress model
+        ++ viewDraftHistory model
 
 
 viewDraftInProgress : Model -> List (Html Msg)
@@ -156,6 +164,17 @@ viewDraftInProgress model =
       --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest (viewRound model) model.draftedTeams
     ]
+
+
+viewDraftComplete : Model -> List (Html Msg)
+viewDraftComplete model =
+    let
+        teams =
+            model.draftedTeams ++ model.waitingTeams
+
+        teamDisplay = List.map viewTeamWithRoster teams
+    in
+        [ div [ id "draftResults" ] teamDisplay ]
 
 
 viewDraftHistory : Model -> List (Html Msg)
@@ -180,9 +199,9 @@ viewRound model =
 
 viewTeam : List (Html Msg) -> String -> Team -> Html Msg
 viewTeam playerList title team =
-    text title
+    h3 [] [text title ] 
         :: [ ul [ class "players" ] playerList ]
-        |> li [ class "team" ]
+        |> div [ class "team" ]
 
 
 viewTeamsWithLatest : String -> List Team -> Html Msg
@@ -209,7 +228,7 @@ viewTeamWithRoster team =
             List.reverse team.players
                 |> List.map viewPlayer
     in
-        viewTeam playerList "" team
+        viewTeam playerList team.gm team
 
 
 viewPlayer : Player -> Html Msg
@@ -251,17 +270,14 @@ viewWaitingTeams title teams =
         currentTeam =
             case List.head teams of
                 Just team ->
-                    [ h3 [] [ "Roster: " ++ team.gm |> text ]
-                    , viewTeamWithRoster team
-                    ]
+                    [ viewTeamWithRoster team ]
 
                 Nothing ->
                     []
 
         teamList =
-            List.map (\t -> viewTeam [] t.gm t) teams
+            List.map (\t -> li [] [ text t.gm ]) teams
                 |> ul [ class "teams" ]
-
     in
         segment title "" (teamList :: currentTeam)
 
