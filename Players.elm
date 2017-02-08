@@ -316,6 +316,11 @@ allPlayers =
       , rating = 8
       , salary = 1919500
       }
+    , { name = "David Townsend"
+      , gender = Male
+      , rating = 5
+      , salary = 1320687
+      }
     , { name = "Chris Tran"
       , gender = Male
       , rating = 6
