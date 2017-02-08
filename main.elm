@@ -272,11 +272,11 @@ viewTeamWithRoster format team =
             List.reverse team.players
                 |> List.map viewPlayer
 
-        (start, end) =
+        ( start, end ) =
             if format then
-                (h3 [] [text team.gm], [ br [] [], br [] [] ])
+                ( h3 [] [ text team.gm ], [ br [] [], br [] [] ] )
             else
-                (text "", [])
+                ( text "", [] )
     in
         start
             :: [ ul [ class "players" ] playerList ]
