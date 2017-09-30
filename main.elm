@@ -27,12 +27,18 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
+    , currentView : TabView
     , history : History
     }
 
 
 type History
     = History (List Model)
+
+
+type TabView
+    = DraftView
+    | TeamView
 
 
 initModel : Model
@@ -42,6 +48,7 @@ initModel =
     , waitingTeams = Teams.teams
     , draftedTeams = []
     , round = 1
+    , currentView = DraftView
     , history = History ([])
     }
 
@@ -60,6 +67,7 @@ type Msg
     | FlipOrder
     | UndoRound
     | Reset
+    | ChangeView TabView
 
 
 update : Msg -> Model -> Model
@@ -76,6 +84,9 @@ update msg model =
 
         Reset ->
             initModel
+
+        ChangeView tabView ->
+            { model | currentView = tabView }
 
 
 draftPlayer : Player -> Model -> Model
@@ -176,7 +187,8 @@ view : Model -> Html Msg
 view model =
     styles
         :: title
-        :: viewDraftContent model
+        :: viewTabNav model.currentView
+        :: viewTabContent model
         |> div []
 
 
@@ -194,6 +206,39 @@ title =
             , button [ onClick UndoRound ] [ text "Undo Round" ]
             ]
         ]
+
+
+viewTabNav : TabView -> Html Msg
+viewTabNav currentView =
+    let
+        buildTab tabView title =
+            let
+                className =
+                    if tabView == currentView then
+                        "active"
+                    else
+                        ""
+            in
+                div
+                    [ class className
+                    , onClick (ChangeView tabView)
+                    ]
+                    [ text title ]
+    in
+        div [ class "nav" ]
+            [ buildTab DraftView "Draft"
+            , buildTab TeamView "Teams"
+            ]
+
+
+viewTabContent : Model -> List (Html Msg)
+viewTabContent model =
+    case model.currentView of
+        DraftView ->
+            viewDraftContent model
+
+        TeamView ->
+            viewDraftComplete model
 
 
 viewDraftContent : Model -> List (Html Msg)
@@ -358,8 +403,3 @@ segment : String -> String -> List (Html Msg) -> Html Msg
 segment title className list =
     div [ class "segment", class className ]
         (h2 [] [ text title ] :: list)
-
-
-playerListAttributes : List (Attribute msg)
-playerListAttributes =
-    [ class "players" ]
