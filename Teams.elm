@@ -2,11 +2,13 @@ module Teams exposing (..)
 
 import Players exposing (Player)
 
+
 type alias Team =
     { gm : String
     , name : String
     , players : List Player
     }
+
 
 teams : List Team
 teams =
@@ -43,4 +45,3 @@ teams =
       , players = []
       }
     ]
-
