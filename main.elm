@@ -211,7 +211,7 @@ viewDraftInProgress model =
     , playerList "Players" draftablePlayer model.undraftedPlayers
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
-    , viewTeamsWithLatest (viewRound model) model.draftedTeams
+    , viewTeamsWithLatest model.round model.draftedTeams
     ]
 
 
@@ -234,13 +234,8 @@ viewDraftHistory model =
     ]
 
 
-viewRound : Model -> String
-viewRound model =
-    "Round " ++ toString model.round
-
-
-viewTeamsWithLatest : String -> List Team -> Html Msg
-viewTeamsWithLatest title teams =
+viewTeamsWithLatest : Int -> List Team -> Html Msg
+viewTeamsWithLatest round teams =
     let
         formatPlayer player =
             let
@@ -251,6 +246,9 @@ viewTeamsWithLatest title teams =
                         "male"
             in
                 dd [ class className ] [ text player.name ]
+
+        title =
+            "Round " ++ (toString round)
 
         playerList team =
             case List.head team.players of
