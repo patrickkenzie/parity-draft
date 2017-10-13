@@ -261,7 +261,7 @@ viewDraftContent model =
 viewDraftInProgress : Model -> List (Html Msg)
 viewDraftInProgress model =
     [ viewWaitingTeams model.waitingTeams
-    , playerList "Players" draftablePlayer model.undraftedPlayers
+    , viewPlayerList "Players" draftablePlayer model.undraftedPlayers
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest model.round model.draftedTeams
@@ -282,10 +282,8 @@ viewDraftComplete model =
 
 viewDraftHistory : Model -> List (Html Msg)
 viewDraftHistory model =
-    {--[ playerList "Draft History" viewPlayer model.draftedPlayers
-    , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers) --}
-    [ draftedPlayerList "Draft History" model.draftedPlayers
-    , draftedPlayerList "Draft Order" (List.reverse model.draftedPlayers)
+    [ viewPlayerList "Draft History" viewDraftedPlayer model.draftedPlayers
+    , viewPlayerList "Draft Order" viewDraftedPlayer (List.reverse model.draftedPlayers)
     ]
 
 
@@ -302,7 +300,7 @@ viewTeamsWithLatest round teams =
         title =
             "Round " ++ (toString round)
 
-        playerList team =
+        viewPlayerList team =
             case List.head team.players of
                 Just player ->
                     dt [] [ text team.gm, formatPlayer player ]
@@ -311,7 +309,7 @@ viewTeamsWithLatest round teams =
                     text title
 
         teamList =
-            List.map playerList teams
+            List.map viewPlayerList teams
     in
         segment title "" [ dl [] teamList ]
 
@@ -319,9 +317,9 @@ viewTeamsWithLatest round teams =
 viewTeamWithRoster : Bool -> Team -> Html Msg
 viewTeamWithRoster format team =
     let
-        playerList =
+        viewPlayerList =
             List.reverse team.players
-                |> List.map viewPlayer
+                |> List.map (viewPlayerDetail [] False)
 
         ( start, end ) =
             if format then
@@ -330,14 +328,9 @@ viewTeamWithRoster format team =
                 ( text "", [] )
     in
         start
-            :: [ ul [ class "players" ] playerList ]
+            :: [ ul [ class "players" ] viewPlayerList ]
             ++ end
             |> div [ class "team" ]
-
-
-viewPlayer : Player -> Html Msg
-viewPlayer player =
-    viewPlayerDetail [] False player
 
 
 viewPlayerDetail : List (Attribute Msg) -> Bool -> Player -> Html Msg
@@ -393,18 +386,13 @@ viewWaitingTeams teams =
             |> segment title ""
 
 
-playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
-playerList title view players =
-    segment title "" [ ol [ class "players" ] (List.map view players) ]
+viewPlayerList : String -> (a -> Html Msg) -> List a -> Html Msg
+viewPlayerList title view list =
+    segment title "" [ ol [ class "players" ] (List.map view list) ]
 
 
-draftedPlayerList : String -> List ( Player, String ) -> Html Msg
-draftedPlayerList title players =
-    segment title "" [ ol [ class "players" ] (List.map draftedPlayerView players) ]
-
-
-draftedPlayerView : ( Player, String ) -> Html Msg
-draftedPlayerView playerInfo =
+viewDraftedPlayer : ( Player, String ) -> Html Msg
+viewDraftedPlayer playerInfo =
     let
         ( player, gm ) =
             playerInfo
