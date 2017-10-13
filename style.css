@@ -92,7 +92,7 @@ ol {
     padding: 0;
 }
 
-.players li, dd {
+.players .female, .players .male, dd {
     margin-bottom: 10px;
     padding: 2px 5px;
     border: solid 1px grey;
@@ -154,6 +154,10 @@ dt {
     font-weight: normal;
     display: block;
     margin-left: 2em;
+}
+
+.gm {
+    font-size: 0.75em;
 }
 
 @media (max-width: 800px) {

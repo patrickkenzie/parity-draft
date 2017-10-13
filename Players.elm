@@ -14,6 +14,14 @@ type alias Player =
     }
 
 
+className : Player -> String
+className player =
+    if player.gender == Female then
+        "female"
+    else
+        "male"
+
+
 sortPlayers : List Player -> List Player
 sortPlayers players =
     List.sortBy .salary allPlayers |> List.reverse

@@ -23,7 +23,7 @@ main =
 
 type alias Model =
     { undraftedPlayers : List Player
-    , draftedPlayers : List Player
+    , draftedPlayers : List ( Player, String )
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
@@ -102,6 +102,14 @@ draftPlayer player model =
         ( newWaiting, newDrafted ) =
             updateRound draftingTeam model
 
+        draftingTeamName =
+            case draftingTeam of
+                Just team ->
+                    team.gm ++ ":"
+
+                Nothing ->
+                    "Unknown Team"
+
         ( round, history ) =
             if List.isEmpty newDrafted then
                 ( model.round + 1, updateHistory model )
@@ -110,7 +118,7 @@ draftPlayer player model =
     in
         { model
             | undraftedPlayers = remaining
-            , draftedPlayers = player :: model.draftedPlayers
+            , draftedPlayers = ( player, draftingTeamName ) :: model.draftedPlayers
             , waitingTeams = newWaiting
             , draftedTeams = newDrafted
             , round = round
@@ -274,8 +282,10 @@ viewDraftComplete model =
 
 viewDraftHistory : Model -> List (Html Msg)
 viewDraftHistory model =
-    [ playerList "Draft History" viewPlayer model.draftedPlayers
-    , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers)
+    {--[ playerList "Draft History" viewPlayer model.draftedPlayers
+    , playerList "Draft Order" viewPlayer (List.reverse model.draftedPlayers) --}
+    [ draftedPlayerList "Draft History" model.draftedPlayers
+    , draftedPlayerList "Draft Order" (List.reverse model.draftedPlayers)
     ]
 
 
@@ -285,10 +295,7 @@ viewTeamsWithLatest round teams =
         formatPlayer player =
             let
                 className =
-                    if player.gender == Female then
-                        "female"
-                    else
-                        "male"
+                    Players.className player
             in
                 dd [ class className ] [ text player.name ]
 
@@ -337,10 +344,7 @@ viewPlayerDetail : List (Attribute Msg) -> Bool -> Player -> Html Msg
 viewPlayerDetail attributes details player =
     let
         className =
-            if player.gender == Female then
-                "female"
-            else
-                "male"
+            Players.className player
 
         rating =
             span [ class "rating" ] [ text (toString player.rating) ]
@@ -392,6 +396,26 @@ viewWaitingTeams teams =
 playerList : String -> (Player -> Html Msg) -> List Player -> Html Msg
 playerList title view players =
     segment title "" [ ol [ class "players" ] (List.map view players) ]
+
+
+draftedPlayerList : String -> List ( Player, String ) -> Html Msg
+draftedPlayerList title players =
+    segment title "" [ ol [ class "players" ] (List.map draftedPlayerView players) ]
+
+
+draftedPlayerView : ( Player, String ) -> Html Msg
+draftedPlayerView playerInfo =
+    let
+        ( player, gm ) =
+            playerInfo
+
+        className =
+            Players.className player
+    in
+        li []
+            [ div [ class "gm" ] [ text gm ]
+            , div [ class className ] [ text player.name ]
+            ]
 
 
 draftablePlayer : Player -> Html Msg
