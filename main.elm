@@ -53,11 +53,6 @@ initModel =
     }
 
 
-currentTeam : Model -> Maybe Team
-currentTeam model =
-    List.head model.waitingTeams
-
-
 
 -- UPDATE
 
@@ -96,7 +91,7 @@ draftPlayer player model =
             List.filter (\p -> p /= player) model.undraftedPlayers
 
         draftingTeam =
-            currentTeam model
+            List.head model.waitingTeams
                 |> addPlayer player
 
         ( newWaiting, newDrafted ) =
