@@ -12,36 +12,36 @@ type alias Team =
 
 teams : List Team
 teams =
-    [ { gm = "Jaime Boss"
-      , name = "Like a Boss"
-      , players = []
-      }
-    , { gm = "Kindha Gorman"
-      , name = "Katy Parity"
+    [ { gm = "Alessandro Colantonio"
+      , name = ""
       , players = []
       }
     , { gm = "Brian Kells"
-      , name = "Mike and the Milburys"
+      , name = ""
       , players = []
       }
-    , { gm = "Amos Lee"
-      , name = "Hindsight Hooligans"
+    , { gm = "Cassie Berquist"
+      , name = ""
       , players = []
       }
-    , { gm = "Jamie Wildgen"
-      , name = "Kaboom"
+    , { gm = "Christopher Keates"
+      , name = ""
       , players = []
       }
-    , { gm = "Owen Lumley"
-      , name = "Basket"
+    , { gm = "Chris Sullivan"
+      , name = ""
       , players = []
       }
-    , { gm = "Andrea Proulx"
-      , name = "SOS"
+    , { gm = "Jessie Robinson"
+      , name = ""
       , players = []
       }
-    , { gm = "Rob Ives"
-      , name = "F Bombs"
+    , { gm = "Mehmet Karman"
+      , name = ""
+      , players = []
+      }
+    , { gm = "Travis Davidson"
+      , name = ""
       , players = []
       }
     ]
