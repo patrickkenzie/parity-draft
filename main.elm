@@ -39,6 +39,7 @@ type History
 type TabView
     = DraftView
     | TeamView
+    | HistoryView
 
 
 initModel : Model
@@ -231,6 +232,7 @@ viewTabNav currentView =
         div [ class "nav" ]
             [ buildTab DraftView "Draft"
             , buildTab TeamView "Teams"
+            , buildTab HistoryView "History"
             ]
 
 
@@ -242,6 +244,9 @@ viewTabContent model =
 
         TeamView ->
             viewDraftComplete model
+
+        HistoryView ->
+            viewDraftHistory model
 
 
 viewDraftContent : Model -> List (Html Msg)
