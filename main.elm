@@ -204,7 +204,7 @@ styles =
 title : Html Msg
 title =
     h1 []
-        [ text "Mock Draft"
+        [ text "Parity Draft"
         , div []
             [ button [ onClick FlipOrder ] [ text "Invert Order" ]
             , button [ onClick UndoRound ] [ text "Undo Round" ]
