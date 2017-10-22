@@ -295,7 +295,7 @@ viewTeamsWithLatest round teams =
                 className =
                     Players.className player
             in
-                dd [ class className ] [ text player.name ]
+                dd [ class className ] [ text (Players.playerName player) ]
 
         title =
             "Round " ++ (toString round)
@@ -344,16 +344,16 @@ viewPlayerDetail attributes details player =
 
         salary =
             rating
-                :: [ text (Format.formatSalary player.salary) ]
+                :: [ text (Format.formatSalary player.height) ]
                 |> span [ class "salary" ]
 
         content =
             if details then
-                [ text player.name
+                [ text (Players.playerName player)
                 , salary
                 ]
             else
-                [ text player.name ]
+                [ text (Players.playerName player) ]
     in
         li ([ class className ] ++ attributes) content
 
@@ -402,7 +402,7 @@ viewDraftedPlayer playerInfo =
     in
         li []
             [ div [ class "gm" ] [ text gm ]
-            , div [ class className ] [ text player.name ]
+            , div [ class className ] [ text (Players.playerName player) ]
             ]
 
 

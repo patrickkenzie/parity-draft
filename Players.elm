@@ -7,10 +7,11 @@ type Gender
 
 
 type alias Player =
-    { name : String
+    { firstName : String
+    , lastName : String
     , gender : Gender
+    , height : Int
     , rating : Int
-    , salary : Int
     }
 
 
@@ -22,9 +23,14 @@ className player =
         "male"
 
 
+playerName : Player -> String
+playerName player =
+    player.firstName ++ " " ++ player.lastName
+
+
 sortPlayers : List Player -> List Player
 sortPlayers players =
-    List.sortBy .salary allPlayers |> List.reverse
+    List.sortBy .lastName allPlayers
 
 
 players : List Player
@@ -34,484 +40,580 @@ players =
 
 allPlayers : List Player
 allPlayers =
-    [ { name = "Nicholas Aghajanian"
-      , gender = Male
-      , rating = 7
-      , salary = 1400000
-      }
-    , { name = "Craig Anderson"
-      , gender = Male
-      , rating = 8
-      , salary = 1749000
-      }
-    , { name = "Kevin Barford"
-      , gender = Male
-      , rating = 6
-      , salary = 1495928
-      }
-    , { name = "Sebastien Belanger"
-      , gender = Male
-      , rating = 6
-      , salary = 1157000
-      }
-    , { name = "Simon Berry"
-      , gender = Male
-      , rating = 5
-      , salary = 1015100
-      }
-    , { name = "Steve Bisang"
-      , gender = Male
-      , rating = 7
-      , salary = 1167428
-      }
-    , { name = "Marcus Bordage"
-      , gender = Male
-      , rating = 8
-      , salary = 998497
-      }
-    , { name = "Graham Brown"
-      , gender = Male
-      , rating = 5
-      , salary = 1071000
-      }
-    , { name = "Jeremy Bryan"
-      , gender = Male
-      , rating = 7
-      , salary = 1270500
-      }
-    , { name = "Brent Burton"
-      , gender = Male
-      , rating = 6
-      , salary = 1493500
-      }
-    , { name = "Frederic Caron"
-      , gender = Male
-      , rating = 9
-      , salary = 1371928
-      }
-    , { name = "Jonathan Champagne"
-      , gender = Male
-      , rating = 4
-      , salary = 940132
-      }
-    , { name = "Wing-Leung Chan"
-      , gender = Male
-      , rating = 6
-      , salary = 998497
-      }
-    , { name = "Steve Chow"
-      , gender = Male
-      , rating = 6
-      , salary = 1831500
-      }
-    , { name = "Martin Cloake"
-      , gender = Male
-      , rating = 9
-      , salary = 1537900
-      }
-    , { name = "Stephen Close"
-      , gender = Male
-      , rating = 7
-      , salary = 998497
-      }
-    , { name = "Michael Colantonio"
-      , gender = Male
-      , rating = 6
-      , salary = 1307500
-      }
-    , { name = "Alessandro Colantonio"
-      , gender = Male
-      , rating = 7
-      , salary = 1539500
-      }
-    , { name = "Sina Dee"
-      , gender = Male
-      , rating = 7
-      , salary = 1922611
-      }
-    , { name = "Mark Donahue"
-      , gender = Male
-      , rating = 8
-      , salary = 1205214
-      }
-    , { name = "Jason Fraser"
-      , gender = Male
-      , rating = 6
-      , salary = 1094600
-      }
-    , { name = "Richard Gregory"
-      , gender = Male
-      , rating = 6
-      , salary = 1256650
-      }
-    , { name = "Scott Higgins"
-      , gender = Male
-      , rating = 7
-      , salary = 1857388
-      }
-    , { name = "Morgan Howard"
-      , gender = Male
-      , rating = 6
-      , salary = 1414333
-      }
-    , { name = "Kevin Hughes"
-      , gender = Male
-      , rating = 7
-      , salary = 1449166
-      }
-    , { name = "Jeff Hunt"
-      , gender = Male
-      , rating = 6
-      , salary = 1190500
-      }
-    , { name = "Rob Ives"
-      , gender = Male
-      , rating = 7
-      , salary = 1241000
-      }
-    , { name = "Tim Kealey"
-      , gender = Male
-      , rating = 6
-      , salary = 1083276
-      }
-    , { name = "Christopher Keates"
-      , gender = Male
-      , rating = 8
-      , salary = 1893000
-      }
-    , { name = "Brian Kells"
-      , gender = Male
-      , rating = 8
-      , salary = 1537500
-      }
-    , { name = "Patrick Kenzie"
-      , gender = Male
-      , rating = 6
-      , salary = 1358500
-      }
-    , { name = "Sonny Kim"
-      , gender = Male
-      , rating = 4
-      , salary = 798798
-      }
-    , { name = "Nick Klimowicz"
-      , gender = Male
-      , rating = 6
-      , salary = 1337392
-      }
-    , { name = "Krys Kudakiewicz"
-      , gender = Male
-      , rating = 6
-      , salary = 1495356
-      }
-    , { name = "Will Leckie"
-      , gender = Male
-      , rating = 8
-      , salary = 1069000
-      }
-    , { name = "Amos Lee"
-      , gender = Male
-      , rating = 8
-      , salary = 1653500
-      }
-    , { name = "Mike Lee"
-      , gender = Male
+    [ { firstName = "Hannah"
+      , lastName = "Dawson"
+      , gender = Female
+      , height = 62
       , rating = 10
-      , salary = 2034704
       }
-    , { name = "Owen Lumley"
-      , gender = Male
-      , rating = 8
-      , salary = 2148000
-      }
-    , { name = "Patrick McKelvey"
-      , gender = Male
-      , rating = 6
-      , salary = 998497
-      }
-    , { name = "Hadrian Mertins-Kirkwood"
-      , gender = Male
-      , rating = 8
-      , salary = 1849900
-      }
-    , { name = "Tyler Mulcock"
-      , gender = Male
-      , rating = 6
-      , salary = 1475000
-      }
-    , { name = "Ryan Mussell"
-      , gender = Male
-      , rating = 5
-      , salary = 1186341
-      }
-    , { name = "Tom Newman"
-      , gender = Male
-      , rating = 9
-      , salary = 1397896
-      }
-    , { name = "Michael O'Hare"
-      , gender = Male
-      , rating = 6
-      , salary = 998497
-      }
-    , { name = "Jonathan Pindur"
-      , gender = Male
-      , rating = 7
-      , salary = 1467636
-      }
-    , { name = "Benjamin Piper"
-      , gender = Male
-      , rating = 7
-      , salary = 1838221
-      }
-    , { name = "Greg Probe"
-      , gender = Male
-      , rating = 7
-      , salary = 1135249
-      }
-    , { name = "Jim Robinson"
-      , gender = Male
-      , rating = 6
-      , salary = 1433500
-      }
-    , { name = "Peter Roebuck"
-      , gender = Male
-      , rating = 6
-      , salary = 1110530
-      }
-    , { name = "Jon Rowe"
-      , gender = Male
-      , rating = 6
-      , salary = 1597500
-      }
-    , { name = "Trevor Ryan"
-      , gender = Male
-      , rating = 6
-      , salary = 1759500
-      }
-    , { name = "Matthew Schijns"
-      , gender = Male
-      , rating = 5
-      , salary = 1286611
-      }
-    , { name = "Andre Scott"
-      , gender = Male
-      , rating = 5
-      , salary = 1110000
-      }
-    , { name = "Geofford seaborn"
-      , gender = Male
-      , rating = 8
-      , salary = 1593500
-      }
-    , { name = "Andrew Spearin"
-      , gender = Male
-      , rating = 6
-      , salary = 1644000
-      }
-    , { name = "Kyle Sprysa"
-      , gender = Male
-      , rating = 9
-      , salary = 939000
-      }
-    , { name = "Trevor Stocki"
-      , gender = Male
-      , rating = 6
-      , salary = 623333
-      }
-    , { name = "Chris Sullivan"
-      , gender = Male
-      , rating = 8
-      , salary = 1919500
-      }
-    , { name = "David Townsend"
-      , gender = Male
-      , rating = 5
-      , salary = 1320687
-      }
-    , { name = "Chris Tran"
-      , gender = Male
-      , rating = 6
-      , salary = 1153200
-      }
-    , { name = "Jay Thor Turner"
-      , gender = Male
-      , rating = 6
-      , salary = 1160000
-      }
-    , { name = "Rob Tyson"
-      , gender = Male
-      , rating = 6
-      , salary = 1098500
-      }
-    , { name = "Jamie Wildgen"
-      , gender = Male
-      , rating = 7
-      , salary = 1684443
-      }
-    , { name = "Edwin Wong"
-      , gender = Male
-      , rating = 5
-      , salary = 798798
-      }
-    , { name = "Christine Beals"
+    , { firstName = "Alisha"
+      , lastName = "Zhao"
       , gender = Female
-      , rating = 5
-      , salary = 776000
-      }
-    , { name = "Jaime Boss"
-      , gender = Female
-      , rating = 9
-      , salary = 1122000
-      }
-    , { name = "Laura Chambers Storey"
-      , gender = Female
-      , rating = 7
-      , salary = 1267213
-      }
-    , { name = "Meagan Doyle"
-      , gender = Female
-      , rating = 8
-      , salary = 998497
-      }
-    , { name = "Wynne Gee"
-      , gender = Female
-      , rating = 9
-      , salary = 1305339
-      }
-    , { name = "Kindha Gorman"
-      , gender = Female
-      , rating = 6
-      , salary = 937500
-      }
-    , { name = "Josee Guibord"
-      , gender = Female
-      , rating = 9
-      , salary = 1397896
-      }
-    , { name = "Sandra Hanson"
-      , gender = Female
-      , rating = 7
-      , salary = 857499
-      }
-    , { name = "Melissa Jess"
-      , gender = Female
-      , rating = 6
-      , salary = 1110856
-      }
-    , { name = "Karen Kavanagh"
-      , gender = Female
-      , rating = 6
-      , salary = 998497
-      }
-    , { name = "Ashlin Kelly"
-      , gender = Female
-      , rating = 7
-      , salary = 1815833
-      }
-    , { name = "Laura Knowles"
-      , gender = Female
-      , rating = 6
-      , salary = 1319475
-      }
-    , { name = "Julia Laforge"
-      , gender = Female
-      , rating = 8
-      , salary = 1098200
-      }
-    , { name = "Samantha Lee"
-      , gender = Female
-      , rating = 9
-      , salary = 1090500
-      }
-    , { name = "Heather McCabe"
-      , gender = Female
-      , rating = 9
-      , salary = 1645070
-      }
-    , { name = "Angela Mueller"
-      , gender = Female
-      , rating = 7
-      , salary = 1229000
-      }
-    , { name = "Aleksandra Ostojic"
-      , gender = Female
-      , rating = 7
-      , salary = 1360000
-      }
-    , { name = "Maya Popovic"
-      , gender = Female
-      , rating = 7
-      , salary = 1415000
-      }
-    , { name = "Justine Price"
-      , gender = Female
-      , rating = 7
-      , salary = 1440000
-      }
-    , { name = "Andrea Proulx"
-      , gender = Female
-      , rating = 8
-      , salary = 1348888
-      }
-    , { name = "Kirsten Querbach"
-      , gender = Female
-      , rating = 7
-      , salary = 1501238
-      }
-    , { name = "Nina Ramic"
-      , gender = Female
-      , rating = 5
-      , salary = 1205917
-      }
-    , { name = "Darlene Riley"
-      , gender = Female
-      , rating = 7
-      , salary = 1285185
-      }
-    , { name = "Megan Robb"
-      , gender = Female
-      , rating = 6
-      , salary = 1587900
-      }
-    , { name = "Jessie Robinson"
-      , gender = Female
-      , rating = 8
-      , salary = 1303454
-      }
-    , { name = "An Tran"
-      , gender = Female
-      , rating = 7
-      , salary = 1095500
-      }
-    , { name = "Carrie-Anne Whyte"
-      , gender = Female
-      , rating = 5
-      , salary = 1066400
-      }
-    , { name = "Carissa Wong"
-      , gender = Female
-      , rating = 7
-      , salary = 998497
-      }
-    , { name = "Stacey Wowchuk"
-      , gender = Female
-      , rating = 6
-      , salary = 1033000
-      }
-    , { name = "Taka Yamada"
-      , gender = Female
-      , rating = 5
-      , salary = 1034350
-      }
-    , { name = "Rachel Young"
-      , gender = Female
-      , rating = 8
-      , salary = 998497
-      }
-    , { name = "Alisha Zhao"
-      , gender = Female
+      , height = 64
       , rating = 10
-      , salary = 1397896
+      }
+    , { firstName = "Cassie"
+      , lastName = "Berquist"
+      , gender = Female
+      , height = 66
+      , rating = 9
+      }
+    , { firstName = "Dominique"
+      , lastName = "Rioux"
+      , gender = Female
+      , height = 66
+      , rating = 9
+      }
+    , { firstName = "Josee"
+      , lastName = "Guibord"
+      , gender = Female
+      , height = 64
+      , rating = 9
+      }
+    , { firstName = "Kristie"
+      , lastName = "Ellis"
+      , gender = Female
+      , height = 66
+      , rating = 9
+      }
+    , { firstName = "Andrea"
+      , lastName = "Proulx"
+      , gender = Female
+      , height = 62
+      , rating = 8
+      }
+    , { firstName = "Jaime"
+      , lastName = "Boss"
+      , gender = Female
+      , height = 66
+      , rating = 8
+      }
+    , { firstName = "Jessie"
+      , lastName = "Robinson"
+      , gender = Female
+      , height = 65
+      , rating = 8
+      }
+    , { firstName = "Vanessa"
+      , lastName = "Mann"
+      , gender = Female
+      , height = 62
+      , rating = 8
+      }
+    , { firstName = "Sherri"
+      , lastName = "Ross"
+      , gender = Female
+      , height = 65
+      , rating = 7
+      }
+    , { firstName = "An"
+      , lastName = "Tran"
+      , gender = Female
+      , height = 64
+      , rating = 7
+      }
+    , { firstName = "Justine"
+      , lastName = "Price"
+      , gender = Female
+      , height = 63
+      , rating = 7
+      }
+    , { firstName = "Susan"
+      , lastName = "Sunde"
+      , gender = Female
+      , height = 61
+      , rating = 7
+      }
+    , { firstName = "Angela"
+      , lastName = "Mueller"
+      , gender = Female
+      , height = 69
+      , rating = 7
+      }
+    , { firstName = "Laura"
+      , lastName = "Chambers Storey"
+      , gender = Female
+      , height = 68
+      , rating = 7
+      }
+    , { firstName = "Kate"
+      , lastName = "Achtell"
+      , gender = Female
+      , height = 61
+      , rating = 6
+      }
+    , { firstName = "Lauren"
+      , lastName = "Ellis"
+      , gender = Female
+      , height = 63
+      , rating = 6
+      }
+    , { firstName = "Stephanie"
+      , lastName = "Verbit"
+      , gender = Female
+      , height = 64
+      , rating = 6
+      }
+    , { firstName = "Stacey"
+      , lastName = "Wowchuk"
+      , gender = Female
+      , height = 62
+      , rating = 6
+      }
+    , { firstName = "Melissa"
+      , lastName = "Jess"
+      , gender = Female
+      , height = 64
+      , rating = 6
+      }
+    , { firstName = "Nicole"
+      , lastName = "MacDonald"
+      , gender = Female
+      , height = 66
+      , rating = 6
+      }
+    , { firstName = "Carrie-Anne"
+      , lastName = "Whyte"
+      , gender = Female
+      , height = 65
+      , rating = 6
+      }
+    , { firstName = "Neena"
+      , lastName = "Sidhu"
+      , gender = Female
+      , height = 63
+      , rating = 6
+      }
+    , { firstName = "Heather"
+      , lastName = "Wallace"
+      , gender = Female
+      , height = 64
+      , rating = 6
+      }
+    , { firstName = "Christine"
+      , lastName = "Beals"
+      , gender = Female
+      , height = 62
+      , rating = 5
+      }
+    , { firstName = "Marie-Ange"
+      , lastName = "Gravel"
+      , gender = Female
+      , height = 66
+      , rating = 5
+      }
+    , { firstName = "Hope"
+      , lastName = "Celani"
+      , gender = Female
+      , height = 62
+      , rating = 5
+      }
+    , { firstName = "Celine"
+      , lastName = "Dumais"
+      , gender = Female
+      , height = 67
+      , rating = 4
+      }
+    , { firstName = "Katherine"
+      , lastName = "Matheson"
+      , gender = Female
+      , height = 66
+      , rating = 4
+      }
+    , { firstName = "Alix"
+      , lastName = "Ranger"
+      , gender = Female
+      , height = 67
+      , rating = 4
+      }
+    , { firstName = "Kristyn"
+      , lastName = "Berquist"
+      , gender = Female
+      , height = 64
+      , rating = 2
+      }
+    , { firstName = "Greg"
+      , lastName = "Ellis"
+      , gender = Male
+      , height = 71
+      , rating = 10
+      }
+    , { firstName = "Frederic"
+      , lastName = "Caron"
+      , gender = Male
+      , height = 71
+      , rating = 9
+      }
+    , { firstName = "Tom"
+      , lastName = "Newman"
+      , gender = Male
+      , height = 74
+      , rating = 9
+      }
+    , { firstName = "Martin"
+      , lastName = "Cloake"
+      , gender = Male
+      , height = 79
+      , rating = 9
+      }
+    , { firstName = "Will"
+      , lastName = "Leckie"
+      , gender = Male
+      , height = 74
+      , rating = 8
+      }
+    , { firstName = "Chris"
+      , lastName = "Sullivan"
+      , gender = Male
+      , height = 72
+      , rating = 8
+      }
+    , { firstName = "Marcus"
+      , lastName = "Bordage"
+      , gender = Male
+      , height = 72
+      , rating = 8
+      }
+    , { firstName = "Christopher"
+      , lastName = "Keates"
+      , gender = Male
+      , height = 75
+      , rating = 8
+      }
+    , { firstName = "Craig"
+      , lastName = "Anderson"
+      , gender = Male
+      , height = 67
+      , rating = 8
+      }
+    , { firstName = "Geofford"
+      , lastName = "Seaborn"
+      , gender = Male
+      , height = 75
+      , rating = 8
+      }
+    , { firstName = "Ken"
+      , lastName = "Maclean"
+      , gender = Male
+      , height = 70
+      , rating = 8
+      }
+    , { firstName = "Ryan"
+      , lastName = "Briggs"
+      , gender = Male
+      , height = 66
+      , rating = 8
+      }
+    , { firstName = "Travis"
+      , lastName = "Davidson"
+      , gender = Male
+      , height = 72
+      , rating = 8
+      }
+    , { firstName = "Brian"
+      , lastName = "Kells"
+      , gender = Male
+      , height = 72
+      , rating = 8
+      }
+    , { firstName = "Hadrian"
+      , lastName = "Mertins - Kirkwood"
+      , gender = Male
+      , height = 73
+      , rating = 8
+      }
+    , { firstName = "Scott"
+      , lastName = "Higgins"
+      , gender = Male
+      , height = 72
+      , rating = 7
+      }
+    , { firstName = "Adam"
+      , lastName = "MacDonald"
+      , gender = Male
+      , height = 68
+      , rating = 7
+      }
+    , { firstName = "Stephen"
+      , lastName = "Close"
+      , gender = Male
+      , height = 71
+      , rating = 7
+      }
+    , { firstName = "Nicholas"
+      , lastName = "Aghajanian"
+      , gender = Male
+      , height = 68
+      , rating = 7
+      }
+    , { firstName = "Mehmet"
+      , lastName = "Karman"
+      , gender = Male
+      , height = 72
+      , rating = 7
+      }
+    , { firstName = "Greg"
+      , lastName = "Probe"
+      , gender = Male
+      , height = 70
+      , rating = 7
+      }
+    , { firstName = "Brian"
+      , lastName = "Perry"
+      , gender = Male
+      , height = 72
+      , rating = 7
+      }
+    , { firstName = "Jamie"
+      , lastName = "Wildgen"
+      , gender = Male
+      , height = 72
+      , rating = 7
+      }
+    , { firstName = "Kelsey"
+      , lastName = "Charie"
+      , gender = Male
+      , height = 67
+      , rating = 7
+      }
+    , { firstName = "John"
+      , lastName = "Haig"
+      , gender = Male
+      , height = 71
+      , rating = 7
+      }
+    , { firstName = "Shubho Bo"
+      , lastName = "Biswas"
+      , gender = Male
+      , height = 66
+      , rating = 7
+      }
+    , { firstName = "Alessandro"
+      , lastName = "Colantonio"
+      , gender = Male
+      , height = 70
+      , rating = 7
+      }
+    , { firstName = "Jonathan"
+      , lastName = "Pindur"
+      , gender = Male
+      , height = 72
+      , rating = 7
+      }
+    , { firstName = "Dan"
+      , lastName = "Thomson"
+      , gender = Male
+      , height = 70
+      , rating = 7
+      }
+    , { firstName = "Kevin"
+      , lastName = "Hughes"
+      , gender = Male
+      , height = 70
+      , rating = 7
+      }
+    , { firstName = "Logan"
+      , lastName = "Ashall"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Michael"
+      , lastName = "Colantonio"
+      , gender = Male
+      , height = 70
+      , rating = 6
+      }
+    , { firstName = "Will"
+      , lastName = "Reid"
+      , gender = Male
+      , height = 67
+      , rating = 6
+      }
+    , { firstName = "Wing-Leung"
+      , lastName = "Chan"
+      , gender = Male
+      , height = 67
+      , rating = 6
+      }
+    , { firstName = "Jeff"
+      , lastName = "Hunt"
+      , gender = Male
+      , height = 69
+      , rating = 6
+      }
+    , { firstName = "Giulian"
+      , lastName = "De La Merced"
+      , gender = Male
+      , height = 67
+      , rating = 6
+      }
+    , { firstName = "Jon"
+      , lastName = "Rowe"
+      , gender = Male
+      , height = 73
+      , rating = 6
+      }
+    , { firstName = "Nick"
+      , lastName = "Amlin"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Liam"
+      , lastName = "Parker"
+      , gender = Male
+      , height = 74
+      , rating = 6
+      }
+    , { firstName = "Trevor"
+      , lastName = "Stocki"
+      , gender = Male
+      , height = 36
+      , rating = 6
+      }
+    , { firstName = "Kevin"
+      , lastName = "Barford"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Jason"
+      , lastName = "Fraser"
+      , gender = Male
+      , height = 70
+      , rating = 6
+      }
+    , { firstName = "Andrew"
+      , lastName = "Spearin"
+      , gender = Male
+      , height = 74
+      , rating = 6
+      }
+    , { firstName = "Richard"
+      , lastName = "Gregory"
+      , gender = Male
+      , height = 66
+      , rating = 6
+      }
+    , { firstName = "Allan"
+      , lastName = "Godding"
+      , gender = Male
+      , height = 75
+      , rating = 6
+      }
+    , { firstName = "Rob"
+      , lastName = "Tyson"
+      , gender = Male
+      , height = 70
+      , rating = 6
+      }
+    , { firstName = "Jim"
+      , lastName = "Robinson"
+      , gender = Male
+      , height = 76
+      , rating = 6
+      }
+    , { firstName = "Nick"
+      , lastName = "Klimowicz"
+      , gender = Male
+      , height = 74
+      , rating = 6
+      }
+    , { firstName = "Derek"
+      , lastName = "Tokarski"
+      , gender = Male
+      , height = 70
+      , rating = 6
+      }
+    , { firstName = "Tim"
+      , lastName = "Kealey"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Sebastien"
+      , lastName = "Belanger"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Patrick"
+      , lastName = "Kenzie"
+      , gender = Male
+      , height = 66
+      , rating = 6
+      }
+    , { firstName = "Nick"
+      , lastName = "Theriault"
+      , gender = Male
+      , height = 72
+      , rating = 6
+      }
+    , { firstName = "Michael"
+      , lastName = "Davidson"
+      , gender = Male
+      , height = 76
+      , rating = 6
+      }
+    , { firstName = "Jonathan"
+      , lastName = "Champagne"
+      , gender = Male
+      , height = 67
+      , rating = 5
+      }
+    , { firstName = "Matthew"
+      , lastName = "Schijns"
+      , gender = Male
+      , height = 72
+      , rating = 5
+      }
+    , { firstName = "Edwin"
+      , lastName = "Wong"
+      , gender = Male
+      , height = 66
+      , rating = 5
+      }
+    , { firstName = "Michael"
+      , lastName = "Wong"
+      , gender = Male
+      , height = 66
+      , rating = 5
+      }
+    , { firstName = "Simon"
+      , lastName = "Berry"
+      , gender = Male
+      , height = 68
+      , rating = 5
+      }
+    , { firstName = "Ben"
+      , lastName = "Curran"
+      , gender = Male
+      , height = 74
+      , rating = 5
+      }
+    , { firstName = "Thomas"
+      , lastName = "Sattolo"
+      , gender = Male
+      , height = 73
+      , rating = 5
+      }
+    , { firstName = "David"
+      , lastName = "Townsend"
+      , gender = Male
+      , height = 71
+      , rating = 5
+      }
+    , { firstName = "Graham"
+      , lastName = "Brown"
+      , gender = Male
+      , height = 70
+      , rating = 5
+      }
+    , { firstName = "Darryl"
+      , lastName = "Payne"
+      , gender = Male
+      , height = 73
+      , rating = 4
       }
     ]
