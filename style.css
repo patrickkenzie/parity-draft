@@ -127,8 +127,7 @@ dt {
 }
 
 .segment {
-    min-width: 250px;
-    max-width: 400px;
+    width: 400px;
     display: inline-block;
     vertical-align: top;
     //margin: 0 1em;
@@ -136,6 +135,11 @@ dt {
 
     max-height: 700px;
     overflow: auto;
+}
+
+#historyView > .segment {
+    width: 34%;
+    margin: 0 8%;
 }
 
 #draftResults > div {
@@ -165,6 +169,11 @@ dt {
     .segment {
         width: 50%;
         max-width: 50%;
+    }
+
+    #historyView > .segment {
+        width: 50%;
+        margin: 0;
     }
 
     #draftResults > div {

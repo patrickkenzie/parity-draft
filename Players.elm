@@ -28,14 +28,14 @@ playerName player =
     player.firstName ++ " " ++ player.lastName
 
 
-sortPlayers : List Player -> List Player
-sortPlayers players =
-    List.sortBy .lastName allPlayers
+sortPlayers : (Player -> comparable) -> List Player -> List Player
+sortPlayers sorter players =
+    List.sortBy sorter allPlayers
 
 
 players : List Player
 players =
-    sortPlayers allPlayers
+    sortPlayers .lastName allPlayers
 
 
 allPlayers : List Player

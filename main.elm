@@ -42,6 +42,10 @@ type TabView
     | HistoryView
 
 
+type alias Comparer a =
+    a -> a -> Order
+
+
 initModel : Model
 initModel =
     { undraftedPlayers = Players.players
@@ -64,6 +68,7 @@ type Msg
     | UndoRound
     | Reset
     | ChangeView TabView
+    | ResortPlayers (Comparer Player)
 
 
 update : Msg -> Model -> Model
@@ -83,6 +88,9 @@ update msg model =
 
         ChangeView tabView ->
             { model | currentView = tabView }
+
+        ResortPlayers comparer ->
+            { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
 
 
 draftPlayer : Player -> Model -> Model
@@ -255,7 +263,6 @@ viewDraftContent model =
         viewDraftComplete model
     else
         viewDraftInProgress model
-            ++ viewDraftHistory model
 
 
 viewDraftInProgress : Model -> List (Html Msg)
@@ -282,8 +289,10 @@ viewDraftComplete model =
 
 viewDraftHistory : Model -> List (Html Msg)
 viewDraftHistory model =
-    [ viewPlayerList "Draft History" viewDraftedPlayer model.draftedPlayers
-    , viewPlayerList "Draft Order" viewDraftedPlayer (List.reverse model.draftedPlayers)
+    [ div [ id "historyView" ]
+        [ viewPlayerList "Draft History" viewDraftedPlayer model.draftedPlayers
+        , viewPlayerList "Draft Order" viewDraftedPlayer (List.reverse model.draftedPlayers)
+        ]
     ]
 
 
