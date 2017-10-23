@@ -127,19 +127,27 @@ dt {
 }
 
 .segment {
-    width: 400px;
     display: inline-block;
     vertical-align: top;
-    //margin: 0 1em;
+    margin: 0;
     padding: 0 1em;
+}
 
+.undrafted {
+    width: 40%;
+}
+
+.current, .latest {
+    width: 30%;
+}
+
+.content{
     max-height: 700px;
     overflow: auto;
 }
 
 #historyView > .segment {
-    width: 34%;
-    margin: 0 8%;
+    margin: 0 5%;
 }
 
 #draftResults > div {

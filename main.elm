@@ -320,7 +320,7 @@ viewTeamsWithLatest round teams =
         teamList =
             List.map viewPlayerList teams
     in
-        segment title "" [ dl [] teamList ]
+        segment title "latest" [ dl [] teamList ]
 
 
 viewTeamWithRoster : Bool -> Team -> Html Msg
@@ -382,12 +382,12 @@ viewWaitingTeams teams =
     in
         currentTeam
             :: upNext
-            |> segment title ""
+            |> segment title "current"
 
 
 viewPlayerList : String -> (a -> Html Msg) -> List a -> Html Msg
 viewPlayerList title view list =
-    segment title "" [ ol [ class "players" ] (List.map view list) ]
+    segment title "undrafted" [ ol [ class "players" ] (List.map view list) ]
 
 
 viewDraftedPlayer : ( Player, String ) -> Html Msg
@@ -412,5 +412,13 @@ draftablePlayer player =
 
 segment : String -> String -> List (Html Msg) -> Html Msg
 segment title className list =
-    div [ class "segment", class className ]
-        (h2 [] [ text title ] :: list)
+    div
+        [ class "segment"
+        , class className
+        ]
+        [ h2 []
+            [ text title ]
+        , div
+            [ class "content" ]
+            list
+        ]
