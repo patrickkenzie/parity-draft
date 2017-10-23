@@ -336,26 +336,16 @@ viewTeamWithRoster format team =
 viewPlayerDetail : List (Attribute Msg) -> Bool -> Player -> Html Msg
 viewPlayerDetail attributes details player =
     let
-        className =
-            Players.className player
-
-        rating =
-            span [ class "rating" ] [ text (toString player.rating) ]
-
-        salary =
-            rating
-                :: [ text (Format.formatSalary player.height) ]
-                |> span [ class "salary" ]
-
         content =
             if details then
                 [ text (Players.playerName player)
-                , salary
+                , span [ class "stat" ] [ text (Format.formatRating player.rating) ]
+                , span [ class "stat" ] [ text (Format.formatHeight player.height) ]
                 ]
             else
                 [ text (Players.playerName player) ]
     in
-        li ([ class className ] ++ attributes) content
+        li ([ class (Players.className player) ] ++ attributes) content
 
 
 viewWaitingTeams : List Team -> Html Msg

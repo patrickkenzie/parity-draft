@@ -1,11 +1,29 @@
-module Format exposing (formatSalary)
+module Format exposing (..)
 
 import String exposing (..)
 
 
-formatSalary : Int -> String
-formatSalary value =
-    String.cons '$' (String.join "," (chunksOfRight 3 <| toString value))
+formatHeight : Int -> String
+formatHeight value =
+    let
+        feet =
+            value // 12
+
+        inches =
+            rem value 12
+
+        feetDisplay =
+            (toString feet) ++ "'"
+
+        inchesDisplay =
+            (toString inches) ++ "\""
+    in
+        "height: " ++ feetDisplay ++ " " ++ inchesDisplay
+
+
+formatRating : Int -> String
+formatRating rating =
+    "rating: " ++ (toString rating)
 
 
 chunksOfRight : Int -> String -> List String

@@ -145,15 +145,16 @@ dt {
     vertical-align:top;
 }
 
-.rating {
-    float:right;
-}
-
-.salary {
+.stat {
     font-size: 0.75em;
     font-weight: normal;
+    text-align: right;
     display: block;
-    margin-left: 2em;
+}
+
+.stat:after {
+    content: " ";
+    clear:both;
 }
 
 .gm {
