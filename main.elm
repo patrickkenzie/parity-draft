@@ -79,6 +79,8 @@ type Msg
     | Reset
     | ChangeView TabView
     | ResortPlayers PlayerSort
+    | MoveTeamUp Team
+    | MoveTeamDown Team
 
 
 update : Msg -> Model -> Model
@@ -101,6 +103,58 @@ update msg model =
 
         ResortPlayers comparer ->
             { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
+
+        MoveTeamUp team ->
+            moveTeamUp team model
+
+        MoveTeamDown team ->
+            moveTeamDown team model
+
+
+moveTeamUp : Team -> Model -> Model
+moveTeamUp team model =
+    let
+        teams =
+            model.waitingTeams
+
+        update i t =
+            if i == team.draftOrder - 1 then
+                { t | draftOrder = t.draftOrder + 1 }
+            else if i == team.draftOrder then
+                { t | draftOrder = t.draftOrder - 1 }
+            else
+                t
+
+        updatedTeams =
+            List.indexedMap update teams
+    in
+        if team.draftOrder == 0 then
+            model
+        else
+            { model | waitingTeams = Teams.sortedTeams updatedTeams }
+
+
+moveTeamDown : Team -> Model -> Model
+moveTeamDown team model =
+    let
+        teams =
+            model.waitingTeams
+
+        update i t =
+            if i == team.draftOrder + 1 then
+                { t | draftOrder = t.draftOrder - 1 }
+            else if i == team.draftOrder then
+                { t | draftOrder = t.draftOrder + 1 }
+            else
+                t
+
+        updatedTeams =
+            List.indexedMap update teams
+    in
+        if team.draftOrder == List.length model.waitingTeams then
+            model
+        else
+            { model | waitingTeams = Teams.sortedTeams updatedTeams }
 
 
 draftPlayer : Player -> Model -> Model
@@ -293,8 +347,21 @@ viewDraftComplete model =
         teams =
             model.draftedTeams ++ model.waitingTeams
 
+        swap team =
+            div []
+                [ viewTeamWithRoster True team
+                , button [ onClick (MoveTeamUp team) ]
+                    [ text "[up]" ]
+                , button
+                    [ onClick (MoveTeamDown team) ]
+                    [ text "[down]" ]
+                ]
+
         teamDisplay =
-            List.map (viewTeamWithRoster True) teams
+            if List.length model.draftedPlayers == 0 then
+                List.map swap teams
+            else
+                List.map (viewTeamWithRoster True) teams
 
         restartButton =
             div [ class "restartDraft" ]
