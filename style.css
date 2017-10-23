@@ -126,6 +126,15 @@ dt {
     margin-bottom: 1em;
 }
 
+.restartDraft {
+    text-align:center;
+}
+
+.restartDraft button {
+    padding: 0.5em;
+    cursor: pointer;
+}
+
 .segment {
     width: 40%;
     display: inline-block;

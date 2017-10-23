@@ -295,8 +295,15 @@ viewDraftComplete model =
 
         teamDisplay =
             List.map (viewTeamWithRoster True) teams
+
+        restartButton =
+            div [ class "restartDraft" ]
+                [ button [ onClick Reset ] [ text "Restart Draft" ]
+                ]
     in
-        [ div [ id "draftResults" ] teamDisplay ]
+        [ div [ id "draftResults" ] teamDisplay
+        , restartButton
+        ]
 
 
 viewDraftHistory : Model -> List (Html Msg)
