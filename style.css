@@ -127,14 +127,11 @@ dt {
 }
 
 .segment {
+    width: 40%;
     display: inline-block;
     vertical-align: top;
     margin: 0;
     padding: 0 1em;
-}
-
-.undrafted {
-    width: 40%;
 }
 
 .current, .latest {
@@ -171,6 +168,46 @@ dt {
 
 .gm {
     font-size: 0.75em;
+}
+
+#playerSortHeader {
+    position: relative;
+    font-size: 0.75em;
+    font-weight: normal;
+    float: right;
+}
+
+#playerSort {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color:white;
+    padding: 0.5em;
+    border: solid 1px lightgrey;
+    border-radius: 3px;
+    visibility: hidden;
+    transition-property: visibility;
+    transition-delay: 0.25s;
+    min-width: 10em;
+}
+
+#playerSort > div {
+    display: block;
+    text-align: left;
+}
+
+#playerSort a {
+    float: right;
+
+}
+
+#playerSortHeader:hover #playerSort {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+a {
+    cursor: pointer;
 }
 
 @media (max-width: 800px) {

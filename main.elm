@@ -42,8 +42,18 @@ type TabView
     | HistoryView
 
 
-type alias Comparer a =
-    a -> a -> Order
+type alias PlayerSort =
+    Player -> Player -> Order
+
+
+compareByAsc : (Player -> comparable) -> Player -> Player -> Order
+compareByAsc sort x y =
+    compare (sort x) (sort y)
+
+
+compareByDesc : (Player -> comparable) -> Player -> Player -> Order
+compareByDesc sort x y =
+    compare (sort y) (sort x)
 
 
 initModel : Model
@@ -68,7 +78,7 @@ type Msg
     | UndoRound
     | Reset
     | ChangeView TabView
-    | ResortPlayers (Comparer Player)
+    | ResortPlayers PlayerSort
 
 
 update : Msg -> Model -> Model
@@ -268,7 +278,9 @@ viewDraftContent model =
 viewDraftInProgress : Model -> List (Html Msg)
 viewDraftInProgress model =
     [ viewWaitingTeams model.waitingTeams
-    , viewPlayerList "Players" draftablePlayer model.undraftedPlayers
+
+    --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
+    , viewUndraftedPlayerList model.undraftedPlayers
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest model.round model.draftedTeams
@@ -309,7 +321,7 @@ viewTeamsWithLatest round teams =
         title =
             "Round " ++ (toString round)
 
-        viewPlayerList team =
+        viewPlayers team =
             case List.head team.players of
                 Just player ->
                     dt [] [ text team.gm, formatPlayer player ]
@@ -318,7 +330,7 @@ viewTeamsWithLatest round teams =
                     text title
 
         teamList =
-            List.map viewPlayerList teams
+            List.map viewPlayers teams
     in
         segment title "latest" [ dl [] teamList ]
 
@@ -326,7 +338,7 @@ viewTeamsWithLatest round teams =
 viewTeamWithRoster : Bool -> Team -> Html Msg
 viewTeamWithRoster format team =
     let
-        viewPlayerList =
+        viewPlayers =
             List.reverse team.players
                 |> List.map (viewPlayerDetail [] False)
 
@@ -337,7 +349,7 @@ viewTeamWithRoster format team =
                 ( text "", [] )
     in
         start
-            :: [ ul [ class "players" ] viewPlayerList ]
+            :: [ ul [ class "players" ] viewPlayers ]
             ++ end
             |> div [ class "team" ]
 
@@ -385,9 +397,33 @@ viewWaitingTeams teams =
             |> segment title "current"
 
 
+viewUndraftedPlayerList : List Player -> Html Msg
+viewUndraftedPlayerList list =
+    let
+        header =
+            h2 []
+                [ span
+                    [ id "playerSortHeader" ]
+                    [ text "Sorting", viewPlayerSortMenu ]
+                , text "Players"
+                ]
+    in
+        div
+            [ class "segment"
+            , class "undrafted"
+            ]
+            [ header
+            , div
+                [ class "content" ]
+                [ ol [ class "players" ]
+                    (List.map draftablePlayer list)
+                ]
+            ]
+
+
 viewPlayerList : String -> (a -> Html Msg) -> List a -> Html Msg
 viewPlayerList title view list =
-    segment title "undrafted" [ ol [ class "players" ] (List.map view list) ]
+    segment title "" [ ol [ class "players" ] (List.map view list) ]
 
 
 viewDraftedPlayer : ( Player, String ) -> Html Msg
@@ -405,6 +441,24 @@ viewDraftedPlayer playerInfo =
             ]
 
 
+viewPlayerSortMenu : Html Msg
+viewPlayerSortMenu =
+    let
+        sortable compare label =
+            div []
+                [ a [ onClick (ResortPlayers (compareByDesc compare)) ] [ text " ▼ " ]
+                , a [ onClick (ResortPlayers (compareByAsc compare)) ] [ text " ▲ " ]
+                , text label
+                ]
+    in
+        div [ id "playerSort" ]
+            [ sortable .lastName "Last Name"
+            , sortable .firstName "First Name"
+            , sortable .height "Height"
+            , sortable .rating "Rating"
+            ]
+
+
 draftablePlayer : Player -> Html Msg
 draftablePlayer player =
     viewPlayerDetail [ class "draftable", onClick (Draft player) ] True player
@@ -416,8 +470,7 @@ segment title className list =
         [ class "segment"
         , class className
         ]
-        [ h2 []
-            [ text title ]
+        [ h2 [] [ text title ]
         , div
             [ class "content" ]
             list
