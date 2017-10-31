@@ -96,7 +96,7 @@ update msg model =
             popHistory model.history
 
         Reset ->
-            initModel
+            resetDraft model
 
         ChangeView tabView ->
             { model | currentView = tabView }
@@ -109,6 +109,21 @@ update msg model =
 
         MoveTeamDown team ->
             moveTeamDown team model
+
+
+resetDraft : Model -> Model
+resetDraft model =
+    let
+        resetRoster team =
+            { team | players = [] }
+
+        teams =
+            List.reverse model.draftedTeams
+                ++ model.waitingTeams
+                |> List.map resetRoster
+                |> Teams.sortedTeams
+    in
+        { initModel | waitingTeams = teams }
 
 
 moveTeamUp : Team -> Model -> Model
