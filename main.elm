@@ -345,7 +345,7 @@ viewDraftComplete : Model -> List (Html Msg)
 viewDraftComplete model =
     let
         teams =
-            model.draftedTeams ++ model.waitingTeams
+            List.reverse model.draftedTeams ++ model.waitingTeams
 
         swap team =
             div []
