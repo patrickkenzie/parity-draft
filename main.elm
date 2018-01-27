@@ -528,6 +528,7 @@ viewPlayerSortMenu =
         div [ id "playerSort" ]
             [ sortable .lastName "Last Name"
             , sortable .firstName "First Name"
+            , sortable (\p -> toString p.gender) "Gender"
             , sortable .height "Height"
             , sortable .rating "Rating"
             ]
