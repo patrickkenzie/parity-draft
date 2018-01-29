@@ -1,15 +1,10 @@
 module Players exposing (..)
 
 
-type Gender
-    = Female
-    | Male
-
-
 type alias Player =
     { firstName : String
     , lastName : String
-    , gender : Gender
+    , gender : String
     , height : Int
     , rating : Int
     }
@@ -17,7 +12,7 @@ type alias Player =
 
 className : Player -> String
 className player =
-    if player.gender == Female then
+    if player.gender == "Female" then
         "female"
     else
         "male"
@@ -42,577 +37,577 @@ allPlayers : List Player
 allPlayers =
     [ { firstName = "Hannah"
       , lastName = "Dawson"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 10
       }
     , { firstName = "Alisha"
       , lastName = "Zhao"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 10
       }
     , { firstName = "Cassie"
       , lastName = "Berquist"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 9
       }
     , { firstName = "Dominique"
       , lastName = "Rioux"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 9
       }
     , { firstName = "Josee"
       , lastName = "Guibord"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 9
       }
     , { firstName = "Kristie"
       , lastName = "Ellis"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 9
       }
     , { firstName = "Andrea"
       , lastName = "Proulx"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 8
       }
     , { firstName = "Jaime"
       , lastName = "Boss"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 8
       }
     , { firstName = "Jessie"
       , lastName = "Robinson"
-      , gender = Female
+      , gender = "Female"
       , height = 65
       , rating = 8
       }
     , { firstName = "Vanessa"
       , lastName = "Mann"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 8
       }
     , { firstName = "Sherri"
       , lastName = "Ross"
-      , gender = Female
+      , gender = "Female"
       , height = 65
       , rating = 7
       }
     , { firstName = "An"
       , lastName = "Tran"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 7
       }
     , { firstName = "Justine"
       , lastName = "Price"
-      , gender = Female
+      , gender = "Female"
       , height = 63
       , rating = 7
       }
     , { firstName = "Susan"
       , lastName = "Sunde"
-      , gender = Female
+      , gender = "Female"
       , height = 61
       , rating = 7
       }
     , { firstName = "Angela"
       , lastName = "Mueller"
-      , gender = Female
+      , gender = "Female"
       , height = 69
       , rating = 7
       }
     , { firstName = "Laura"
       , lastName = "Chambers Storey"
-      , gender = Female
+      , gender = "Female"
       , height = 68
       , rating = 7
       }
     , { firstName = "Kate"
       , lastName = "Achtell"
-      , gender = Female
+      , gender = "Female"
       , height = 61
       , rating = 6
       }
     , { firstName = "Lauren"
       , lastName = "Ellis"
-      , gender = Female
+      , gender = "Female"
       , height = 63
       , rating = 6
       }
     , { firstName = "Stephanie"
       , lastName = "Verbit"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 6
       }
     , { firstName = "Stacey"
       , lastName = "Wowchuk"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 6
       }
     , { firstName = "Melissa"
       , lastName = "Jess"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 6
       }
     , { firstName = "Nicole"
       , lastName = "MacDonald"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 6
       }
     , { firstName = "Carrie-Anne"
       , lastName = "Whyte"
-      , gender = Female
+      , gender = "Female"
       , height = 65
       , rating = 6
       }
     , { firstName = "Neena"
       , lastName = "Sidhu"
-      , gender = Female
+      , gender = "Female"
       , height = 63
       , rating = 6
       }
     , { firstName = "Heather"
       , lastName = "Wallace"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 6
       }
     , { firstName = "Christine"
       , lastName = "Beals"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 5
       }
     , { firstName = "Marie-Ange"
       , lastName = "Gravel"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 5
       }
     , { firstName = "Hope"
       , lastName = "Celani"
-      , gender = Female
+      , gender = "Female"
       , height = 62
       , rating = 5
       }
     , { firstName = "Celine"
       , lastName = "Dumais"
-      , gender = Female
+      , gender = "Female"
       , height = 67
       , rating = 4
       }
     , { firstName = "Katherine"
       , lastName = "Matheson"
-      , gender = Female
+      , gender = "Female"
       , height = 66
       , rating = 4
       }
     , { firstName = "Alix"
       , lastName = "Ranger"
-      , gender = Female
+      , gender = "Female"
       , height = 67
       , rating = 4
       }
     , { firstName = "Kristyn"
       , lastName = "Berquist"
-      , gender = Female
+      , gender = "Female"
       , height = 64
       , rating = 2
       }
     , { firstName = "Greg"
       , lastName = "Ellis"
-      , gender = Male
+      , gender = "Male"
       , height = 71
       , rating = 10
       }
     , { firstName = "Frederic"
       , lastName = "Caron"
-      , gender = Male
+      , gender = "Male"
       , height = 71
       , rating = 9
       }
     , { firstName = "Tom"
       , lastName = "Newman"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 9
       }
     , { firstName = "Martin"
       , lastName = "Cloake"
-      , gender = Male
+      , gender = "Male"
       , height = 79
       , rating = 9
       }
     , { firstName = "Will"
       , lastName = "Leckie"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 8
       }
     , { firstName = "Chris"
       , lastName = "Sullivan"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 8
       }
     , { firstName = "Marcus"
       , lastName = "Bordage"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 8
       }
     , { firstName = "Christopher"
       , lastName = "Keates"
-      , gender = Male
+      , gender = "Male"
       , height = 75
       , rating = 8
       }
     , { firstName = "Craig"
       , lastName = "Anderson"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 8
       }
     , { firstName = "Geofford"
       , lastName = "Seaborn"
-      , gender = Male
+      , gender = "Male"
       , height = 75
       , rating = 8
       }
     , { firstName = "Ken"
       , lastName = "Maclean"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 8
       }
     , { firstName = "Ryan"
       , lastName = "Briggs"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 8
       }
     , { firstName = "Travis"
       , lastName = "Davidson"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 8
       }
     , { firstName = "Brian"
       , lastName = "Kells"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 8
       }
     , { firstName = "Hadrian"
       , lastName = "Mertins - Kirkwood"
-      , gender = Male
+      , gender = "Male"
       , height = 73
       , rating = 8
       }
     , { firstName = "Scott"
       , lastName = "Higgins"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 7
       }
     , { firstName = "Adam"
       , lastName = "MacDonald"
-      , gender = Male
+      , gender = "Male"
       , height = 68
       , rating = 7
       }
     , { firstName = "Stephen"
       , lastName = "Close"
-      , gender = Male
+      , gender = "Male"
       , height = 71
       , rating = 7
       }
     , { firstName = "Nicholas"
       , lastName = "Aghajanian"
-      , gender = Male
+      , gender = "Male"
       , height = 68
       , rating = 7
       }
     , { firstName = "Mehmet"
       , lastName = "Karman"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 7
       }
     , { firstName = "Greg"
       , lastName = "Probe"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 7
       }
     , { firstName = "Brian"
       , lastName = "Perry"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 7
       }
     , { firstName = "Jamie"
       , lastName = "Wildgen"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 7
       }
     , { firstName = "Kelsey"
       , lastName = "Charie"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 7
       }
     , { firstName = "John"
       , lastName = "Haig"
-      , gender = Male
+      , gender = "Male"
       , height = 71
       , rating = 7
       }
     , { firstName = "Shubho Bo"
       , lastName = "Biswas"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 7
       }
     , { firstName = "Alessandro"
       , lastName = "Colantonio"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 7
       }
     , { firstName = "Jonathan"
       , lastName = "Pindur"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 7
       }
     , { firstName = "Dan"
       , lastName = "Thomson"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 7
       }
     , { firstName = "Kevin"
       , lastName = "Hughes"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 7
       }
     , { firstName = "Logan"
       , lastName = "Ashall"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Michael"
       , lastName = "Colantonio"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 6
       }
     , { firstName = "Will"
       , lastName = "Reid"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 6
       }
     , { firstName = "Wing-Leung"
       , lastName = "Chan"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 6
       }
     , { firstName = "Jeff"
       , lastName = "Hunt"
-      , gender = Male
+      , gender = "Male"
       , height = 69
       , rating = 6
       }
     , { firstName = "Giulian"
       , lastName = "De La Merced"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 6
       }
     , { firstName = "Jon"
       , lastName = "Rowe"
-      , gender = Male
+      , gender = "Male"
       , height = 73
       , rating = 6
       }
     , { firstName = "Nick"
       , lastName = "Amlin"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Liam"
       , lastName = "Parker"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 6
       }
     , { firstName = "Trevor"
       , lastName = "Stocki"
-      , gender = Male
+      , gender = "Male"
       , height = 36
       , rating = 6
       }
     , { firstName = "Kevin"
       , lastName = "Barford"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Jason"
       , lastName = "Fraser"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 6
       }
     , { firstName = "Andrew"
       , lastName = "Spearin"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 6
       }
     , { firstName = "Richard"
       , lastName = "Gregory"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 6
       }
     , { firstName = "Allan"
       , lastName = "Godding"
-      , gender = Male
+      , gender = "Male"
       , height = 75
       , rating = 6
       }
     , { firstName = "Rob"
       , lastName = "Tyson"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 6
       }
     , { firstName = "Jim"
       , lastName = "Robinson"
-      , gender = Male
+      , gender = "Male"
       , height = 76
       , rating = 6
       }
     , { firstName = "Nick"
       , lastName = "Klimowicz"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 6
       }
     , { firstName = "Derek"
       , lastName = "Tokarski"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 6
       }
     , { firstName = "Tim"
       , lastName = "Kealey"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Sebastien"
       , lastName = "Belanger"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Patrick"
       , lastName = "Kenzie"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 6
       }
     , { firstName = "Nick"
       , lastName = "Theriault"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 6
       }
     , { firstName = "Michael"
       , lastName = "Davidson"
-      , gender = Male
+      , gender = "Male"
       , height = 76
       , rating = 6
       }
     , { firstName = "Jonathan"
       , lastName = "Champagne"
-      , gender = Male
+      , gender = "Male"
       , height = 67
       , rating = 5
       }
     , { firstName = "Matthew"
       , lastName = "Schijns"
-      , gender = Male
+      , gender = "Male"
       , height = 72
       , rating = 5
       }
     , { firstName = "Edwin"
       , lastName = "Wong"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 5
       }
     , { firstName = "Michael"
       , lastName = "Wong"
-      , gender = Male
+      , gender = "Male"
       , height = 66
       , rating = 5
       }
     , { firstName = "Simon"
       , lastName = "Berry"
-      , gender = Male
+      , gender = "Male"
       , height = 68
       , rating = 5
       }
     , { firstName = "Ben"
       , lastName = "Curran"
-      , gender = Male
+      , gender = "Male"
       , height = 74
       , rating = 5
       }
     , { firstName = "Thomas"
       , lastName = "Sattolo"
-      , gender = Male
+      , gender = "Male"
       , height = 73
       , rating = 5
       }
     , { firstName = "David"
       , lastName = "Townsend"
-      , gender = Male
+      , gender = "Male"
       , height = 71
       , rating = 5
       }
     , { firstName = "Graham"
       , lastName = "Brown"
-      , gender = Male
+      , gender = "Male"
       , height = 70
       , rating = 5
       }
     , { firstName = "Darryl"
       , lastName = "Payne"
-      , gender = Male
+      , gender = "Male"
       , height = 73
       , rating = 4
       }

@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -8,13 +8,37 @@ import Players exposing (..)
 import Format
 
 
-main : Program Never Model Msg
+main : Program (Maybe Model) Model Msg
 main =
-    Html.beginnerProgram
-        { model = initModel
-        , update = update
+    Html.programWithFlags
+        { init = init
         , view = view
+        , update = updateWithStorage
+        , subscriptions = \_ -> Sub.none
         }
+
+
+updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
+updateWithStorage msg model =
+    let
+        ( newModel, cmds ) =
+            update msg model
+    in
+        ( newModel
+        , Cmd.batch [ saveModel newModel, cmds ]
+        )
+
+
+init : Maybe Model -> ( Model, Cmd Msg )
+init savedModel =
+    Maybe.withDefault initModel savedModel ! []
+
+
+
+-- PORTS
+
+
+port saveModel : Model -> Cmd msg
 
 
 
@@ -27,13 +51,8 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
-    , currentView : TabView
-    , history : History
+    , currentView : Int
     }
-
-
-type History
-    = History (List Model)
 
 
 type TabView
@@ -63,9 +82,34 @@ initModel =
     , waitingTeams = Teams.teams
     , draftedTeams = []
     , round = 1
-    , currentView = DraftView
-    , history = History ([])
+    , currentView = 0
     }
+
+
+tabViewFromInt : Int -> TabView
+tabViewFromInt value =
+    case value of
+        1 ->
+            TeamView
+
+        2 ->
+            HistoryView
+
+        _ ->
+            DraftView
+
+
+tabViewToInt : TabView -> Int
+tabViewToInt view =
+    case view of
+        DraftView ->
+            0
+
+        TeamView ->
+            1
+
+        HistoryView ->
+            2
 
 
 
@@ -83,32 +127,36 @@ type Msg
     | MoveTeamDown Team
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Draft player ->
-            draftPlayer player model
+    let
+        newModel =
+            case msg of
+                Draft player ->
+                    draftPlayer player model
 
-        FlipOrder ->
-            { model | waitingTeams = List.reverse model.waitingTeams }
+                FlipOrder ->
+                    { model | waitingTeams = List.reverse model.waitingTeams }
 
-        UndoRound ->
-            popHistory model.history
+                UndoRound ->
+                    model
 
-        Reset ->
-            initModel
+                Reset ->
+                    initModel
 
-        ChangeView tabView ->
-            { model | currentView = tabView }
+                ChangeView tabView ->
+                    { model | currentView = tabViewToInt tabView }
 
-        ResortPlayers comparer ->
-            { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
+                ResortPlayers comparer ->
+                    { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
 
-        MoveTeamUp team ->
-            moveTeamUp team model
+                MoveTeamUp team ->
+                    moveTeamUp team model
 
-        MoveTeamDown team ->
-            moveTeamDown team model
+                MoveTeamDown team ->
+                    moveTeamDown team model
+    in
+        newModel ! []
 
 
 moveTeamUp : Team -> Model -> Model
@@ -178,11 +226,11 @@ draftPlayer player model =
                 Nothing ->
                     "Unknown Team"
 
-        ( round, history ) =
+        round =
             if List.isEmpty newDrafted then
-                ( model.round + 1, updateHistory model )
+                model.round + 1
             else
-                ( model.round, model.history )
+                model.round
     in
         { model
             | undraftedPlayers = remaining
@@ -190,34 +238,36 @@ draftPlayer player model =
             , waitingTeams = newWaiting
             , draftedTeams = newDrafted
             , round = round
-            , history = history
         }
 
 
-updateHistory : Model -> History
-updateHistory model =
-    let
-        (History existing) =
-            model.history
-    in
-        History (model :: existing)
+
+{-
+   updateHistory : Model -> History
+   updateHistory model =
+       let
+           (History existing) =
+               model.history
+       in
+           History (model :: existing)
 
 
-popHistory : History -> Model
-popHistory history =
-    let
-        (History rounds) =
-            history
-    in
-        if List.isEmpty rounds then
-            initModel
-        else
-            case List.head rounds of
-                Just round ->
-                    round
+   popHistory : History -> Model
+   popHistory history =
+       let
+           (History rounds) =
+               history
+       in
+           if List.isEmpty rounds then
+               initModel
+           else
+               case List.head rounds of
+                   Just round ->
+                       round
 
-                Nothing ->
-                    initModel
+                   Nothing ->
+                       initModel
+-}
 
 
 updateRound : Maybe Team -> Model -> ( List Team, List Team )
@@ -263,7 +313,7 @@ view : Model -> Html Msg
 view model =
     styles
         :: title
-        :: viewTabNav model.currentView
+        :: viewTabNav (tabViewFromInt model.currentView)
         :: viewTabContent model
         |> div []
 
@@ -311,14 +361,14 @@ viewTabNav currentView =
 viewTabContent : Model -> List (Html Msg)
 viewTabContent model =
     case model.currentView of
-        DraftView ->
-            viewDraftContent model
-
-        TeamView ->
+        1 ->
             viewDraftComplete model
 
-        HistoryView ->
+        2 ->
             viewDraftHistory model
+
+        _ ->
+            viewDraftContent model
 
 
 viewDraftContent : Model -> List (Html Msg)
@@ -528,7 +578,7 @@ viewPlayerSortMenu =
         div [ id "playerSort" ]
             [ sortable .lastName "Last Name"
             , sortable .firstName "First Name"
-            , sortable (\p -> toString p.gender) "Gender"
+            , sortable .gender "Gender"
             , sortable .height "Height"
             , sortable .rating "Rating"
             ]
