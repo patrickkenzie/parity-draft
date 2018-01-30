@@ -142,7 +142,7 @@ update msg model =
                     undo model
 
                 Reset ->
-                    initModel
+                    resetDraft model
 
                 ChangeView tabView ->
                     { model | currentView = tabViewToInt tabView }
@@ -157,6 +157,21 @@ update msg model =
                     moveTeamDown team model
     in
         newModel ! []
+
+
+resetDraft : Model -> Model
+resetDraft model =
+    let
+        resetRoster team =
+            { team | players = [] }
+
+        teams =
+            List.reverse model.draftedTeams
+                ++ model.waitingTeams
+                |> List.map resetRoster
+                |> Teams.sortedTeams
+    in
+        { initModel | waitingTeams = teams }
 
 
 moveTeamUp : Team -> Model -> Model
@@ -457,7 +472,7 @@ viewDraftComplete : Model -> List (Html Msg)
 viewDraftComplete model =
     let
         teams =
-            model.draftedTeams ++ model.waitingTeams
+            List.reverse model.draftedTeams ++ model.waitingTeams
 
         swap team =
             div []
