@@ -246,7 +246,6 @@ dummyPlayer =
     { firstName = "first"
     , lastName = "last"
     , gender = "x"
-    , height = 1
     , rating = 1
     }
 
@@ -548,7 +547,6 @@ viewPlayerDetail attributes details player =
             if details then
                 [ text (Players.playerName player)
                 , span [ class "stat" ] [ text (Format.formatRating player.rating) ]
-                , span [ class "stat" ] [ text (Format.formatHeight player.height) ]
                 ]
             else
                 [ text (Players.playerName player) ]
@@ -642,7 +640,6 @@ viewPlayerSortMenu =
             [ sortable .lastName "Last Name"
             , sortable .firstName "First Name"
             , sortable .gender "Gender"
-            , sortable .height "Height"
             , sortable .rating "Rating"
             ]
 
