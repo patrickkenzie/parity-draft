@@ -26,21 +26,17 @@ h1 {
 }
 
 h1 > div button {
-    display: none;
-    vertical-align: middle;
+    display: block;
+    margin: 8px 10px;
+    float: right;
+    clear: right;
+    padding: 5px 10px;
 }
 
 h1 > div {
     position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 150px;
-    min-height: 80px;
-}
-
-h1 > div:hover button {
-    display: inline-block;
-    margin: 10px;
+    top: 8px;
+    right: 8px;
 }
 
 ul, li.team {
