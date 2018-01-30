@@ -119,7 +119,7 @@ tabViewToInt view =
 type Msg
     = Draft Player
     | FlipOrder
-    | UndoRound
+    | UndoDraft
     | Reset
     | ChangeView TabView
     | ResortPlayers PlayerSort
@@ -138,8 +138,8 @@ update msg model =
                 FlipOrder ->
                     { model | waitingTeams = List.reverse model.waitingTeams }
 
-                UndoRound ->
-                    model
+                UndoDraft ->
+                    undo model
 
                 Reset ->
                     initModel
@@ -241,33 +241,96 @@ draftPlayer player model =
         }
 
 
+dummyPlayer : Player
+dummyPlayer =
+    { firstName = "first"
+    , lastName = "last"
+    , gender = "x"
+    , height = 1
+    , rating = 1
+    }
 
-{-
-   updateHistory : Model -> History
-   updateHistory model =
-       let
-           (History existing) =
-               model.history
-       in
-           History (model :: existing)
+
+dummyTeam : Team
+dummyTeam =
+    { gm = "gm"
+    , name = "team"
+    , players = []
+    , draftOrder = 0
+    }
 
 
-   popHistory : History -> Model
-   popHistory history =
-       let
-           (History rounds) =
-               history
-       in
-           if List.isEmpty rounds then
-               initModel
-           else
-               case List.head rounds of
-                   Just round ->
-                       round
+undoDraft : Model -> Model
+undoDraft model =
+    let
+        shouldUndoRound =
+            model.round > 1 && List.isEmpty model.draftedTeams
 
-                   Nothing ->
-                       initModel
--}
+        teamList =
+            if shouldUndoRound then
+                model.waitingTeams
+            else
+                model.draftedTeams
+
+        lastDraftedTeam =
+            List.head teamList
+                |> Maybe.withDefault dummyTeam
+
+        lastTeam =
+            Debug.log "lastTeam"
+                { lastDraftedTeam
+                    | players = List.tail lastDraftedTeam.players |> Maybe.withDefault []
+                }
+
+        teamsWaiting =
+            if shouldUndoRound then
+                [ lastTeam ]
+            else
+                lastTeam :: model.waitingTeams
+
+        teamsDrafted =
+            List.tail teamList |> Maybe.withDefault []
+
+        ( playersWaiting, playersDrafted ) =
+            undraftPlayer model
+
+        round =
+            if shouldUndoRound then
+                model.round - 1
+            else
+                model.round
+    in
+        { model
+            | undraftedPlayers = playersWaiting
+            , draftedPlayers = playersDrafted
+            , waitingTeams = teamsWaiting
+            , draftedTeams = teamsDrafted
+            , round = round
+        }
+
+
+undraftPlayer : Model -> ( List Player, List ( Player, String ) )
+undraftPlayer model =
+    let
+        ( lastPlayer, _ ) =
+            List.head model.draftedPlayers
+                |> Maybe.withDefault ( dummyPlayer, "" )
+
+        playersWaiting =
+            lastPlayer :: model.undraftedPlayers
+
+        playersDrafted =
+            List.tail model.draftedPlayers |> Maybe.withDefault []
+    in
+        ( playersWaiting, playersDrafted )
+
+
+undo : Model -> Model
+undo model =
+    if List.isEmpty model.draftedPlayers then
+        model
+    else
+        undoDraft model
 
 
 updateRound : Maybe Team -> Model -> ( List Team, List Team )
@@ -329,7 +392,7 @@ title =
         [ text "Parity Draft"
         , div []
             [ button [ onClick FlipOrder ] [ text "Invert Order" ]
-            , button [ onClick UndoRound ] [ text "Undo Round" ]
+            , button [ onClick UndoDraft ] [ text "Undo" ]
             ]
         ]
 
