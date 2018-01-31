@@ -33,7 +33,7 @@ allTeams =
       , players = []
       , draftOrder = 1
       }
-    , { gm = "Christopher Keates"
+    , { gm = "Chris Keates"
       , name = ""
       , players = []
       , draftOrder = 2

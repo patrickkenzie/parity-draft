@@ -67,7 +67,7 @@ allPlayers =
     , { firstName = "Rob", lastName = "Ives", gender = "Male", rating = 7 }
     , { firstName = "Mehmet", lastName = "Karman", gender = "Male", rating = 7 }
     , { firstName = "Tim", lastName = "Kealey", gender = "Male", rating = 6 }
-    , { firstName = "Christopher", lastName = "Keates", gender = "Male", rating = 8 }
+    , { firstName = "Chris", lastName = "Keates", gender = "Male", rating = 8 }
     , { firstName = "Brian", lastName = "Kells", gender = "Male", rating = 8 }
     , { firstName = "Patrick", lastName = "Kenzie", gender = "Male", rating = 6 }
     , { firstName = "Nick", lastName = "Klimowicz", gender = "Male", rating = 6 }
