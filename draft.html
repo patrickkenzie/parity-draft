@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Parity Draft</title>
+        <script type="text/javascript" src="elm.js"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+
+        <script type="text/javascript">
+         var storedModel = localStorage.getItem('saved-model');
+         var startModel = storedModel ? JSON.parse(storedModel) : null;
+         var elm = Elm.Main.fullscreen(startModel);
+         elm.ports.saveModel.subscribe(function(model) {
+             localStorage.setItem('saved-model', JSON.stringify(model));
+         });
+        </script>
+
+    </body>
+</html>
