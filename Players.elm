@@ -25,14 +25,21 @@ playerName player =
     player.firstName ++ " " ++ player.lastName
 
 
-sortPlayers : (Player -> comparable) -> List Player -> List Player
-sortPlayers sorter players =
-    List.sortBy sorter allPlayers
+compareByAsc : (Player -> comparable) -> Player -> Player -> Order
+compareByAsc sort x y =
+    compare (sort x) (sort y)
 
 
+compareByDesc : (Player -> comparable) -> Player -> Player -> Order
+compareByDesc sort x y =
+    compare (sort y) (sort x)
+
+    
 players : List Player
 players =
-    sortPlayers .lastName allPlayers
+    allPlayers
+    |> List.sortWith (compareByAsc .lastName)
+    |> List.sortWith (compareByAsc .gender)
 
 
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
