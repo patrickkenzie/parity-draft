@@ -268,7 +268,6 @@ dummyPlayer =
 dummyTeam : Team
 dummyTeam =
     { gm = "gm"
-    , name = "team"
     , players = []
     , draftOrder = 0
     }

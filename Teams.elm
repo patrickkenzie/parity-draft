@@ -5,7 +5,6 @@ import Players exposing (Player)
 
 type alias Team =
     { gm : String
-    , name : String
     , players : List Player
     , draftOrder : Int
     }
@@ -23,44 +22,44 @@ teams =
 
 allTeams : List Team
 allTeams =
-    [ { gm = "Chris Sullivan"
-      , name = ""
+    [ { gm = "Andrea Proulx"
       , players = []
       , draftOrder = 0
       }
-    , { gm = "Mehmet Karman"
-      , name = ""
+    , { gm = "Heather Wallace"
       , players = []
       , draftOrder = 1
       }
-    , { gm = "Chris Keates"
-      , name = ""
+    , { gm = "Jaime Boss"
       , players = []
       , draftOrder = 2
       }
-    , { gm = "Al Colantonio"
-      , name = ""
+    , { gm = "Jessie Robinson"
       , players = []
       , draftOrder = 3
       }
-    , { gm = "Cassie Berquist"
-      , name = ""
+    , { gm = "Kate Achtell"
       , players = []
       , draftOrder = 4
       }
-    , { gm = "Brian Perry"
-      , name = ""
+    , { gm = "Katie Wood"
       , players = []
       , draftOrder = 5
       }
-    , { gm = "Heather Wallace"
-      , name = ""
+    , { gm = "Kate Cav"
       , players = []
       , draftOrder = 6
       }
-    , { gm = "Jessie Robinson"
-      , name = ""
+    , { gm = "Kindha Gorman"
       , players = []
       , draftOrder = 7
+      }
+    , { gm = "Laura Storey"
+      , players = []
+      , draftOrder = 8
+      }
+    , { gm = "Michelle Warren"
+      , players = []
+      , draftOrder = 9
       }
     ]
