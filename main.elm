@@ -457,7 +457,7 @@ viewDraftContent model =
 
 viewDraftInProgress : Model -> List (Html Msg)
 viewDraftInProgress model =
-    [ viewWaitingTeams model.waitingTeams
+    [ viewWaitingTeams model.draftedTeams model.waitingTeams
 
     --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
     , viewUndraftedPlayerList model.undraftedPlayers
@@ -568,32 +568,41 @@ viewPlayerDetail attributes details player =
         li ([ class (Players.className player) ] ++ attributes) content
 
 
-viewWaitingTeams : List Team -> Html Msg
-viewWaitingTeams teams =
+viewWaitingTeams : List Team -> List Team -> Html Msg
+viewWaitingTeams draftedTeams waitingTeams =
     let
-        ( currentTeam, title ) =
-            case List.head teams of
+        ( teamDisplay, teamName ) =
+            case List.head waitingTeams of
                 Just team ->
                     ( viewTeamWithRoster False team, team.gm )
 
                 Nothing ->
-                    ( text "Unknown Team!", "Unknown!" )
+                    ( text "no team", "no team" )
 
-        teamList =
-            case List.tail teams of
+        display team =
+            li [] [ text team.gm ]
+
+        draftedItems =
+            List.map display draftedTeams
+
+        waitingItems =
+            case List.tail waitingTeams of
                 Just list ->
-                    List.map (\t -> li [] [ text t.gm ]) list
-                        |> ul [ class "teams" ]
+                  List.map display list
 
                 Nothing ->
-                    ul [] []
+                    []
+
+        teamList =
+          draftedItems ++ [li [ class "currentTeam"] [text teamName]] ++ waitingItems
+                        |> ul [ class "teams" ]
 
         upNext =
-            [ h3 [] [ text "Up Next" ], teamList ]
+            [ h3 [] [ text "Draft Order" ], teamList ]
     in
-        currentTeam
+        teamDisplay
             :: upNext
-            |> segment title "current"
+            |> segment ("Drafting: " ++ teamName) "current"
 
 
 viewUndraftedPlayerList : List Player -> Html Msg
