@@ -78,11 +78,6 @@ ol {
     border-color: lightgrey;
 }
 
-
-.upcoming .team:first-of-type h3 {
-    font-weight: bold;
-}
-
 .team li {
     margin: 0;
     padding: 0;
@@ -152,11 +147,15 @@ dt {
     margin: 0 5%;
 }
 
-#draftResults > div {
-    width: 12.5%;
-    display: inline-block;
-    padding: 10px;
-    vertical-align:top;
+#draftResults {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#draftResults .team {
+    flex-basis: 20%;
+    padding: 1em;
 }
 
 .stat {
