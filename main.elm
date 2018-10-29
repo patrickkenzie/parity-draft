@@ -65,15 +65,6 @@ type alias PlayerSort =
     Player -> Player -> Order
 
 
-compareByAsc : (Player -> comparable) -> Player -> Player -> Order
-compareByAsc sort x y =
-    compare (sort x) (sort y)
-
-
-compareByDesc : (Player -> comparable) -> Player -> Player -> Order
-compareByDesc sort x y =
-    compare (sort y) (sort x)
-
 
 initModel : Model
 initModel =
@@ -261,6 +252,7 @@ dummyPlayer =
     { firstName = "first"
     , lastName = "last"
     , gender = "x"
+    , height = 10
     , rating = 1
     }
 
@@ -602,8 +594,8 @@ viewWaitingTeams draftedTeams waitingTeams =
     in
         teamDisplay
             :: upNext
-            |> segment ("Drafting: " ++ teamName) "current"
 
+            |> segment ("Drafting: " ++ teamName) "current"
 
 viewUndraftedPlayerList : List Player -> Html Msg
 viewUndraftedPlayerList list =
