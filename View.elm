@@ -171,7 +171,7 @@ viewTeamWithRoster format team =
 
         ( start, end ) =
             if format then
-                ( h3 [] [ text team.gm ], [ br [] [], br [] [] ] )
+                ( h3 [] [ text team.gm ], [] )
             else
                 ( text "", [] )
     in
