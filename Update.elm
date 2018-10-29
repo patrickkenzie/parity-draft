@@ -16,6 +16,7 @@ type Msg
     | ResortPlayers PlayerSort
     | MoveTeamUp Team
     | MoveTeamDown Team
+    | ToggleMenu Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,6 +47,9 @@ update msg model =
 
                 MoveTeamDown team ->
                     moveTeamDown team model
+
+                ToggleMenu showMenu ->
+                    { model | showMenu = showMenu }
     in
         newModel ! []
 

@@ -2,40 +2,71 @@ module View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onWithOptions, defaultOptions)
 import Format
-import Update exposing(..)
-import Model exposing(..)
-import Players exposing(..)
-import Teams exposing(..)
+import Update exposing (..)
+import Model exposing (..)
+import Players exposing (..)
+import Teams exposing (..)
+import Json.Decode as Json
+
 
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    styles
-        :: title
+    title
+        :: showMenuButton model.showMenu
+        :: viewMenu model.showMenu
         :: viewTabNav (tabViewFromInt model.currentView)
         :: viewTabContent model
         |> div []
 
 
-styles : Html Msg
-styles =
-    Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
-
-
 title : Html Msg
 title =
-    h1 []
-        [ text "Parity Draft"
-        , div []
-            [ button [ onClick FlipOrder ] [ text "Invert Order" ]
-            , button [ onClick UndoDraft ] [ text "Undo" ]
+    h1 [] [ text "Parity Draft" ]
+
+
+showMenuButton : Bool -> Html Msg
+showMenuButton showMenu =
+    button
+        [ id "menuButton"
+        , onClick (ToggleMenu (not showMenu))
+        ]
+        [ text "Menu" ]
+
+
+menuItem : Msg -> String -> Html Msg
+menuItem msg label =
+    li [] [ button [ onClick msg ] [ text label ] ]
+
+
+viewMenu : Bool -> Html Msg
+viewMenu showMenu =
+    div
+        [ id "menuBackdrop"
+        , onClick (ToggleMenu False)
+        , hidden (not showMenu)
+        ]
+        [ div
+            [ id "menu"
+            -- could be NoOp
+            , onClickStopPropagation (ToggleMenu True)
+            ]
+            [ h1 [] [ text "Menu" ]
+            , ul []
+                [ menuItem FlipOrder "Flip Draft Order"
+                , menuItem UndoDraft "Undo Player Selection"
+                ]
             ]
         ]
 
+
+onClickStopPropagation : msg -> Attribute msg
+onClickStopPropagation msg =
+    onWithOptions "click" { defaultOptions | stopPropagation = True } (Json.succeed msg)
 
 viewTabNav : TabView -> Html Msg
 viewTabNav currentView =
@@ -216,22 +247,24 @@ viewWaitingTeams draftedTeams waitingTeams =
         waitingItems =
             case List.tail waitingTeams of
                 Just list ->
-                  List.map display list
+                    List.map display list
 
                 Nothing ->
                     []
 
         teamList =
-          draftedItems ++ [li [ class "currentTeam"] [text teamName]] ++ waitingItems
-                        |> ul [ class "teams" ]
+            draftedItems
+                ++ [ li [ class "currentTeam" ] [ text teamName ] ]
+                ++ waitingItems
+                |> ul [ class "teams" ]
 
         upNext =
             [ h3 [] [ text "Draft Order" ], teamList ]
     in
         teamDisplay
             :: upNext
-
             |> segment ("Drafting: " ++ teamName) "current"
+
 
 viewUndraftedPlayerList : List Player -> Html Msg
 viewUndraftedPlayerList list =

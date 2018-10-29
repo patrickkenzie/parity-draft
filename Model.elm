@@ -1,7 +1,8 @@
 module Model exposing (..)
 
-import Players exposing(..)
-import Teams exposing(Team)
+import Players exposing (..)
+import Teams exposing (Team)
+
 
 -- MODEL
 
@@ -13,6 +14,7 @@ type alias Model =
     , draftedTeams : List Team
     , round : Int
     , currentView : Int
+    , showMenu : Bool
     }
 
 
@@ -26,7 +28,6 @@ type alias PlayerSort =
     Player -> Player -> Order
 
 
-
 initModel : Model
 initModel =
     { undraftedPlayers = Players.players
@@ -35,6 +36,7 @@ initModel =
     , draftedTeams = []
     , round = 1
     , currentView = 0
+    , showMenu = False
     }
 
 

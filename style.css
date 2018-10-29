@@ -7,6 +7,7 @@ body {
     font-family: Roboto,sans-serif;
     font-weight: 400;
     color: rgba(0,0,0,.87);
+    position: relative;
 }
 
 h1, h2, h3 {
@@ -24,18 +25,31 @@ h1 {
     margin-bottom: 0;
 }
 
-h1 > div button {
-    display: block;
-    margin: 8px 10px;
-    float: right;
-    clear: right;
-    padding: 5px 10px;
+#menuButton {
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    z-index: 20;
 }
 
-h1 > div {
+#menuBackdrop {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 5;
+}
+
+#menu {
+    position: absolute;
+    left: 0;
+    width: 25%;
+    border-right: solid thin grey;
+    top: 0;
+    bottom: 0;
+    background-color: lightgrey;
+    z-index: 10;
 }
 
 ul, li.team {

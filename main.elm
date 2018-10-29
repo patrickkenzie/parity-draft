@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Html
 import Teams exposing (..)
 import Players exposing (..)
-import Update exposing(Msg, update)
+import Update exposing (Msg, update)
 import Model exposing (..)
 import View
 import Format
