@@ -34,12 +34,41 @@ compareByDesc : (Player -> comparable) -> Player -> Player -> Order
 compareByDesc sort x y =
     compare (sort y) (sort x)
 
-    
+
 players : List Player
 players =
-    allPlayers
-    |> List.sortWith (compareByAsc .lastName)
-    |> List.sortWith (compareByAsc .gender)
+    let
+        parsedPlayers =
+            allPlayersParsed
+
+        buildPlayers =
+            buildPlaceholderPlayers (10 * 6) parsedPlayers
+    in
+        (parsedPlayers ++ buildPlayers "Female" ++ buildPlayers "Male")
+            |> List.sortWith (compareByAsc .lastName)
+            |> List.sortWith (compareByAsc .gender)
+
+
+isGender : String -> Player -> Bool
+isGender gender player =
+    player.gender == gender
+
+
+buildPlaceholderPlayers : Int -> List Player -> String -> List Player
+buildPlaceholderPlayers targetCount parsedPlayers gender =
+    let
+        createDummy gender number =
+            { firstName = gender ++ " Placeholder"
+            , lastName = "_" ++ (toString number)
+            , gender = gender
+            , rating = 0
+            }
+
+        playerCount =
+            List.length (List.filter (isGender gender) parsedPlayers)
+    in
+        -- 1-index the range to force an empty list (and nicer display!)
+        List.map (createDummy gender) (List.range 1 (targetCount - playerCount))
 
 
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
@@ -48,12 +77,12 @@ playerDecoder =
         (next Result.Ok
             |> andMap (next Result.Ok)
             |> andMap (next Result.Ok)
-            |> andMap (next (\_ ->  Result.Ok 0))
+            |> andMap (next (\_ -> Result.Ok 0))
         )
 
 
-allPlayers : List Player
-allPlayers =
+allPlayersParsed : List Player
+allPlayersParsed =
     allPlayersRaw
         |> Csv.parse
         |> Csv.Decode.decodeCsv playerDecoder
