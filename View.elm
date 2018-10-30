@@ -52,8 +52,7 @@ viewMenu showMenu =
         ]
         [ div
             [ id "menu"
-            -- could be NoOp
-            , onClickStopPropagation (ToggleMenu True)
+            , onClickStopPropagation (NoOp)
             ]
             [ h1 [] [ text "Menu" ]
             , ul []

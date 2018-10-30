@@ -8,7 +8,8 @@ import Model exposing(..)
 
 
 type Msg
-    = Draft Player
+    = NoOp
+    | Draft Player
     | FlipOrder
     | UndoDraft
     | RestartDraft
@@ -24,6 +25,9 @@ update msg model =
     let
         newModel =
             case msg of
+                NoOp ->
+                    model
+
                 Draft player ->
                     draftPlayer player model
 
