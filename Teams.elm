@@ -22,27 +22,23 @@ teams =
 
 allTeams : List Team
 allTeams =
-    [ { gm = "Andrea Proulx"
-      , players = []
-      , draftOrder = 0
-      }
-    , { gm = "Heather Wallace"
+    [ { gm = "Michelle Warren"
       , players = []
       , draftOrder = 1
       }
-    , { gm = "Jaime Boss"
+    , { gm = "Kindha Gorman"
       , players = []
       , draftOrder = 2
       }
-    , { gm = "Jessie Robinson"
+    , { gm = "Jaime Boss"
       , players = []
       , draftOrder = 3
       }
-    , { gm = "Kate Achtell"
+    , { gm = "Jessie Robinson"
       , players = []
       , draftOrder = 4
       }
-    , { gm = "Katie Wood"
+    , { gm = "Heather Wallace"
       , players = []
       , draftOrder = 5
       }
@@ -50,16 +46,20 @@ allTeams =
       , players = []
       , draftOrder = 6
       }
-    , { gm = "Kindha Gorman"
+    , { gm = "Katie Wood"
       , players = []
       , draftOrder = 7
       }
-    , { gm = "Laura Storey"
+    , { gm = "Andrea Proulx"
       , players = []
       , draftOrder = 8
       }
-    , { gm = "Michelle Warren"
+    , { gm = "Kate Achtell"
       , players = []
       , draftOrder = 9
+      }
+    , { gm = "Laura Storey"
+      , players = []
+      , draftOrder = 10
       }
     ]
