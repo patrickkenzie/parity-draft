@@ -59,7 +59,7 @@ viewMenu showMenu =
             , ul []
                 [ menuItem FlipOrder "Flip Draft Order"
                 , menuItem UndoDraft "Undo Player Selection"
-                , menuItem Reset "Restart Draft"
+                , menuItem RestartDraft "Restart Draft"
                 ]
             ]
         ]

@@ -11,7 +11,7 @@ type Msg
     = Draft Player
     | FlipOrder
     | UndoDraft
-    | Reset
+    | RestartDraft
     | ChangeView TabView
     | ResortPlayers PlayerSort
     | MoveTeamUp Team
@@ -33,7 +33,7 @@ update msg model =
                 UndoDraft ->
                     undo model
 
-                Reset ->
+                RestartDraft ->
                     resetDraft model
 
                 ChangeView tabView ->
