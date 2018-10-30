@@ -2,14 +2,18 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height:100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     line-height: 1.5;
     font-family: Roboto,sans-serif;
     font-weight: 400;
     color: rgba(0,0,0,.87);
     position: relative;
-    margin: 0;
-    padding: 0;
 }
 
 h1, h2, h3 {
@@ -187,6 +191,15 @@ button:hover {
 #draftResults .team {
     flex-basis: 20%;
     padding: 1em;
+}
+
+#preDraft {
+    max-width: 30em;
+    margin: auto;
+}
+
+#preDraft li {
+    font-size: x-large;
 }
 
 .stat {

@@ -59,6 +59,7 @@ viewMenu showMenu =
             , ul []
                 [ menuItem FlipOrder "Flip Draft Order"
                 , menuItem UndoDraft "Undo Player Selection"
+                , menuItem Reset "Restart Draft"
                 ]
             ]
         ]
@@ -67,6 +68,7 @@ viewMenu showMenu =
 onClickStopPropagation : msg -> Attribute msg
 onClickStopPropagation msg =
     onWithOptions "click" { defaultOptions | stopPropagation = True } (Json.succeed msg)
+
 
 viewTabNav : TabView -> Html Msg
 viewTabNav currentView =
@@ -131,30 +133,24 @@ viewDraftComplete model =
         teams =
             List.reverse model.draftedTeams ++ model.waitingTeams
 
-        swap team =
-            div []
-                [ viewTeamWithRoster True team
-                , button [ onClick (MoveTeamUp team) ]
-                    [ text "[up]" ]
-                , button
+        viewPreDraft team =
+            li []
+                [ text team.gm
+                , text " ( "
+                , a [ onClick (MoveTeamUp team) ]
+                    [ text " ▲ " ]
+                , a
                     [ onClick (MoveTeamDown team) ]
-                    [ text "[down]" ]
+                    [ text " ▼ " ]
+                , text " )"
                 ]
-
-        teamDisplay =
-            if List.length model.draftedPlayers == 0 then
-                List.map swap teams
-            else
-                List.map (viewTeamWithRoster True) teams
-
-        restartButton =
-            div [ class "restartDraft" ]
-                [ button [ onClick Reset ] [ text "Restart Draft" ]
-                ]
-    in
-        [ div [ id "draftResults" ] teamDisplay
-        , restartButton
-        ]
+  in
+        if List.length model.draftedPlayers == 0 then
+            [ h2 [] [text "Draft Order"]
+            , ol [ id "preDraft" ] (List.map viewPreDraft teams)
+            ]
+        else
+            [ div [ id "draftResults" ] (List.map (viewTeamWithRoster True) teams) ]
 
 
 viewDraftHistory : Model -> List (Html Msg)
