@@ -60,6 +60,7 @@ viewMenu showMenu =
                 [ menuItem FlipOrder "Flip Draft Order"
                 , menuItem UndoDraft "Undo Player Selection"
                 , menuItem RestartDraft "Restart Draft"
+                , menuItem ResetApp "Reload Everything"
                 ]
             ]
         ]

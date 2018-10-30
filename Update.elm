@@ -17,7 +17,7 @@ type Msg
     | MoveTeamUp Team
     | MoveTeamDown Team
     | ToggleMenu Bool
-
+    | ResetApp
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -50,6 +50,9 @@ update msg model =
 
                 ToggleMenu showMenu ->
                     { model | showMenu = showMenu }
+
+                ResetApp ->
+                    initModel
     in
         newModel ! []
 
