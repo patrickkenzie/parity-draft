@@ -26,7 +26,7 @@ updateWithStorage msg model =
             update msg model
     in
         ( newModel
-        , Cmd.batch [ saveModel newModel, cmds ]
+        , Cmd.batch [ saveModel { newModel | showMenu = False }, cmds ]
         )
 
 
