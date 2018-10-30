@@ -130,6 +130,7 @@ Neena,Sidhu,Female,63,6
 Stacey,Wowchuk,Female,62,6
 Natalie,Mullin,Female,68,6
 Heather,Wallace,Female,64,6
+Elsbeth,Vaino,Female,69,5
 Rachel,Hurdle,Female,79,5
 Audrey,Nuk,Female,68,5
 Erin,Courtney,Female,64,5
