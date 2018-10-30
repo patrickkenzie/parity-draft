@@ -8,6 +8,8 @@ body {
     font-weight: 400;
     color: rgba(0,0,0,.87);
     position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 h1, h2, h3 {
@@ -39,6 +41,7 @@ h1 {
     bottom: 0;
     right: 0;
     z-index: 5;
+    background: rgb(0, 0, 0, 0.2);
 }
 
 #menu {
@@ -50,6 +53,11 @@ h1 {
     bottom: 0;
     background-color: lightgrey;
     z-index: 10;
+}
+
+#menu button {
+    width: 90%;
+    margin: 1em 5%;
 }
 
 ul, li.team {
@@ -138,9 +146,15 @@ dt {
     text-align:center;
 }
 
-.restartDraft button {
+button {
+    border: solid thin lightgrey;
     padding: 0.5em;
     cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(0, 0, 0, 0.05);
+    border-color: grey;
 }
 
 .segment {
