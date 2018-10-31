@@ -125,8 +125,14 @@ moveTeamDown team model =
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
+        gender =
+            player.gender
+
         remaining =
             List.filter (\p -> p /= player) model.undraftedPlayers
+
+        remainingGender =
+            List.filter (\p -> p.gender == gender) remaining
 
         draftingTeam =
             List.head model.waitingTeams
@@ -134,6 +140,12 @@ draftPlayer player model =
 
         ( newWaiting, newDrafted ) =
             updateRound draftingTeam model
+
+        updatedWaiting =
+            if List.isEmpty remainingGender then
+                List.reverse newWaiting
+            else
+                newWaiting
 
         draftingTeamName =
             case draftingTeam of
@@ -152,7 +164,7 @@ draftPlayer player model =
         { model
             | undraftedPlayers = remaining
             , draftedPlayers = ( player, draftingTeamName ) :: model.draftedPlayers
-            , waitingTeams = newWaiting
+            , waitingTeams = updatedWaiting
             , draftedTeams = newDrafted
             , round = round
         }
