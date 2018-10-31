@@ -24,9 +24,12 @@ updateWithStorage msg model =
     let
         ( newModel, cmds ) =
             update msg model
+
+        cleanModel =
+            { newModel | showMenu = False }
     in
         ( newModel
-        , Cmd.batch [ saveModel { newModel | showMenu = False }, cmds ]
+        , Cmd.batch [ saveModel cleanModel, cmds ]
         )
 
 

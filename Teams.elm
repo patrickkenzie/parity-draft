@@ -1,4 +1,4 @@
-module Teams exposing (..)
+module Teams exposing (Team, sortTeams, fullTeamList)
 
 import Players exposing (Player)
 
@@ -10,14 +10,14 @@ type alias Team =
     }
 
 
-sortedTeams : List Team -> List Team
-sortedTeams teams =
+sortTeams : List Team -> List Team
+sortTeams teams =
     List.sortBy .draftOrder teams
 
 
-teams : List Team
-teams =
-    sortedTeams allTeams
+fullTeamList : List Team
+fullTeamList =
+    sortTeams allTeams
 
 
 allTeams : List Team

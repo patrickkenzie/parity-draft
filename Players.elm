@@ -36,8 +36,8 @@ compareByDesc sort x y =
     compare (sort y) (sort x)
 
 
-players : List Player
-players =
+fullPlayerList : List Player
+fullPlayerList =
     let
         parsedPlayers =
             allPlayersParsed

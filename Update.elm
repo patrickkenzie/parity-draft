@@ -19,6 +19,8 @@ type Msg
     | MoveTeamDown Team
     | ToggleMenu Bool
     | ResetApp
+    | SearchPlayer String
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -57,6 +59,9 @@ update msg model =
 
                 ResetApp ->
                     initModel
+
+                SearchPlayer search ->
+                    { model | playerSearch = search }
     in
         newModel ! []
 
@@ -71,7 +76,7 @@ resetDraft model =
             List.reverse model.draftedTeams
                 ++ model.waitingTeams
                 |> List.map resetRoster
-                |> Teams.sortedTeams
+                |> Teams.sortTeams
     in
         { initModel | waitingTeams = teams }
 
@@ -96,7 +101,7 @@ moveTeamUp team model =
         if team.draftOrder == 0 then
             model
         else
-            { model | waitingTeams = Teams.sortedTeams updatedTeams }
+            { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
 moveTeamDown : Team -> Model -> Model
@@ -119,7 +124,7 @@ moveTeamDown team model =
         if team.draftOrder == List.length model.waitingTeams then
             model
         else
-            { model | waitingTeams = Teams.sortedTeams updatedTeams }
+            { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
 
@@ -133,7 +138,7 @@ draftPlayer player model =
             Maybe.withDefault dummyTeam (List.head model.waitingTeams)
 
         gms =
-            List.map .gm Teams.teams
+            List.map .gm Teams.fullTeamList
 
     in
         if (List.member playerName gms) && (draftingTeam.gm /= playerName) then
@@ -184,6 +189,7 @@ assignDraftedPlayer player model =
             , waitingTeams = updatedWaiting
             , draftedTeams = newDrafted
             , round = round
+            , playerSearch = ""
         }
 
 

@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onWithOptions, defaultOptions)
+import Html.Events exposing (onClick, onInput, onWithOptions, defaultOptions)
 import Format
 import Update exposing (..)
 import Model exposing (..)
@@ -120,7 +120,7 @@ viewDraftInProgress model =
     [ viewWaitingTeams model.draftedTeams model.waitingTeams
 
     --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
-    , viewUndraftedPlayerList model.undraftedPlayers
+    , viewUndraftedPlayerList model.playerSearch model.undraftedPlayers
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest model.round model.draftedTeams
@@ -144,9 +144,9 @@ viewDraftComplete model =
                     [ text " ▼ " ]
                 , text " )"
                 ]
-  in
+    in
         if List.length model.draftedPlayers == 0 then
-            [ h2 [] [text "Draft Order"]
+            [ h2 [] [ text "Draft Order" ]
             , ol [ id "preDraft" ] (List.map viewPreDraft teams)
             ]
         else
@@ -262,25 +262,35 @@ viewWaitingTeams draftedTeams waitingTeams =
             |> segment ("Drafting: " ++ teamName) "current"
 
 
-viewUndraftedPlayerList : List Player -> Html Msg
-viewUndraftedPlayerList fullList =
+viewUndraftedPlayerList : String -> List Player -> Html Msg
+viewUndraftedPlayerList search fullList =
     let
         females =
             List.filter (\p -> p.gender == "Female") fullList
 
+        matches player =
+            String.contains (String.toUpper search) (String.toUpper (Players.playerName player))
+
         players =
-            if List.isEmpty females then
-                fullList
-            else
-                females
+            List.filter matches
+                (if List.isEmpty females then
+                    fullList
+                 else
+                    females
+                )
 
         header =
-            h2 []
-                [ span
-                    [ id "playerSortHeader" ]
-                    [ text "Sorting", viewPlayerSortMenu ]
-                , text "Players"
+            h2 [] [ text "Players" ]
+
+        playerSearch =
+            input
+                [ type_ "search"
+                , placeholder "search players..."
+                , value search
+                , autofocus True
+                , onInput SearchPlayer
                 ]
+                []
     in
         div
             [ class "segment"
@@ -288,10 +298,13 @@ viewUndraftedPlayerList fullList =
             ]
             [ header
             , div
-                [ class "content" ]
-                [ ol [ class "players" ]
-                    (List.map draftablePlayer players)
+                [ class "playerConfig" ]
+                [ playerSearch
+                , span [ id "playerSortHeader" ] [ text "[Change Sorting]", viewPlayerSortMenu ]
                 ]
+            , div
+                [ class "content" ]
+                [ ol [ class "players" ] (List.map draftablePlayer players) ]
             ]
 
 

@@ -176,6 +176,7 @@ button:hover {
 .content{
     max-height: 700px;
     overflow: auto;
+    margin-top: 1em;
 }
 
 #historyView > .segment {
@@ -218,11 +219,15 @@ button:hover {
     font-size: 0.75em;
 }
 
-#playerSortHeader {
+.playerConfig {
+    text-align: center;
     position: relative;
-    font-size: 0.75em;
-    font-weight: normal;
-    float: right;
+    padding: 0.5em;
+}
+
+#playerSortHeader {
+    position: absolute;
+    right: 0;
 }
 
 #playerSort {
@@ -236,17 +241,18 @@ button:hover {
     visibility: hidden;
     transition-property: visibility;
     transition-delay: 0.25s;
-    min-width: 10em;
+    min-width: 12em;
 }
 
 #playerSort > div {
     display: block;
     text-align: left;
+    padding: 0.5em;
 }
 
 #playerSort a {
     float: right;
-
+    padding: 0 0.5em;
 }
 
 #playerSortHeader:hover #playerSort {

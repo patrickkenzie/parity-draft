@@ -15,6 +15,7 @@ type alias Model =
     , round : Int
     , currentView : Int
     , showMenu : Bool
+    , playerSearch : String
     }
 
 
@@ -30,13 +31,14 @@ type alias PlayerSort =
 
 initModel : Model
 initModel =
-    { undraftedPlayers = Players.players
+    { undraftedPlayers = Players.fullPlayerList
     , draftedPlayers = []
-    , waitingTeams = Teams.teams
+    , waitingTeams = Teams.fullTeamList
     , draftedTeams = []
     , round = 1
     , currentView = 0
     , showMenu = False
+    , playerSearch = ""
     }
 
 
