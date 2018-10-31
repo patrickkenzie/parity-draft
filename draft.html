@@ -11,12 +11,18 @@
     <body>
 
         <script type="text/javascript">
-         var storedModel = localStorage.getItem('saved-model');
-         var startModel = storedModel ? JSON.parse(storedModel) : null;
-         var elm = Elm.Main.fullscreen(startModel);
-         elm.ports.saveModel.subscribe(function(model) {
-             localStorage.setItem('saved-model', JSON.stringify(model));
-         });
+	try {
+		var storedModel = localStorage.getItem('saved-model');
+		var startModel = storedModel ? JSON.parse(storedModel) : null;
+		var elm = Elm.Main.fullscreen(startModel);
+		elm.ports.saveModel.subscribe(function(model) {
+				localStorage.setItem('saved-model', JSON.stringify(model));
+				});
+	} catch(err) {
+		console.error(err);
+		localStorage.clear();
+		window.location.reload();
+	}
         </script>
 
     </body>
