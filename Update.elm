@@ -122,8 +122,28 @@ moveTeamDown team model =
             { model | waitingTeams = Teams.sortedTeams updatedTeams }
 
 
+
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
+    let
+        playerName =
+          (Players.playerName player)
+
+        draftingTeam =
+            Maybe.withDefault dummyTeam (List.head model.waitingTeams)
+
+        gms =
+            List.map .gm Teams.teams
+
+    in
+        if (List.member playerName gms) && (draftingTeam.gm /= playerName) then
+            model
+        else
+            assignDraftedPlayer player model
+
+
+assignDraftedPlayer : Player -> Model -> Model
+assignDraftedPlayer player model =
     let
         remaining =
             List.filter (\p -> p /= player) model.undraftedPlayers
