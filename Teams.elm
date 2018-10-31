@@ -42,7 +42,7 @@ allTeams =
       , players = []
       , draftOrder = 5
       }
-    , { gm = "Kate Cav"
+    , { gm = "Kate Cavallaro"
       , players = []
       , draftOrder = 6
       }
