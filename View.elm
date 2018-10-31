@@ -263,8 +263,17 @@ viewWaitingTeams draftedTeams waitingTeams =
 
 
 viewUndraftedPlayerList : List Player -> Html Msg
-viewUndraftedPlayerList list =
+viewUndraftedPlayerList fullList =
     let
+        females =
+            List.filter (\p -> p.gender == "Female") fullList
+
+        players =
+            if List.isEmpty females then
+                fullList
+            else
+                females
+
         header =
             h2 []
                 [ span
@@ -281,7 +290,7 @@ viewUndraftedPlayerList list =
             , div
                 [ class "content" ]
                 [ ol [ class "players" ]
-                    (List.map draftablePlayer list)
+                    (List.map draftablePlayer players)
                 ]
             ]
 
@@ -319,7 +328,6 @@ viewPlayerSortMenu =
         div [ id "playerSort" ]
             [ sortable .lastName "Last Name"
             , sortable .firstName "First Name"
-            , sortable .gender "Gender"
             , sortable .height "Height"
             , sortable .rating "Rating"
             ]

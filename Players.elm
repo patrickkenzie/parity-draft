@@ -47,6 +47,7 @@ players =
     in
         (parsedPlayers ++ buildPlayers "Female" ++ buildPlayers "Male")
             |> List.sortWith (compareByAsc .lastName)
+            |> List.sortWith (compareByDesc .rating)
             |> List.sortWith (compareByAsc .gender)
 
 
