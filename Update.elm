@@ -125,14 +125,11 @@ moveTeamDown team model =
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
-        gender =
-            player.gender
-
         remaining =
             List.filter (\p -> p /= player) model.undraftedPlayers
 
         remainingGender =
-            List.filter (\p -> p.gender == gender) remaining
+            List.filter (Players.isGender player.gender) remaining
 
         draftingTeam =
             List.head model.waitingTeams
@@ -188,6 +185,27 @@ dummyTeam =
     }
 
 
+unFlipDraftOrderIfRequired : Model -> List Team -> List Team
+unFlipDraftOrderIfRequired model teams =
+    let
+        toGender ps =
+            List.map .gender ps
+
+        players =
+            toGender (List.map Tuple.first model.draftedPlayers)
+
+        unMax =
+            List.maximum players
+
+        drMax =
+            List.maximum (toGender model.undraftedPlayers)
+    in
+        if unMax == drMax then
+            teams
+        else
+            List.reverse teams
+
+
 undoDraft : Model -> Model
 undoDraft model =
     let
@@ -195,10 +213,11 @@ undoDraft model =
             model.round > 1 && List.isEmpty model.draftedTeams
 
         teamList =
-            if shouldUndoRound then
-                model.waitingTeams
-            else
-                model.draftedTeams
+            unFlipDraftOrderIfRequired model (
+              if shouldUndoRound then
+                  model.waitingTeams
+              else
+                  model.draftedTeams)
 
         lastDraftedTeam =
             List.head teamList
