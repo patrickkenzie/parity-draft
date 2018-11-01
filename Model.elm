@@ -110,9 +110,8 @@ parseLocation location =
             ( "", "" )
 
 
-decodeModel : D.Value -> String -> String -> Maybe Model
-decodeModel value hostingType hostingId =
-    let decoder =
+modelDecoder : String -> String -> D.Decoder Model
+modelDecoder hostingType hostingId =
         DP.decode Model
             |> required "undraftedPlayers" (D.list Players.decodePlayer)
             |> required "draftedPlayers" (D.list decodeDraftedPlayer)
@@ -125,8 +124,10 @@ decodeModel value hostingType hostingId =
             |> hardcoded hostingType
             |> hardcoded hostingId
 
-     in
-        Result.toMaybe (D.decodeValue decoder value)
+
+decodeModel : D.Value -> String -> String -> Maybe Model
+decodeModel value hostingType hostingId =
+        Result.toMaybe (D.decodeValue (modelDecoder hostingType hostingId) value)
 
 
 decodeDraftedPlayer : Decoder ( Player, String )

@@ -8,8 +8,9 @@ import Model exposing (..)
 import View
 import Format
 import Navigation exposing (Location)
-import Json.Encode as J exposing(..)
-import Json.Decode as D exposing(..)
+import Json.Encode as J exposing (..)
+import Json.Decode as D exposing (..)
+import Time exposing (every, second)
 
 
 main : Program J.Value Model Msg
@@ -18,7 +19,7 @@ main =
         { init = init
         , view = View.view
         , update = updateWithStorage
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subs
         }
 
 
@@ -61,3 +62,15 @@ init savedModel location =
 
 
 port saveModel : J.Value -> Cmd msg
+
+
+
+-- SUBSCRIPTIONS
+
+
+subs : Model -> Sub Msg
+subs model =
+    if model.hostingType == "view" then
+        Time.every (10 * 1000) (always Update.RequestModelUpdate)
+    else
+        Sub.none

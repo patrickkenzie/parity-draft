@@ -7,6 +7,7 @@ import Navigation exposing (Location)
 import Json.Decode exposing (string)
 import Http
 
+
 -- UPDATE
 
 
@@ -24,6 +25,8 @@ type Msg
     | ResetApp
     | SearchPlayer String
     | OnLocationChange Location
+    | RequestModelUpdate
+    | LoadModelUpdate (Result Http.Error Model)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -82,8 +85,19 @@ update rawMsg model =
                             | hostingType = hostType
                             , hostingId = hostId
                         }
+
+                RequestModelUpdate ->
+                    model
+
+                LoadModelUpdate modelResult ->
+                    case modelResult of
+                        Ok m ->
+                            m
+
+                        Err e ->
+                            (Debug.log (toString e)) model
     in
-        ( newModel , includeUploadCommand msg newModel )
+        ( newModel, includeServerCommand msg newModel )
 
 
 resetDraft : Model -> Model
@@ -378,31 +392,55 @@ allowReadonlyMessage m =
         OnLocationChange _ ->
             m
 
-        _ ->
-            NoOp
+        RequestModelUpdate ->
+            m
 
-includeUploadCommand : Msg -> Model -> Cmd Msg
-includeUploadCommand msg model =
-    if model.hostingType /= "host" then
-        Cmd.none
-    else
-        case msg of
-            Draft _ ->
-               uploadModel model
-            FlipOrder ->
-               uploadModel model
-            UndoDraft ->
-               uploadModel model
-            RestartDraft ->
-               uploadModel model
-            MoveTeamUp _ ->
-               uploadModel model
-            MoveTeamDown _ ->
-               uploadModel model
-            ResetApp ->
-               uploadModel model
-            _ ->
-                Cmd.none
+        LoadModelUpdate _ ->
+            m
+
+        _ ->
+            (Debug.log ("Blocking message: " ++ (toString m))) NoOp
+
+
+includeServerCommand : Msg -> Model -> Cmd Msg
+includeServerCommand msg model =
+    case model.hostingType of
+        "view" ->
+            case msg of
+                RequestModelUpdate ->
+                    loadModel model
+
+                _ ->
+                    Cmd.none
+
+        "host" ->
+            case msg of
+                Draft _ ->
+                    uploadModel model
+
+                FlipOrder ->
+                    uploadModel model
+
+                UndoDraft ->
+                    uploadModel model
+
+                RestartDraft ->
+                    uploadModel model
+
+                MoveTeamUp _ ->
+                    uploadModel model
+
+                MoveTeamDown _ ->
+                    uploadModel model
+
+                ResetApp ->
+                    uploadModel model
+
+                _ ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
 
 
 draftUrl : Model -> String
@@ -410,7 +448,13 @@ draftUrl model =
     "https://paritydraft.patrickkenzie.com/draft/" ++ model.hostingId
 
 
+loadModel : Model -> Cmd Msg
+loadModel model =
+    Http.send LoadModelUpdate
+        (Http.get (draftUrl model) (modelDecoder model.hostingType model.hostingId))
+
+
 uploadModel : Model -> Cmd Msg
 uploadModel model =
     Http.send (always NoOp)
-      (Http.post (draftUrl model) (Http.jsonBody (encodeModel model)) string)
+        (Http.post (draftUrl model) (Http.jsonBody (encodeModel model)) string)
