@@ -97,6 +97,7 @@ allPlayersRaw : String
 allPlayersRaw =
     """
 First Name,Last Name,Gender,Height,Skill Level
+Vivianne,Fortin,Female,67,10
 Liza,Shelley,Female,67,9
 Michelle,Warren,Female,65,9
 Josee,Guibord,Female,64,9
@@ -148,6 +149,7 @@ Andrea,Brabant,Female,63,5
 Clare,Gee,Female,67,5
 Celine,Dumais,Female,67,4
 Julia,Riddick,Female,70,4
+Katherine,Schaefer,Female,66,4
 AnneMarie,Gagnon,Female,65,3
 Emily,MacDonald,Female,63,3
 Rachel,Ng,Female,60,3
