@@ -4,7 +4,8 @@ import Teams exposing (..)
 import Players exposing (..)
 import Model exposing (..)
 import Navigation exposing (Location)
-
+import Json.Decode exposing (string)
+import Http
 
 -- UPDATE
 
@@ -28,23 +29,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update rawMsg model =
     let
-        allowReadonlyMessage m =
-            case m of
-                ChangeView _ ->
-                    m
-
-                ResortPlayers _ ->
-                    m
-
-                SearchPlayer _ ->
-                    m
-
-                OnLocationChange _ ->
-                    m
-
-                _ ->
-                    NoOp
-
         msg =
             if model.hostingType == "view" then
                 allowReadonlyMessage rawMsg
@@ -99,7 +83,7 @@ update rawMsg model =
                             , hostingId = hostId
                         }
     in
-        newModel ! []
+        ( newModel , includeUploadCommand msg newModel )
 
 
 resetDraft : Model -> Model
@@ -377,3 +361,56 @@ addPlayer player team =
 
         Nothing ->
             team
+
+
+allowReadonlyMessage : Msg -> Msg
+allowReadonlyMessage m =
+    case m of
+        ChangeView _ ->
+            m
+
+        ResortPlayers _ ->
+            m
+
+        SearchPlayer _ ->
+            m
+
+        OnLocationChange _ ->
+            m
+
+        _ ->
+            NoOp
+
+includeUploadCommand : Msg -> Model -> Cmd Msg
+includeUploadCommand msg model =
+    if model.hostingType /= "host" then
+        Cmd.none
+    else
+        case msg of
+            Draft _ ->
+               uploadModel model
+            FlipOrder ->
+               uploadModel model
+            UndoDraft ->
+               uploadModel model
+            RestartDraft ->
+               uploadModel model
+            MoveTeamUp _ ->
+               uploadModel model
+            MoveTeamDown _ ->
+               uploadModel model
+            ResetApp ->
+               uploadModel model
+            _ ->
+                Cmd.none
+
+
+draftUrl : Model -> String
+draftUrl model =
+    "https://paritydraft.patrickkenzie.com/draft/" ++ model.hostingId
+
+
+uploadModel : Model -> Cmd Msg
+uploadModel model =
+    Http.send (always NoOp)
+      (Http.post (draftUrl model) (Http.jsonBody (encodeModel model)) string)
