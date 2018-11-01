@@ -36,7 +36,22 @@ updateWithStorage msg model =
 
 init : Maybe Model -> Location -> ( Model, Cmd Msg )
 init savedModel location =
-    Maybe.withDefault initModel savedModel ! []
+    let
+        ( hostType, hostId ) =
+            Model.parseLocation location
+
+        newModel =
+            case savedModel of
+                Just m ->
+                    { m
+                        | hostingType = hostType
+                        , hostingId = hostId
+                    }
+
+                Nothing ->
+                    initModel hostType hostId
+    in
+        newModel ! []
 
 
 

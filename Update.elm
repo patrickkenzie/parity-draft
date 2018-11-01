@@ -1,10 +1,10 @@
-module Update exposing(..)
+module Update exposing (..)
 
-import Teams exposing(..)
-import Players exposing(..)
-import Model exposing(..)
-import UrlParser exposing(..)
-import Navigation exposing(Location)
+import Teams exposing (..)
+import Players exposing (..)
+import Model exposing (..)
+import Navigation exposing (Location)
+
 
 -- UPDATE
 
@@ -26,8 +26,31 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update rawMsg model =
     let
+        allowReadonlyMessage m =
+            case m of
+                ChangeView _ ->
+                    m
+
+                ResortPlayers _ ->
+                    m
+
+                SearchPlayer _ ->
+                    m
+
+                OnLocationChange _ ->
+                    m
+
+                _ ->
+                    NoOp
+
+        msg =
+            if model.hostingType == "view" then
+                allowReadonlyMessage rawMsg
+            else
+                rawMsg
+
         newModel =
             case msg of
                 NoOp ->
@@ -61,18 +84,19 @@ update msg model =
                     { model | showMenu = showMenu }
 
                 ResetApp ->
-                    initModel
+                    initModel model.hostingType model.hostingId
 
                 SearchPlayer search ->
                     { model | playerSearch = search }
 
                 OnLocationChange location ->
                     let
-                        (hostType, hostId) = parseLocation location
+                        ( hostType, hostId ) =
+                            parseLocation location
                     in
-                        {model
-                          | hostingType = hostType
-                          , hostingId = hostId
+                        { model
+                            | hostingType = hostType
+                            , hostingId = hostId
                         }
     in
         newModel ! []
@@ -89,8 +113,11 @@ resetDraft model =
                 ++ model.waitingTeams
                 |> List.map resetRoster
                 |> Teams.sortTeams
+
+        newModel =
+            initModel model.hostingType model.hostingId
     in
-        { initModel | waitingTeams = teams }
+        { newModel | waitingTeams = teams }
 
 
 moveTeamUp : Team -> Model -> Model
@@ -139,19 +166,17 @@ moveTeamDown team model =
             { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
-
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
         playerName =
-          (Players.playerName player)
+            (Players.playerName player)
 
         draftingTeam =
             Maybe.withDefault dummyTeam (List.head model.waitingTeams)
 
         gms =
             List.map .gm Teams.fullTeamList
-
     in
         if (List.member playerName gms) && (draftingTeam.gm /= playerName) then
             model
@@ -251,11 +276,12 @@ undoDraft model =
             model.round > 1 && List.isEmpty model.draftedTeams
 
         teamList =
-            unFlipDraftOrderIfRequired model (
-              if shouldUndoRound then
-                  model.waitingTeams
-              else
-                  model.draftedTeams)
+            unFlipDraftOrderIfRequired model
+                (if shouldUndoRound then
+                    model.waitingTeams
+                 else
+                    model.draftedTeams
+                )
 
         lastDraftedTeam =
             List.head teamList
@@ -351,35 +377,3 @@ addPlayer player team =
 
         Nothing ->
             team
-
-type Route
-    = Top
-    | Host String
-    | View String
-
-
-matchers : Parser (Route -> a) a
-matchers =
-    oneOf
-      [ map Top top
-      , map Host (s "host" </> string)
-      , map View (s "view" </> string)
-      ]
-
-
-parseLocation : Location -> (String, String)
-parseLocation location =
-    case parseHash matchers location of
-        Just route ->
-            case route of
-                Top ->
-                    ("", "")
-
-                Host id ->
-                    ("host", id)
-
-                View id ->
-                    ("view", id)
-
-        Nothing ->
-            ("", "")
