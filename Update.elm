@@ -3,6 +3,8 @@ module Update exposing(..)
 import Teams exposing(..)
 import Players exposing(..)
 import Model exposing(..)
+import UrlParser exposing(..)
+import Navigation exposing(Location)
 
 -- UPDATE
 
@@ -20,6 +22,7 @@ type Msg
     | ToggleMenu Bool
     | ResetApp
     | SearchPlayer String
+    | OnLocationChange Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -62,6 +65,15 @@ update msg model =
 
                 SearchPlayer search ->
                     { model | playerSearch = search }
+
+                OnLocationChange location ->
+                    let
+                        (hostType, hostId) = parseLocation location
+                    in
+                        {model
+                          | hostingType = hostType
+                          , hostingId = hostId
+                        }
     in
         newModel ! []
 
@@ -339,3 +351,35 @@ addPlayer player team =
 
         Nothing ->
             team
+
+type Route
+    = Top
+    | Host String
+    | View String
+
+
+matchers : Parser (Route -> a) a
+matchers =
+    oneOf
+      [ map Top top
+      , map Host (s "host" </> string)
+      , map View (s "view" </> string)
+      ]
+
+
+parseLocation : Location -> (String, String)
+parseLocation location =
+    case parseHash matchers location of
+        Just route ->
+            case route of
+                Top ->
+                    ("", "")
+
+                Host id ->
+                    ("host", id)
+
+                View id ->
+                    ("view", id)
+
+        Nothing ->
+            ("", "")

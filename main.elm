@@ -7,11 +7,12 @@ import Update exposing (Msg, update)
 import Model exposing (..)
 import View
 import Format
+import Navigation exposing (Location)
 
 
 main : Program (Maybe Model) Model Msg
 main =
-    Html.programWithFlags
+    Navigation.programWithFlags Update.OnLocationChange
         { init = init
         , view = View.view
         , update = updateWithStorage
@@ -33,8 +34,8 @@ updateWithStorage msg model =
         )
 
 
-init : Maybe Model -> ( Model, Cmd Msg )
-init savedModel =
+init : Maybe Model -> Location -> ( Model, Cmd Msg )
+init savedModel location =
     Maybe.withDefault initModel savedModel ! []
 
 

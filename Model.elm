@@ -16,6 +16,8 @@ type alias Model =
     , currentView : Int
     , showMenu : Bool
     , playerSearch : String
+    , hostingType : String
+    , hostingId : String
     }
 
 
@@ -39,6 +41,8 @@ initModel =
     , currentView = 0
     , showMenu = False
     , playerSearch = ""
+    , hostingType = ""
+    , hostingId = ""
     }
 
 
