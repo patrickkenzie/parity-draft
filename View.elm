@@ -31,11 +31,11 @@ title =
 
 showMenuButton : Bool -> Html Msg
 showMenuButton showMenu =
-    button
-        [ id "menuButton"
-        , onClick (ToggleMenu (not showMenu))
-        ]
-        [ text "Menu" ]
+        button
+            [ id "menuButton"
+            , onClick (ToggleMenu (not showMenu))
+            ]
+            [ text "Menu" ]
 
 
 menuItem : Msg -> String -> Html Msg

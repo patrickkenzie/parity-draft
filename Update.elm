@@ -1,8 +1,12 @@
-module Update exposing(..)
+module Update exposing (..)
 
-import Teams exposing(..)
-import Players exposing(..)
-import Model exposing(..)
+import Teams exposing (..)
+import Players exposing (..)
+import Model exposing (..)
+import Navigation exposing (Location)
+import Json.Decode exposing (string)
+import Http
+
 
 -- UPDATE
 
@@ -20,11 +24,20 @@ type Msg
     | ToggleMenu Bool
     | ResetApp
     | SearchPlayer String
+    | OnLocationChange Location
+    | RequestModelUpdate
+    | LoadModelUpdate (Result Http.Error Model)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update rawMsg model =
     let
+        msg =
+            if model.hostingType == "view" then
+                allowReadonlyMessage rawMsg
+            else
+                rawMsg
+
         newModel =
             case msg of
                 NoOp ->
@@ -58,12 +71,33 @@ update msg model =
                     { model | showMenu = showMenu }
 
                 ResetApp ->
-                    initModel
+                    initModel model.hostingType model.hostingId
 
                 SearchPlayer search ->
                     { model | playerSearch = search }
+
+                OnLocationChange location ->
+                    let
+                        ( hostType, hostId ) =
+                            parseLocation location
+                    in
+                        { model
+                            | hostingType = hostType
+                            , hostingId = hostId
+                        }
+
+                RequestModelUpdate ->
+                    model
+
+                LoadModelUpdate modelResult ->
+                    case modelResult of
+                        Ok m ->
+                            m
+
+                        Err e ->
+                            (Debug.log (toString e)) model
     in
-        newModel ! []
+        ( newModel, includeServerCommand msg newModel )
 
 
 resetDraft : Model -> Model
@@ -77,8 +111,11 @@ resetDraft model =
                 ++ model.waitingTeams
                 |> List.map resetRoster
                 |> Teams.sortTeams
+
+        newModel =
+            initModel model.hostingType model.hostingId
     in
-        { initModel | waitingTeams = teams }
+        { newModel | waitingTeams = teams }
 
 
 moveTeamUp : Team -> Model -> Model
@@ -127,19 +164,17 @@ moveTeamDown team model =
             { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
-
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
         playerName =
-          (Players.playerName player)
+            (Players.playerName player)
 
         draftingTeam =
             Maybe.withDefault dummyTeam (List.head model.waitingTeams)
 
         gms =
             List.map .gm Teams.fullTeamList
-
     in
         if (List.member playerName gms) && (draftingTeam.gm /= playerName) then
             model
@@ -239,11 +274,12 @@ undoDraft model =
             model.round > 1 && List.isEmpty model.draftedTeams
 
         teamList =
-            unFlipDraftOrderIfRequired model (
-              if shouldUndoRound then
-                  model.waitingTeams
-              else
-                  model.draftedTeams)
+            unFlipDraftOrderIfRequired model
+                (if shouldUndoRound then
+                    model.waitingTeams
+                 else
+                    model.draftedTeams
+                )
 
         lastDraftedTeam =
             List.head teamList
@@ -339,3 +375,86 @@ addPlayer player team =
 
         Nothing ->
             team
+
+
+allowReadonlyMessage : Msg -> Msg
+allowReadonlyMessage m =
+    case m of
+        ChangeView _ ->
+            m
+
+        ResortPlayers _ ->
+            m
+
+        SearchPlayer _ ->
+            m
+
+        OnLocationChange _ ->
+            m
+
+        RequestModelUpdate ->
+            m
+
+        LoadModelUpdate _ ->
+            m
+
+        _ ->
+            (Debug.log ("Blocking message: " ++ (toString m))) NoOp
+
+
+includeServerCommand : Msg -> Model -> Cmd Msg
+includeServerCommand msg model =
+    case model.hostingType of
+        "view" ->
+            case msg of
+                RequestModelUpdate ->
+                    loadModel model
+
+                _ ->
+                    Cmd.none
+
+        "host" ->
+            case msg of
+                Draft _ ->
+                    uploadModel model
+
+                FlipOrder ->
+                    uploadModel model
+
+                UndoDraft ->
+                    uploadModel model
+
+                RestartDraft ->
+                    uploadModel model
+
+                MoveTeamUp _ ->
+                    uploadModel model
+
+                MoveTeamDown _ ->
+                    uploadModel model
+
+                ResetApp ->
+                    uploadModel model
+
+                _ ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
+
+
+draftUrl : Model -> String
+draftUrl model =
+    "https://paritydraft.patrickkenzie.com/draft/" ++ model.hostingId
+
+
+loadModel : Model -> Cmd Msg
+loadModel model =
+    Http.send LoadModelUpdate
+        (Http.get (draftUrl model) (modelDecoder model.hostingType model.hostingId))
+
+
+uploadModel : Model -> Cmd Msg
+uploadModel model =
+    Http.send (always NoOp)
+        (Http.post (draftUrl model) (Http.jsonBody (encodeModel model)) string)

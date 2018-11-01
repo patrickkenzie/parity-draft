@@ -7,15 +7,19 @@ import Update exposing (Msg, update)
 import Model exposing (..)
 import View
 import Format
+import Navigation exposing (Location)
+import Json.Encode as J exposing (..)
+import Json.Decode as D exposing (..)
+import Time exposing (every, second)
 
 
-main : Program (Maybe Model) Model Msg
+main : Program J.Value Model Msg
 main =
-    Html.programWithFlags
+    Navigation.programWithFlags Update.OnLocationChange
         { init = init
         , view = View.view
         , update = updateWithStorage
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subs
         }
 
 
@@ -26,20 +30,47 @@ updateWithStorage msg model =
             update msg model
 
         cleanModel =
-            { newModel | showMenu = False }
+            encodeModel { newModel | showMenu = False }
     in
         ( newModel
         , Cmd.batch [ saveModel cleanModel, cmds ]
         )
 
 
-init : Maybe Model -> ( Model, Cmd Msg )
-init savedModel =
-    Maybe.withDefault initModel savedModel ! []
+init : J.Value -> Location -> ( Model, Cmd Msg )
+init savedModel location =
+    let
+        ( hostType, hostId ) =
+            Model.parseLocation location
+
+        newModel =
+            case decodeModel savedModel hostType hostId of
+                Just m ->
+                    { m
+                        | hostingType = hostType
+                        , hostingId = hostId
+                    }
+
+                Nothing ->
+                    initModel hostType hostId
+    in
+        newModel ! []
 
 
 
 -- PORTS
 
 
-port saveModel : Model -> Cmd msg
+port saveModel : J.Value -> Cmd msg
+
+
+
+-- SUBSCRIPTIONS
+
+
+subs : Model -> Sub Msg
+subs model =
+    if model.hostingType == "view" then
+        Time.every (10 * 1000) (always Update.RequestModelUpdate)
+    else
+        Sub.none
