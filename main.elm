@@ -8,9 +8,11 @@ import Model exposing (..)
 import View
 import Format
 import Navigation exposing (Location)
+import Json.Encode as J exposing(..)
+import Json.Decode as D exposing(..)
 
 
-main : Program (Maybe Model) Model Msg
+main : Program J.Value Model Msg
 main =
     Navigation.programWithFlags Update.OnLocationChange
         { init = init
@@ -27,21 +29,21 @@ updateWithStorage msg model =
             update msg model
 
         cleanModel =
-            { newModel | showMenu = False }
+            encodeModel { newModel | showMenu = False }
     in
         ( newModel
         , Cmd.batch [ saveModel cleanModel, cmds ]
         )
 
 
-init : Maybe Model -> Location -> ( Model, Cmd Msg )
+init : J.Value -> Location -> ( Model, Cmd Msg )
 init savedModel location =
     let
         ( hostType, hostId ) =
             Model.parseLocation location
 
         newModel =
-            case savedModel of
+            case decodeModel savedModel hostType hostId of
                 Just m ->
                     { m
                         | hostingType = hostType
@@ -58,4 +60,4 @@ init savedModel location =
 -- PORTS
 
 
-port saveModel : Model -> Cmd msg
+port saveModel : J.Value -> Cmd msg

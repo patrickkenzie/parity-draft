@@ -1,7 +1,8 @@
-module Teams exposing (Team, sortTeams, fullTeamList)
+module Teams exposing (..)
 
 import Players exposing (Player)
-
+import Json.Encode as E exposing (..)
+import Json.Decode as D exposing (..)
 
 type alias Team =
     { gm : String
@@ -18,6 +19,23 @@ sortTeams teams =
 fullTeamList : List Team
 fullTeamList =
     sortTeams allTeams
+
+
+decodeTeam : Decoder Team
+decodeTeam =
+    D.map3 Team
+        (field "gm" D.string)
+        (field "players" (D.list Players.decodePlayer))
+        (field "draftOrder" D.int)
+
+
+encodeTeam : Team -> E.Value
+encodeTeam team =
+    E.object
+        [ ( "gm", E.string team.gm )
+        , ( "players", E.list (List.map Players.encodePlayer team.players) )
+        , ( "draftOrder", E.int team.draftOrder )
+        ]
 
 
 allTeams : List Team

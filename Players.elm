@@ -2,6 +2,8 @@ module Players exposing (..)
 
 import Csv exposing (..)
 import Csv.Decode exposing (..)
+import Json.Encode as E exposing (..)
+import Json.Decode as D exposing (..)
 
 
 type alias Player =
@@ -34,6 +36,28 @@ compareByAsc sort x y =
 compareByDesc : (Player -> comparable) -> Player -> Player -> Order
 compareByDesc sort x y =
     compare (sort y) (sort x)
+
+
+decodePlayer : D.Decoder Player
+decodePlayer =
+    D.map5 Player
+        (D.field "firstName" D.string)
+        (D.field "lastName" D.string)
+        (D.field "gender" D.string)
+        (D.field "height" D.int)
+        (D.field "rating" D.int)
+
+
+
+encodePlayer : Player -> E.Value
+encodePlayer player =
+    E.object
+        [ ( "firstName", E.string player.firstName )
+        , ( "lastName", E.string player.lastName )
+        , ( "gender", E.string player.gender )
+        , ( "height", E.int player.height )
+        , ( "rating", E.int player.rating )
+        ]
 
 
 fullPlayerList : List Player
@@ -76,7 +100,7 @@ buildPlaceholderPlayers targetCount parsedPlayers gender =
 
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
 playerDecoder =
-    map Player
+    Csv.Decode.map Player
         (next Result.Ok
             |> andMap (next Result.Ok)
             |> andMap (next Result.Ok)

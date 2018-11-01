@@ -17,7 +17,7 @@
 		var elm = Elm.Main.fullscreen(startModel);
 		elm.ports.saveModel.subscribe(function(model) {
 				localStorage.setItem('saved-model', JSON.stringify(model));
-				});
+		});
 	} catch(err) {
 		console.error(err);
 		localStorage.clear();
