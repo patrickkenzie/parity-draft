@@ -29,11 +29,9 @@ updateWithStorage msg model =
         ( newModel, cmds ) =
             update msg model
 
-        cleanModel =
-            encodeModel { newModel | showMenu = False }
     in
         ( newModel
-        , Cmd.batch [ saveModel cleanModel, cmds ]
+        , Cmd.batch [ saveModel ( encodeModel newModel ) , cmds ]
         )
 
 
@@ -44,6 +42,7 @@ init savedModel location =
             Model.parseLocation location
 
         localState = { currentView = DraftView
+            , showMenu = False
             , hostingType = hostType
             , hostingId = hostId
         }

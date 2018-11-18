@@ -75,7 +75,10 @@ update rawMsg model =
                     moveTeamDown team model
 
                 ToggleMenu showMenu ->
-                    { model | showMenu = showMenu }
+                    let
+                        ls = model.localState
+                    in
+                        { model | localState = { ls | showMenu = showMenu } }
 
                 ResetApp ->
                     initModel model.localState
@@ -85,13 +88,14 @@ update rawMsg model =
 
                 OnLocationChange location ->
                     let
+                        ls = model.localState
+
                         ( hostType, hostId ) =
                             parseLocation location
                     in
                         { model
                             | localState =
-                                { currentView = DraftView
-                                , hostingType = hostType
+                                { ls | hostingType = hostType
                                 , hostingId = hostId
                                 }
                         }

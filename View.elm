@@ -17,8 +17,8 @@ import Json.Decode as Json
 view : Model -> Html Msg
 view model =
     title
-        :: showMenuButton model.showMenu
-        :: viewMenu model.showMenu
+        :: showMenuButton model.localState.showMenu
+        :: viewMenu model.localState.showMenu
         :: viewTabNav model.localState.currentView
         :: viewTabContent model
         |> div []

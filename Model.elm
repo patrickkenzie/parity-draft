@@ -18,7 +18,6 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
-    , showMenu : Bool
     , playerSearch : String
     , localState : LocalState
     }
@@ -32,6 +31,7 @@ type TabView
 
 type alias LocalState =
     { currentView : TabView
+    , showMenu : Bool
     , hostingType: String
     , hostingId: String
     }
@@ -47,7 +47,6 @@ initModel localState =
     , waitingTeams = Teams.fullTeamList
     , draftedTeams = []
     , round = 1
-    , showMenu = False
     , playerSearch = ""
     , localState = localState
     }
@@ -94,7 +93,6 @@ modelDecoder localState =
         |> required "waitingTeams" (D.list Teams.decodeTeam)
         |> required "draftedTeams" (D.list Teams.decodeTeam)
         |> required "round" D.int
-        |> required "showMenu" D.bool
         |> required "playerSearch" D.string
         |> hardcoded localState
 
@@ -119,7 +117,6 @@ encodeModel model =
         , ( "waitingTeams", E.list (List.map Teams.encodeTeam model.waitingTeams) )
         , ( "draftedTeams", E.list (List.map Teams.encodeTeam model.draftedTeams) )
         , ( "round", E.int model.round )
-        , ( "showMenu", E.bool model.showMenu )
         , ( "playerSearch", E.string model.playerSearch )
         ]
 
