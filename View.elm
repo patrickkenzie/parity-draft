@@ -31,11 +31,11 @@ title =
 
 showMenuButton : Bool -> Html Msg
 showMenuButton showMenu =
-        button
-            [ id "menuButton"
-            , onClick (ToggleMenu (not showMenu))
-            ]
-            [ text "Menu" ]
+    button
+        [ id "menuButton"
+        , onClick (ToggleMenu (not showMenu))
+        ]
+        [ text "Menu" ]
 
 
 menuItem : Msg -> String -> Html Msg
@@ -266,7 +266,7 @@ viewUndraftedPlayerList : String -> List Player -> Html Msg
 viewUndraftedPlayerList search fullList =
     let
         females =
-            List.filter (\p -> p.gender == "Female") fullList
+            List.filter (\p -> p.gender == Female) fullList
 
         matches player =
             String.contains (String.toUpper search) (String.toUpper (Players.playerName player))

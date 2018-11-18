@@ -232,7 +232,7 @@ dummyPlayer : Player
 dummyPlayer =
     { firstName = "first"
     , lastName = "last"
-    , gender = "x"
+    , gender = Female
     , height = 10
     , rating = 1
     }
@@ -249,19 +249,17 @@ dummyTeam =
 unFlipDraftOrderIfRequired : Model -> List Team -> List Team
 unFlipDraftOrderIfRequired model teams =
     let
-        toGender ps =
-            List.map .gender ps
+        multiGender ps =
+            let
+                gens =
+                    List.map .gender ps
+            in
+                List.member Female gens && List.member Male gens
 
-        players =
-            toGender (List.map Tuple.first model.draftedPlayers)
-
-        unMax =
-            List.maximum players
-
-        drMax =
-            List.maximum (toGender model.undraftedPlayers)
+        draftedPlayers =
+            List.map Tuple.first model.draftedPlayers
     in
-        if unMax == drMax then
+        if multiGender draftedPlayers || multiGender model.undraftedPlayers then
             teams
         else
             List.reverse teams

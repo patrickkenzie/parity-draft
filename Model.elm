@@ -112,22 +112,22 @@ parseLocation location =
 
 modelDecoder : String -> String -> D.Decoder Model
 modelDecoder hostingType hostingId =
-        DP.decode Model
-            |> required "undraftedPlayers" (D.list Players.decodePlayer)
-            |> required "draftedPlayers" (D.list decodeDraftedPlayer)
-            |> required "waitingTeams" (D.list Teams.decodeTeam)
-            |> required "draftedTeams" (D.list Teams.decodeTeam)
-            |> required "round" D.int
-            |> required "currentView" D.int
-            |> required "showMenu" D.bool
-            |> required "playerSearch" D.string
-            |> hardcoded hostingType
-            |> hardcoded hostingId
+    DP.decode Model
+        |> required "undraftedPlayers" (D.list Players.decodePlayer)
+        |> required "draftedPlayers" (D.list decodeDraftedPlayer)
+        |> required "waitingTeams" (D.list Teams.decodeTeam)
+        |> required "draftedTeams" (D.list Teams.decodeTeam)
+        |> required "round" D.int
+        |> required "currentView" D.int
+        |> required "showMenu" D.bool
+        |> required "playerSearch" D.string
+        |> hardcoded hostingType
+        |> hardcoded hostingId
 
 
 decodeModel : D.Value -> String -> String -> Maybe Model
 decodeModel value hostingType hostingId =
-        Result.toMaybe (D.decodeValue (modelDecoder hostingType hostingId) value)
+    Result.toMaybe (D.decodeValue (modelDecoder hostingType hostingId) value)
 
 
 decodeDraftedPlayer : Decoder ( Player, String )
@@ -140,7 +140,7 @@ decodeDraftedPlayer =
 encodeModel : Model -> E.Value
 encodeModel model =
     E.object
-        [ ("undraftedPlayers", E.list (List.map Players.encodePlayer model.undraftedPlayers) )
+        [ ( "undraftedPlayers", E.list (List.map Players.encodePlayer model.undraftedPlayers) )
         , ( "draftedPlayers", E.list (List.map encodeDraftedPlayer model.draftedPlayers) )
         , ( "waitingTeams", E.list (List.map Teams.encodeTeam model.waitingTeams) )
         , ( "draftedTeams", E.list (List.map Teams.encodeTeam model.draftedTeams) )

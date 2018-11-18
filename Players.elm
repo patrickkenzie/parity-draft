@@ -9,18 +9,69 @@ import Json.Decode as D exposing (..)
 type alias Player =
     { firstName : String
     , lastName : String
-    , gender : String
-    , height: Int
+    , gender : Gender
+    , height : Int
     , rating : Int
     }
 
 
+type Gender
+    = Female
+    | Male
+
+
+genderDecoder : D.Decoder Gender
+genderDecoder =
+    D.string |> D.andThen (fromResult << parseGender)
+
+
+fromResult : Result String a -> D.Decoder a
+fromResult result =
+    case result of
+        Ok a ->
+            D.succeed a
+
+        Err err ->
+            D.fail err
+
+
+parseGender : String -> Result String Gender
+parseGender gender =
+    case gender of
+        "female" ->
+            Ok Female
+
+        "Female" ->
+            Ok Female
+
+        "male" ->
+            Ok Male
+
+        "Male" ->
+            Ok Male
+
+        _ ->
+            Err ("Invalid Gender: " ++ gender)
+
+
+genderEncoder : Gender -> E.Value
+genderEncoder gender =
+    case gender of
+        Female ->
+            E.string "female"
+
+        Male ->
+            E.string "male"
+
+
 className : Player -> String
 className player =
-    if player.gender == "Female" then
-        "female"
-    else
-        "male"
+    case player.gender of
+        Female ->
+            "female"
+
+        Male ->
+            "male"
 
 
 playerName : Player -> String
@@ -43,10 +94,9 @@ decodePlayer =
     D.map5 Player
         (D.field "firstName" D.string)
         (D.field "lastName" D.string)
-        (D.field "gender" D.string)
+        (D.field "gender" genderDecoder)
         (D.field "height" D.int)
         (D.field "rating" D.int)
-
 
 
 encodePlayer : Player -> E.Value
@@ -54,7 +104,7 @@ encodePlayer player =
     E.object
         [ ( "firstName", E.string player.firstName )
         , ( "lastName", E.string player.lastName )
-        , ( "gender", E.string player.gender )
+        , ( "gender", genderEncoder player.gender )
         , ( "height", E.int player.height )
         , ( "rating", E.int player.rating )
         ]
@@ -69,22 +119,21 @@ fullPlayerList =
         buildPlayers =
             buildPlaceholderPlayers (10 * 6) parsedPlayers
     in
-        (parsedPlayers ++ buildPlayers "Female" ++ buildPlayers "Male")
+        (parsedPlayers ++ buildPlayers Female ++ buildPlayers Male)
             |> List.sortWith (compareByAsc .lastName)
             |> List.sortWith (compareByDesc .rating)
-            |> List.sortWith (compareByAsc .gender)
 
 
-isGender : String -> Player -> Bool
+isGender : Gender -> Player -> Bool
 isGender gender player =
     player.gender == gender
 
 
-buildPlaceholderPlayers : Int -> List Player -> String -> List Player
+buildPlaceholderPlayers : Int -> List Player -> Gender -> List Player
 buildPlaceholderPlayers targetCount parsedPlayers gender =
     let
         createDummy gender number =
-            { firstName = gender ++ " Placeholder"
+            { firstName = (toString gender) ++ " Placeholder"
             , lastName = "_" ++ (toString number)
             , gender = gender
             , height = 0
@@ -103,7 +152,7 @@ playerDecoder =
     Csv.Decode.map Player
         (next Result.Ok
             |> andMap (next Result.Ok)
-            |> andMap (next Result.Ok)
+            |> andMap (next parseGender)
             |> andMap (next String.toInt)
             |> andMap (next String.toInt)
         )

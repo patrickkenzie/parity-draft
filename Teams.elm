@@ -4,6 +4,7 @@ import Players exposing (Player)
 import Json.Encode as E exposing (..)
 import Json.Decode as D exposing (..)
 
+
 type alias Team =
     { gm : String
     , players : List Player
