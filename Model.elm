@@ -18,11 +18,9 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
-    , currentView : Int
     , showMenu : Bool
     , playerSearch : String
-    , hostingType : String
-    , hostingId : String
+    , localState : LocalState
     }
 
 
@@ -32,49 +30,27 @@ type TabView
     | HistoryView
 
 
+type alias LocalState =
+    { currentView : TabView
+    , hostingType: String
+    , hostingId: String
+    }
+
 type alias PlayerSort =
     Player -> Player -> Order
 
 
-initModel : String -> String -> Model
-initModel hostType hostId =
+initModel : LocalState -> Model
+initModel localState =
     { undraftedPlayers = Players.fullPlayerList
     , draftedPlayers = []
     , waitingTeams = Teams.fullTeamList
     , draftedTeams = []
     , round = 1
-    , currentView = 0
     , showMenu = False
     , playerSearch = ""
-    , hostingType = hostType
-    , hostingId = hostId
+    , localState = localState
     }
-
-
-tabViewFromInt : Int -> TabView
-tabViewFromInt value =
-    case value of
-        1 ->
-            TeamView
-
-        2 ->
-            HistoryView
-
-        _ ->
-            DraftView
-
-
-tabViewToInt : TabView -> Int
-tabViewToInt view =
-    case view of
-        DraftView ->
-            0
-
-        TeamView ->
-            1
-
-        HistoryView ->
-            2
 
 
 type Route
@@ -110,24 +86,22 @@ parseLocation location =
             ( "", "" )
 
 
-modelDecoder : String -> String -> D.Decoder Model
-modelDecoder hostingType hostingId =
+modelDecoder : LocalState -> D.Decoder Model
+modelDecoder localState =
     DP.decode Model
         |> required "undraftedPlayers" (D.list Players.decodePlayer)
         |> required "draftedPlayers" (D.list decodeDraftedPlayer)
         |> required "waitingTeams" (D.list Teams.decodeTeam)
         |> required "draftedTeams" (D.list Teams.decodeTeam)
         |> required "round" D.int
-        |> required "currentView" D.int
         |> required "showMenu" D.bool
         |> required "playerSearch" D.string
-        |> hardcoded hostingType
-        |> hardcoded hostingId
+        |> hardcoded localState
 
 
-decodeModel : D.Value -> String -> String -> Maybe Model
-decodeModel value hostingType hostingId =
-    Result.toMaybe (D.decodeValue (modelDecoder hostingType hostingId) value)
+decodeModel : D.Value -> LocalState -> Maybe Model
+decodeModel value localState =
+    Result.toMaybe (D.decodeValue (modelDecoder localState) value)
 
 
 decodeDraftedPlayer : Decoder ( Player, String )
@@ -145,7 +119,6 @@ encodeModel model =
         , ( "waitingTeams", E.list (List.map Teams.encodeTeam model.waitingTeams) )
         , ( "draftedTeams", E.list (List.map Teams.encodeTeam model.draftedTeams) )
         , ( "round", E.int model.round )
-        , ( "currentView", E.int model.currentView )
         , ( "showMenu", E.bool model.showMenu )
         , ( "playerSearch", E.string model.playerSearch )
         ]

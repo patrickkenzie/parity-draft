@@ -19,7 +19,7 @@ view model =
     title
         :: showMenuButton model.showMenu
         :: viewMenu model.showMenu
-        :: viewTabNav (tabViewFromInt model.currentView)
+        :: viewTabNav model.localState.currentView
         :: viewTabContent model
         |> div []
 
@@ -96,15 +96,15 @@ viewTabNav currentView =
 
 viewTabContent : Model -> List (Html Msg)
 viewTabContent model =
-    case model.currentView of
-        1 ->
+    case model.localState.currentView of
+        DraftView ->
+            viewDraftContent model
+
+        TeamView ->
             viewDraftComplete model
 
-        2 ->
+        HistoryView ->
             viewDraftHistory model
-
-        _ ->
-            viewDraftContent model
 
 
 viewDraftContent : Model -> List (Html Msg)

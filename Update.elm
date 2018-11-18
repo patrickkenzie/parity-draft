@@ -33,7 +33,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update rawMsg model =
     let
         msg =
-            if model.hostingType == "view" then
+            if model.localState.hostingType == "view" then
                 allowReadonlyMessage rawMsg
             else
                 rawMsg
@@ -56,7 +56,14 @@ update rawMsg model =
                     resetDraft model
 
                 ChangeView tabView ->
-                    { model | currentView = tabViewToInt tabView }
+                    let
+                        ls =
+                            model.localState
+                    in
+                        { model
+                            | localState =
+                                { ls | currentView = tabView }
+                        }
 
                 ResortPlayers comparer ->
                     { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
@@ -71,7 +78,7 @@ update rawMsg model =
                     { model | showMenu = showMenu }
 
                 ResetApp ->
-                    initModel model.hostingType model.hostingId
+                    initModel model.localState
 
                 SearchPlayer search ->
                     { model | playerSearch = search }
@@ -82,8 +89,11 @@ update rawMsg model =
                             parseLocation location
                     in
                         { model
-                            | hostingType = hostType
-                            , hostingId = hostId
+                            | localState =
+                                { currentView = DraftView
+                                , hostingType = hostType
+                                , hostingId = hostId
+                                }
                         }
 
                 RequestModelUpdate ->
@@ -113,7 +123,7 @@ resetDraft model =
                 |> Teams.sortTeams
 
         newModel =
-            initModel model.hostingType model.hostingId
+            initModel model.localState
     in
         { newModel | waitingTeams = teams }
 
@@ -402,7 +412,7 @@ allowReadonlyMessage m =
 
 includeServerCommand : Msg -> Model -> Cmd Msg
 includeServerCommand msg model =
-    case model.hostingType of
+    case model.localState.hostingType of
         "view" ->
             case msg of
                 RequestModelUpdate ->
@@ -443,13 +453,13 @@ includeServerCommand msg model =
 
 draftUrl : Model -> String
 draftUrl model =
-    "https://paritydraft.patrickkenzie.com/draft/" ++ model.hostingId
+    "https://paritydraft.patrickkenzie.com/draft/" ++ model.localState.hostingId
 
 
 loadModel : Model -> Cmd Msg
 loadModel model =
     Http.send LoadModelUpdate
-        (Http.get (draftUrl model) (modelDecoder model.hostingType model.hostingId))
+        (Http.get (draftUrl model) (modelDecoder model.localState))
 
 
 uploadModel : Model -> Cmd Msg

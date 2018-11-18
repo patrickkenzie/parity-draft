@@ -43,16 +43,20 @@ init savedModel location =
         ( hostType, hostId ) =
             Model.parseLocation location
 
+        localState = { currentView = DraftView
+            , hostingType = hostType
+            , hostingId = hostId
+        }
+
         newModel =
-            case decodeModel savedModel hostType hostId of
+            case decodeModel savedModel localState of
                 Just m ->
                     { m
-                        | hostingType = hostType
-                        , hostingId = hostId
+                        | localState = localState
                     }
 
                 Nothing ->
-                    initModel hostType hostId
+                    initModel localState
     in
         newModel ! []
 
@@ -70,7 +74,7 @@ port saveModel : J.Value -> Cmd msg
 
 subs : Model -> Sub Msg
 subs model =
-    if model.hostingType == "view" then
+    if model.localState.hostingType == "view" then
         Time.every (10 * 1000) (always Update.RequestModelUpdate)
     else
         Sub.none
