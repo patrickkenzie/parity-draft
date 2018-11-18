@@ -29,11 +29,15 @@ type TabView
     | HistoryView
 
 
+type HostType
+    = Local
+    | Host String
+    | View String
+
 type alias LocalState =
     { currentView : TabView
     , showMenu : Bool
-    , hostingType: String
-    , hostingId: String
+    , hostingType: HostType
     }
 
 type alias PlayerSort =
@@ -52,37 +56,23 @@ initModel localState =
     }
 
 
-type Route
-    = Top
-    | Host String
-    | View String
-
-
-matchers : Parser (Route -> a) a
+matchers : Parser (HostType -> a) a
 matchers =
     UrlParser.oneOf
-        [ UrlParser.map Top top
+        [ UrlParser.map Local top
         , UrlParser.map Host (s "host" </> UrlParser.string)
         , UrlParser.map View (s "view" </> UrlParser.string)
         ]
 
-
-parseLocation : Location -> ( String, String )
+--
+parseLocation : Location -> HostType
 parseLocation location =
     case parseHash matchers location of
         Just route ->
-            case route of
-                Top ->
-                    ( "", "" )
-
-                Host id ->
-                    ( "host", id )
-
-                View id ->
-                    ( "view", id )
+            route
 
         Nothing ->
-            ( "", "" )
+            Local
 
 
 modelDecoder : LocalState -> D.Decoder Model

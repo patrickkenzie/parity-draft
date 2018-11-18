@@ -38,13 +38,12 @@ updateWithStorage msg model =
 init : J.Value -> Location -> ( Model, Cmd Msg )
 init savedModel location =
     let
-        ( hostType, hostId ) =
+        hostType =
             Model.parseLocation location
 
         localState = { currentView = DraftView
             , showMenu = False
             , hostingType = hostType
-            , hostingId = hostId
         }
 
         newModel =
@@ -73,7 +72,8 @@ port saveModel : J.Value -> Cmd msg
 
 subs : Model -> Sub Msg
 subs model =
-    if model.localState.hostingType == "view" then
-        Time.every (10 * 1000) (always Update.RequestModelUpdate)
-    else
-        Sub.none
+    case model.localState.hostingType of
+        View _ ->
+            Time.every (10 * 1000) (always Update.RequestModelUpdate)
+        _ ->
+            Sub.none

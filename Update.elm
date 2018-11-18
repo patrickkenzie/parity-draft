@@ -33,10 +33,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update rawMsg model =
     let
         msg =
-            if model.localState.hostingType == "view" then
-                allowReadonlyMessage rawMsg
-            else
-                rawMsg
+            case model.localState.hostingType of
+                View _ ->
+                    allowReadonlyMessage rawMsg
+                _ ->
+                    rawMsg
 
         newModel =
             case msg of
@@ -90,14 +91,12 @@ update rawMsg model =
                     let
                         ls = model.localState
 
-                        ( hostType, hostId ) =
+                        hostType =
                             parseLocation location
                     in
                         { model
                             | localState =
-                                { ls | hostingType = hostType
-                                , hostingId = hostId
-                                }
+                                { ls | hostingType = hostType }
                         }
 
                 RequestModelUpdate ->
@@ -417,7 +416,7 @@ allowReadonlyMessage m =
 includeServerCommand : Msg -> Model -> Cmd Msg
 includeServerCommand msg model =
     case model.localState.hostingType of
-        "view" ->
+        View _ ->
             case msg of
                 RequestModelUpdate ->
                     loadModel model
@@ -425,7 +424,7 @@ includeServerCommand msg model =
                 _ ->
                     Cmd.none
 
-        "host" ->
+        Host _ ->
             case msg of
                 Draft _ ->
                     uploadModel model
@@ -451,13 +450,20 @@ includeServerCommand msg model =
                 _ ->
                     Cmd.none
 
-        _ ->
+        Local ->
             Cmd.none
 
 
 draftUrl : Model -> String
 draftUrl model =
-    "https://paritydraft.patrickkenzie.com/draft/" ++ model.localState.hostingId
+    let draftId =
+        case model.localState.hostingType of
+            Host id -> id
+
+            View id -> id
+            Local -> ""
+    in
+        "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
 
 
 loadModel : Model -> Cmd Msg
