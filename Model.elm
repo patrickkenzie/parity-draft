@@ -18,7 +18,6 @@ type alias Model =
     , waitingTeams : List Team
     , draftedTeams : List Team
     , round : Int
-    , playerSearch : String
     , localState : LocalState
     }
 
@@ -36,8 +35,9 @@ type HostType
 
 type alias LocalState =
     { currentView : TabView
-    , showMenu : Bool
     , hostingType: HostType
+    , playerSearch : String
+    , showMenu : Bool
     }
 
 type alias PlayerSort =
@@ -51,7 +51,6 @@ initModel localState =
     , waitingTeams = Teams.fullTeamList
     , draftedTeams = []
     , round = 1
-    , playerSearch = ""
     , localState = localState
     }
 
@@ -83,7 +82,6 @@ modelDecoder localState =
         |> required "waitingTeams" (D.list Teams.decodeTeam)
         |> required "draftedTeams" (D.list Teams.decodeTeam)
         |> required "round" D.int
-        |> required "playerSearch" D.string
         |> hardcoded localState
 
 
@@ -107,7 +105,6 @@ encodeModel model =
         , ( "waitingTeams", E.list (List.map Teams.encodeTeam model.waitingTeams) )
         , ( "draftedTeams", E.list (List.map Teams.encodeTeam model.draftedTeams) )
         , ( "round", E.int model.round )
-        , ( "playerSearch", E.string model.playerSearch )
         ]
 
 

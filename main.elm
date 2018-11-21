@@ -42,6 +42,7 @@ init savedModel location =
             Model.parseLocation location
 
         localState = { currentView = DraftView
+            , playerSearch = ""
             , showMenu = False
             , hostingType = hostType
         }

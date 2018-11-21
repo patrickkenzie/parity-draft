@@ -120,7 +120,7 @@ viewDraftInProgress model =
     [ viewWaitingTeams model.draftedTeams model.waitingTeams
 
     --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
-    , viewUndraftedPlayerList model.playerSearch model.undraftedPlayers
+    , viewUndraftedPlayerList model.localState.playerSearch model.undraftedPlayers
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest model.round model.draftedTeams
@@ -288,7 +288,7 @@ viewUndraftedPlayerList search fullList =
                 , placeholder "search players..."
                 , value search
                 , autofocus True
-                , onInput SearchPlayer
+                , onInput (LocalMsg << SearchPlayer)
                 ]
                 []
     in

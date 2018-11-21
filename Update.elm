@@ -22,7 +22,6 @@ type Msg
     | MoveTeamUp Team
     | MoveTeamDown Team
     | ResetApp
-    | SearchPlayer String
     | RequestModelUpdate
     | LoadModelUpdate (Result Http.Error Model)
 
@@ -30,6 +29,7 @@ type Msg
 type LocalMsg
     = ChangeView TabView
     | OnLocationChange Location
+    | SearchPlayer String
     | ToggleMenu Bool
 
 
@@ -75,9 +75,6 @@ update rawMsg model =
                 ResetApp ->
                     initModel model.localState
 
-                SearchPlayer search ->
-                    { model | playerSearch = search }
-
                 RequestModelUpdate ->
                     model
 
@@ -101,8 +98,11 @@ updateLocalMsg msg state =
         OnLocationChange location ->
                   { state | hostingType = (parseLocation location) }
 
+        SearchPlayer search ->
+            { state | playerSearch = search }
+
         ToggleMenu showMenu ->
-                { state | showMenu = showMenu }
+              { state | showMenu = showMenu }
 
 
 
@@ -231,7 +231,6 @@ assignDraftedPlayer player model =
             , waitingTeams = updatedWaiting
             , draftedTeams = newDrafted
             , round = round
-            , playerSearch = ""
         }
 
 
@@ -389,9 +388,6 @@ allowReadonlyMessage m =
             m
 
         ResortPlayers _ ->
-            m
-
-        SearchPlayer _ ->
             m
 
         RequestModelUpdate ->
