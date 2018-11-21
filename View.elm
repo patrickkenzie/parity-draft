@@ -33,7 +33,7 @@ showMenuButton : Bool -> Html Msg
 showMenuButton showMenu =
     button
         [ id "menuButton"
-        , onClick (ToggleMenu (not showMenu))
+        , onClick (LocalMsg (ToggleMenu (not showMenu)))
         ]
         [ text "Menu" ]
 
@@ -47,7 +47,7 @@ viewMenu : Bool -> Html Msg
 viewMenu showMenu =
     div
         [ id "menuBackdrop"
-        , onClick (ToggleMenu False)
+        , onClick (LocalMsg (ToggleMenu False))
         , hidden (not showMenu)
         ]
         [ div
@@ -83,7 +83,7 @@ viewTabNav currentView =
             in
                 div
                     [ class className
-                    , onClick (ChangeView tabView)
+                    , onClick ((LocalMsg  << ChangeView) tabView)
                     ]
                     [ text title ]
     in

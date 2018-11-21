@@ -15,7 +15,7 @@ import Time exposing (every, second)
 
 main : Program J.Value Model Msg
 main =
-    Navigation.programWithFlags Update.OnLocationChange
+    Navigation.programWithFlags (Update.LocalMsg << Update.OnLocationChange)
         { init = init
         , view = View.view
         , update = updateWithStorage

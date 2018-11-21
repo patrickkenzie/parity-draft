@@ -13,20 +13,24 @@ import Http
 
 type Msg
     = NoOp
+    | LocalMsg LocalMsg
     | Draft Player
     | FlipOrder
     | UndoDraft
     | RestartDraft
-    | ChangeView TabView
     | ResortPlayers PlayerSort
     | MoveTeamUp Team
     | MoveTeamDown Team
-    | ToggleMenu Bool
     | ResetApp
     | SearchPlayer String
-    | OnLocationChange Location
     | RequestModelUpdate
     | LoadModelUpdate (Result Http.Error Model)
+
+
+type LocalMsg
+    = ChangeView TabView
+    | OnLocationChange Location
+    | ToggleMenu Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,6 +48,9 @@ update rawMsg model =
                 NoOp ->
                     model
 
+                LocalMsg localMsg ->
+                    { model | localState = updateLocalMsg localMsg model.localState }
+
                 Draft player ->
                     draftPlayer player model
 
@@ -56,16 +63,6 @@ update rawMsg model =
                 RestartDraft ->
                     resetDraft model
 
-                ChangeView tabView ->
-                    let
-                        ls =
-                            model.localState
-                    in
-                        { model
-                            | localState =
-                                { ls | currentView = tabView }
-                        }
-
                 ResortPlayers comparer ->
                     { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
 
@@ -75,29 +72,11 @@ update rawMsg model =
                 MoveTeamDown team ->
                     moveTeamDown team model
 
-                ToggleMenu showMenu ->
-                    let
-                        ls = model.localState
-                    in
-                        { model | localState = { ls | showMenu = showMenu } }
-
                 ResetApp ->
                     initModel model.localState
 
                 SearchPlayer search ->
                     { model | playerSearch = search }
-
-                OnLocationChange location ->
-                    let
-                        ls = model.localState
-
-                        hostType =
-                            parseLocation location
-                    in
-                        { model
-                            | localState =
-                                { ls | hostingType = hostType }
-                        }
 
                 RequestModelUpdate ->
                     model
@@ -111,6 +90,21 @@ update rawMsg model =
                             (Debug.log (toString e)) model
     in
         ( newModel, includeServerCommand msg newModel )
+
+
+updateLocalMsg : LocalMsg -> LocalState -> LocalState
+updateLocalMsg msg state =
+    case msg of
+        ChangeView tabView ->
+                  { state | currentView = tabView }
+
+        OnLocationChange location ->
+                  { state | hostingType = (parseLocation location) }
+
+        ToggleMenu showMenu ->
+                { state | showMenu = showMenu }
+
+
 
 
 resetDraft : Model -> Model
@@ -391,16 +385,13 @@ addPlayer player team =
 allowReadonlyMessage : Msg -> Msg
 allowReadonlyMessage m =
     case m of
-        ChangeView _ ->
+        LocalMsg _ ->
             m
 
         ResortPlayers _ ->
             m
 
         SearchPlayer _ ->
-            m
-
-        OnLocationChange _ ->
             m
 
         RequestModelUpdate ->
