@@ -28,10 +28,9 @@ updateWithStorage msg model =
     let
         ( newModel, cmds ) =
             update msg model
-
     in
         ( newModel
-        , Cmd.batch [ saveModel ( encodeModel newModel ) , cmds ]
+        , Cmd.batch [ saveModel (encodeModel newModel), cmds ]
         )
 
 
@@ -41,11 +40,12 @@ init savedModel location =
         hostType =
             Model.parseLocation location
 
-        localState = { currentView = DraftView
+        localState =
+            { currentView = DraftView
             , playerSearch = ""
             , showMenu = False
             , hostingType = hostType
-        }
+            }
 
         newModel =
             case decodeModel savedModel localState of
@@ -76,5 +76,6 @@ subs model =
     case model.localState.hostingType of
         View _ ->
             Time.every (10 * 1000) (always Update.RequestModelUpdate)
+
         _ ->
             Sub.none

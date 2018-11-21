@@ -83,7 +83,7 @@ viewTabNav currentView =
             in
                 div
                     [ class className
-                    , onClick ((LocalMsg  << ChangeView) tabView)
+                    , onClick ((LocalMsg << ChangeView) tabView)
                     ]
                     [ text title ]
     in

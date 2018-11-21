@@ -40,6 +40,7 @@ update rawMsg model =
             case model.localState.hostingType of
                 View _ ->
                     allowReadonlyMessage rawMsg
+
                 _ ->
                     rawMsg
 
@@ -93,18 +94,16 @@ updateLocalMsg : LocalMsg -> LocalState -> LocalState
 updateLocalMsg msg state =
     case msg of
         ChangeView tabView ->
-                  { state | currentView = tabView }
+            { state | currentView = tabView }
 
         OnLocationChange location ->
-                  { state | hostingType = (parseLocation location) }
+            { state | hostingType = (parseLocation location) }
 
         SearchPlayer search ->
             { state | playerSearch = search }
 
         ToggleMenu showMenu ->
-              { state | showMenu = showMenu }
-
-
+            { state | showMenu = showMenu }
 
 
 resetDraft : Model -> Model
@@ -443,12 +442,17 @@ includeServerCommand msg model =
 
 draftUrl : Model -> String
 draftUrl model =
-    let draftId =
-        case model.localState.hostingType of
-            Host id -> id
+    let
+        draftId =
+            case model.localState.hostingType of
+                Host id ->
+                    id
 
-            View id -> id
-            Local -> ""
+                View id ->
+                    id
+
+                Local ->
+                    ""
     in
         "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
 

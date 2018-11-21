@@ -33,12 +33,14 @@ type HostType
     | Host String
     | View String
 
+
 type alias LocalState =
     { currentView : TabView
-    , hostingType: HostType
+    , hostingType : HostType
     , playerSearch : String
     , showMenu : Bool
     }
+
 
 type alias PlayerSort =
     Player -> Player -> Order
@@ -63,7 +65,11 @@ matchers =
         , UrlParser.map View (s "view" </> UrlParser.string)
         ]
 
+
+
 --
+
+
 parseLocation : Location -> HostType
 parseLocation location =
     case parseHash matchers location of
