@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Html
 import Teams exposing (..)
 import Players exposing (..)
-import Update exposing (Msg, update)
+import Update exposing (Msg, update, loadModel)
 import Model exposing (..)
 import View
 import Format
@@ -47,17 +47,23 @@ init savedModel location =
             , hostingType = hostType
             }
 
-        newModel =
-            case decodeModel savedModel localState of
-                Just m ->
-                    { m
-                        | localState = localState
-                    }
+        command =
+            case hostType of
+                View _ ->
+                    Update.loadModel localState
 
-                Nothing ->
-                    initModel localState
+                Host _ ->
+                    Cmd.none
+
+                Local ->
+                    Cmd.none
     in
-        newModel ! []
+        case decodeModel savedModel localState of
+            Just model ->
+                ( model, command )
+
+            Nothing ->
+                ( initModel localState, command )
 
 
 

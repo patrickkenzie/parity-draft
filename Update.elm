@@ -405,7 +405,7 @@ includeServerCommand msg model =
         View _ ->
             case msg of
                 RequestModelUpdate ->
-                    loadModel model
+                    loadModel model.localState
 
                 _ ->
                     Cmd.none
@@ -440,11 +440,11 @@ includeServerCommand msg model =
             Cmd.none
 
 
-draftUrl : Model -> String
-draftUrl model =
+draftUrl : HostType -> String
+draftUrl hostType =
     let
         draftId =
-            case model.localState.hostingType of
+            case hostType of
                 Host id ->
                     id
 
@@ -457,13 +457,13 @@ draftUrl model =
         "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
 
 
-loadModel : Model -> Cmd Msg
-loadModel model =
+loadModel : LocalState -> Cmd Msg
+loadModel state =
     Http.send LoadModelUpdate
-        (Http.get (draftUrl model) (modelDecoder model.localState))
+        (Http.get (draftUrl state.hostingType) (modelDecoder state))
 
 
 uploadModel : Model -> Cmd Msg
 uploadModel model =
     Http.send (always NoOp)
-        (Http.post (draftUrl model) (Http.jsonBody (encodeModel model)) string)
+        (Http.post (draftUrl model.localState.hostingType) (Http.jsonBody (encodeModel model)) string)
