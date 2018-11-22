@@ -44,50 +44,48 @@ update rawMsg model =
                 _ ->
                     rawMsg
 
-        newModel =
-            case msg of
-                NoOp ->
-                    model
-
-                LocalMsg localMsg ->
-                    { model | localState = updateLocalMsg localMsg model.localState }
-
-                Draft player ->
-                    draftPlayer player model
-
-                FlipOrder ->
-                    { model | waitingTeams = List.reverse model.waitingTeams }
-
-                UndoDraft ->
-                    undo model
-
-                RestartDraft ->
-                    resetDraft model
-
-                ResortPlayers comparer ->
-                    { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }
-
-                MoveTeamUp team ->
-                    moveTeamUp team model
-
-                MoveTeamDown team ->
-                    moveTeamDown team model
-
-                ResetApp ->
-                    initModel model.localState
-
-                RequestModelUpdate ->
-                    model
-
-                LoadModelUpdate modelResult ->
-                    case modelResult of
-                        Ok m ->
-                            m
-
-                        Err e ->
-                            (Debug.log (toString e)) model
     in
-        ( newModel, includeServerCommand msg newModel )
+        case msg of
+            NoOp ->
+                ( model, Cmd.none )
+
+            LocalMsg localMsg ->
+                ( { model | localState = updateLocalMsg localMsg model.localState }, Cmd.none )
+
+            Draft player ->
+                ( draftPlayer player model, uploadModel model )
+
+            FlipOrder ->
+                ( { model | waitingTeams = List.reverse model.waitingTeams }, uploadModel model )
+
+            UndoDraft ->
+                ( undo model, uploadModel model )
+
+            RestartDraft ->
+                ( resetDraft model, uploadModel model )
+
+            ResortPlayers comparer ->
+                ( { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }, Cmd.none )
+
+            MoveTeamUp team ->
+                ( moveTeamUp team model, uploadModel model )
+
+            MoveTeamDown team ->
+                ( moveTeamDown team model, uploadModel model )
+
+            ResetApp ->
+                ( initModel model.localState, uploadModel model )
+
+            RequestModelUpdate ->
+                ( model, loadModel model.localState )
+
+            LoadModelUpdate modelResult ->
+                ( case modelResult of
+                    Ok m ->
+                        m
+
+                    Err e ->
+                        (Debug.log (toString e)) model, Cmd.none )
 
 
 updateLocalMsg : LocalMsg -> LocalState -> LocalState
@@ -399,71 +397,34 @@ allowReadonlyMessage m =
             (Debug.log ("Blocking message: " ++ (toString m))) NoOp
 
 
-includeServerCommand : Msg -> Model -> Cmd Msg
-includeServerCommand msg model =
-    case model.localState.hostingType of
-        View _ ->
-            case msg of
-                RequestModelUpdate ->
-                    loadModel model.localState
+draftUrl : String -> String
+draftUrl draftId =
+    "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
 
-                _ ->
-                    Cmd.none
 
+loadModel : LocalState -> Cmd Msg
+loadModel state =
+    case state.hostingType of
         Host _ ->
-            case msg of
-                Draft _ ->
-                    uploadModel model
+            Cmd.none
 
-                FlipOrder ->
-                    uploadModel model
-
-                UndoDraft ->
-                    uploadModel model
-
-                RestartDraft ->
-                    uploadModel model
-
-                MoveTeamUp _ ->
-                    uploadModel model
-
-                MoveTeamDown _ ->
-                    uploadModel model
-
-                ResetApp ->
-                    uploadModel model
-
-                _ ->
-                    Cmd.none
+        View id ->
+            Http.send LoadModelUpdate
+                (Http.get (draftUrl id) (modelDecoder state))
 
         Local ->
             Cmd.none
 
 
-draftUrl : HostType -> String
-draftUrl hostType =
-    let
-        draftId =
-            case hostType of
-                Host id ->
-                    id
-
-                View id ->
-                    id
-
-                Local ->
-                    ""
-    in
-        "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
-
-
-loadModel : LocalState -> Cmd Msg
-loadModel state =
-    Http.send LoadModelUpdate
-        (Http.get (draftUrl state.hostingType) (modelDecoder state))
-
-
 uploadModel : Model -> Cmd Msg
 uploadModel model =
-    Http.send (always NoOp)
-        (Http.post (draftUrl model.localState.hostingType) (Http.jsonBody (encodeModel model)) string)
+    case model.localState.hostingType of
+        Host id ->
+            Http.send (always NoOp)
+                (Http.post (draftUrl id) (Http.jsonBody (encodeModel model)) string)
+
+        View _ ->
+            Cmd.none
+
+        Local ->
+            Cmd.none
