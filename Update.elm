@@ -322,15 +322,16 @@ undoDraft model =
 undraftPlayer : Model -> ( List Player, List ( Player, String ) )
 undraftPlayer model =
     let
-        ( lastPlayer, _ ) =
-            List.head model.draftedPlayers
-                |> Maybe.withDefault ( dummyPlayer, "" )
-
         playersWaiting =
-            lastPlayer :: model.undraftedPlayers
+            case List.head model.draftedPlayers of
+                Just ( player, _ ) ->
+                    player :: model.undraftedPlayers
+
+                Nothing ->
+                    model.undraftedPlayers
 
         playersDrafted =
-            List.tail model.draftedPlayers |> Maybe.withDefault []
+            Maybe.withDefault [] ( List.tail model.draftedPlayers )
     in
         ( playersWaiting, playersDrafted )
 
@@ -355,12 +356,8 @@ updateRound team model =
                     model.draftedTeams
 
         waiting =
-            case List.tail model.waitingTeams of
-                Just rest ->
-                    rest
+            Maybe.withDefault [] (List.tail model.waitingTeams)
 
-                Nothing ->
-                    []
     in
         if List.isEmpty waiting then
             ( drafted, waiting )

@@ -18,7 +18,7 @@ view : Model -> Html Msg
 view model =
     title
         :: showMenuButton model.localState.showMenu
-        :: viewMenu model.localState.showMenu
+        :: viewMenu model
         :: viewTabNav model.localState.currentView
         :: viewTabContent model
         |> div []
@@ -38,17 +38,17 @@ showMenuButton showMenu =
         [ text "Menu" ]
 
 
-menuItem : Msg -> String -> Html Msg
-menuItem msg label =
-    li [] [ button [ onClick msg ] [ text label ] ]
+menuItem : Msg -> String -> Bool -> Html Msg
+menuItem msg label isEnabled =
+    li [] [ button [ onClick msg, disabled (not isEnabled) ] [ text label ] ]
 
 
-viewMenu : Bool -> Html Msg
-viewMenu showMenu =
+viewMenu : Model -> Html Msg
+viewMenu model =
     div
         [ id "menuBackdrop"
         , onClick (LocalMsg (ToggleMenu False))
-        , hidden (not showMenu)
+        , hidden (not model.localState.showMenu)
         ]
         [ div
             [ id "menu"
@@ -56,10 +56,10 @@ viewMenu showMenu =
             ]
             [ h1 [] [ text "Menu" ]
             , ul []
-                [ menuItem FlipOrder "Flip Draft Order"
-                , menuItem UndoDraft "Undo Player Selection"
-                , menuItem RestartDraft "Restart Draft"
-                , menuItem ResetApp "Reload Everything"
+                [ menuItem FlipOrder "Flip Draft Order" (List.isEmpty model.draftedTeams)
+                , menuItem UndoDraft "Undo Player Selection" (not (List.isEmpty model.draftedPlayers))
+                , menuItem RestartDraft "Restart Draft" True
+                , menuItem ResetApp "Reload Everything" True
                 ]
             ]
         ]
