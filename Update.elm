@@ -181,13 +181,15 @@ draftPlayer player model =
         playerName =
             (Players.playerName player)
 
-        draftingTeam =
-            Maybe.withDefault dummyTeam (List.head model.waitingTeams)
+        draftingGM =
+            List.head model.waitingTeams
+            |> Maybe.map .gm
+            |> Maybe.withDefault ""
 
         gms =
             List.map .gm Teams.fullTeamList
     in
-        if (List.member playerName gms) && (draftingTeam.gm /= playerName) then
+        if (List.member playerName gms) && (draftingGM /= playerName) then
             model
         else
             assignDraftedPlayer player model
