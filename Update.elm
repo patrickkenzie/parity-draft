@@ -45,7 +45,7 @@ update rawMsg model =
                             rawMsg
 
                         _ ->
-                            (Debug.log ("Blocking message: " ++ (toString m))) NoOp
+                            (Debug.log ("Blocking message: " ++ (toString rawMsg))) NoOp
 
                 _ ->
                     rawMsg
