@@ -183,8 +183,8 @@ draftPlayer player model =
 
         draftingGM =
             List.head model.waitingTeams
-            |> Maybe.map .gm
-            |> Maybe.withDefault ""
+                |> Maybe.map .gm
+                |> Maybe.withDefault ""
 
         gms =
             List.map .gm Teams.fullTeamList
@@ -240,14 +240,6 @@ assignDraftedPlayer player model =
         }
 
 
-dummyTeam : Team
-dummyTeam =
-    { gm = "gm"
-    , players = []
-    , draftOrder = 0
-    }
-
-
 unFlipDraftOrderIfRequired : Model -> List Team -> List Team
 unFlipDraftOrderIfRequired model teams =
     let
@@ -283,13 +275,19 @@ undoDraft model =
 
         lastDraftedTeam =
             List.head teamList
-                |> Maybe.withDefault dummyTeam
+                |> Maybe.withDefault
+                    { gm = "gm"
+                    , players = []
+                    , draftOrder = 0
+                    }
+
+        remainingPlayers =
+            Maybe.withDefault [] (List.tail lastDraftedTeam.players)
 
         lastTeam =
-            Debug.log "lastTeam"
-                { lastDraftedTeam
-                    | players = List.tail lastDraftedTeam.players |> Maybe.withDefault []
-                }
+            { lastDraftedTeam
+                | players = remainingPlayers
+            }
 
         teamsWaiting =
             if shouldUndoRound then
@@ -298,7 +296,7 @@ undoDraft model =
                 lastTeam :: model.waitingTeams
 
         teamsDrafted =
-            List.tail teamList |> Maybe.withDefault []
+            Maybe.withDefault [] (List.tail teamList)
 
         ( playersWaiting, playersDrafted ) =
             undraftPlayer model
