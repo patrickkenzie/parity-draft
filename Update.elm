@@ -22,13 +22,13 @@ type Msg
     | MoveTeamUp Team
     | MoveTeamDown Team
     | ResetApp
-    | RequestModelUpdate
     | LoadModelUpdate (Result Http.Error Model)
 
 
 type LocalMsg
     = ChangeView TabView
     | OnLocationChange Location
+    | RequestModelUpdate
     | ResortPlayers PlayerSortEntry
     | SearchPlayer String
     | ToggleMenu Bool
@@ -50,7 +50,7 @@ update rawMsg model =
                 ( model, Cmd.none )
 
             LocalMsg localMsg ->
-                ( { model | localState = updateLocalMsg localMsg model.localState }, Cmd.none )
+                updateLocalMsg localMsg model
 
             Draft player ->
                 ( draftPlayer player model, uploadModel model )
@@ -73,9 +73,6 @@ update rawMsg model =
             ResetApp ->
                 ( initModel model.localState, uploadModel model )
 
-            RequestModelUpdate ->
-                ( model, loadModel model.localState )
-
             LoadModelUpdate modelResult ->
                 ( case modelResult of
                     Ok m ->
@@ -87,23 +84,33 @@ update rawMsg model =
                 )
 
 
-updateLocalMsg : LocalMsg -> LocalState -> LocalState
-updateLocalMsg msg state =
-    case msg of
-        ChangeView tabView ->
-            { state | currentView = tabView }
+updateLocalMsg : LocalMsg -> Model -> (Model, Cmd Msg)
+updateLocalMsg msg model =
+    let
+        localState = model.localState
 
-        OnLocationChange location ->
-            { state | hostingType = (parseLocation location) }
+        updateLocal state =
+            ( { model | localState = state }, Cmd.none )
 
-        ResortPlayers entry ->
-            { state | playerSorts = List.Extra.uniqueBy .tag (entry :: state.playerSorts) }
+    in
+        case msg of
+            ChangeView tabView ->
+                updateLocal { localState | currentView = tabView }
 
-        SearchPlayer search ->
-            { state | playerSearch = search }
+            OnLocationChange location ->
+                updateLocal { localState | hostingType = (parseLocation location) }
 
-        ToggleMenu showMenu ->
-            { state | showMenu = showMenu }
+            RequestModelUpdate ->
+                ( model, loadModel localState )
+
+            ResortPlayers entry ->
+                updateLocal { localState | playerSorts = List.Extra.uniqueBy .tag (entry :: localState.playerSorts) }
+
+            SearchPlayer search ->
+                updateLocal { localState | playerSearch = search }
+
+            ToggleMenu showMenu ->
+                updateLocal { localState | showMenu = showMenu }
 
 
 resetDraft : Model -> Model
@@ -380,9 +387,6 @@ allowReadonlyMessage : Msg -> Msg
 allowReadonlyMessage m =
     case m of
         LocalMsg _ ->
-            m
-
-        RequestModelUpdate ->
             m
 
         LoadModelUpdate _ ->

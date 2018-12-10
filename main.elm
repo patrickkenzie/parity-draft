@@ -82,7 +82,7 @@ subs : Model -> Sub Msg
 subs model =
     case model.localState.hostingType of
         View _ ->
-            Time.every (10 * 1000) (always Update.RequestModelUpdate)
+            Time.every (10 * 1000) (always (Update.LocalMsg Update.RequestModelUpdate))
 
         _ ->
             Sub.none
