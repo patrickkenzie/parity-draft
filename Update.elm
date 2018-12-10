@@ -238,16 +238,6 @@ assignDraftedPlayer player model =
         }
 
 
-dummyPlayer : Player
-dummyPlayer =
-    { firstName = "first"
-    , lastName = "last"
-    , gender = Female
-    , height = 10
-    , rating = 1
-    }
-
-
 dummyTeam : Team
 dummyTeam =
     { gm = "gm"
