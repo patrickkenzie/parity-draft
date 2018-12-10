@@ -22,11 +22,11 @@ type Msg
     | MoveTeamUp Team
     | MoveTeamDown Team
     | ResetApp
-    | LoadModelUpdate (Result Http.Error Model)
 
 
 type LocalMsg
     = ChangeView TabView
+    | LoadModelUpdate (Result Http.Error Model)
     | OnLocationChange Location
     | RequestModelUpdate
     | ResortPlayers PlayerSortEntry
@@ -40,7 +40,12 @@ update rawMsg model =
         msg =
             case model.localState.hostingType of
                 View _ ->
-                    allowReadonlyMessage rawMsg
+                    case rawMsg of
+                        LocalMsg _ ->
+                            rawMsg
+
+                        _ ->
+                            (Debug.log ("Blocking message: " ++ (toString m))) NoOp
 
                 _ ->
                     rawMsg
@@ -73,29 +78,22 @@ update rawMsg model =
             ResetApp ->
                 ( initModel model.localState, uploadModel model )
 
-            LoadModelUpdate modelResult ->
-                ( case modelResult of
-                    Ok m ->
-                        m
 
-                    Err e ->
-                        (Debug.log (toString e)) model
-                , Cmd.none
-                )
-
-
-updateLocalMsg : LocalMsg -> Model -> (Model, Cmd Msg)
+updateLocalMsg : LocalMsg -> Model -> ( Model, Cmd Msg )
 updateLocalMsg msg model =
     let
-        localState = model.localState
+        localState =
+            model.localState
 
         updateLocal state =
             ( { model | localState = state }, Cmd.none )
-
     in
         case msg of
             ChangeView tabView ->
                 updateLocal { localState | currentView = tabView }
+
+            LoadModelUpdate modelResult ->
+                ( Result.withDefault model modelResult, Cmd.none )
 
             OnLocationChange location ->
                 updateLocal { localState | hostingType = (parseLocation location) }
@@ -383,19 +381,6 @@ addPlayer player team =
             team
 
 
-allowReadonlyMessage : Msg -> Msg
-allowReadonlyMessage m =
-    case m of
-        LocalMsg _ ->
-            m
-
-        LoadModelUpdate _ ->
-            m
-
-        _ ->
-            (Debug.log ("Blocking message: " ++ (toString m))) NoOp
-
-
 draftUrl : String -> String
 draftUrl draftId =
     "https://paritydraft.patrickkenzie.com/draft/" ++ draftId
@@ -408,7 +393,7 @@ loadModel state =
             Cmd.none
 
         View id ->
-            Http.send LoadModelUpdate
+            Http.send (LocalMsg << LoadModelUpdate)
                 (Http.get (draftUrl id) (modelDecoder state))
 
         Local ->
