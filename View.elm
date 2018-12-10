@@ -120,7 +120,7 @@ viewDraftInProgress model =
     [ viewWaitingTeams model.draftedTeams model.waitingTeams
 
     --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
-    , viewUndraftedPlayerList model.localState.playerSearch model.undraftedPlayers
+    , viewUndraftedPlayerList model
 
     --, viewTeamsLastDrafted (viewRound model) model.draftedTeams
     , viewTeamsWithLatest model.round model.draftedTeams
@@ -262,22 +262,34 @@ viewWaitingTeams draftedTeams waitingTeams =
             |> segment ("Drafting: " ++ teamName) "current"
 
 
-viewUndraftedPlayerList : String -> List Player -> Html Msg
-viewUndraftedPlayerList search fullList =
+
+--foldr : (sorts -> Lp -> Lp) -> Lp -> List sorts -> Lp
+
+
+applySorts : List PlayerSortEntry -> List Player -> List Player
+applySorts sorts players =
+    List.foldr List.sortWith players (List.map .sort sorts)
+
+
+viewUndraftedPlayerList : Model -> Html Msg
+viewUndraftedPlayerList model =
     let
         females =
-            List.filter (\p -> p.gender == Female) fullList
+            List.filter (\p -> p.gender == Female) model.undraftedPlayers
 
         matches player =
-            String.contains (String.toUpper search) (String.toUpper (Players.playerName player))
+            String.contains (String.toUpper model.localState.playerSearch) (String.toUpper (Players.playerName player))
 
-        players =
+        rawPlayers =
             List.filter matches
                 (if List.isEmpty females then
-                    fullList
+                    model.undraftedPlayers
                  else
                     females
                 )
+
+        players =
+            applySorts model.localState.playerSorts rawPlayers
 
         header =
             h2 [] [ text "Players" ]
@@ -286,7 +298,7 @@ viewUndraftedPlayerList search fullList =
             input
                 [ type_ "search"
                 , placeholder "search players..."
-                , value search
+                , value model.localState.playerSearch
                 , autofocus True
                 , onInput (LocalMsg << SearchPlayer)
                 ]
@@ -328,22 +340,31 @@ viewDraftedPlayer playerInfo =
             ]
 
 
+makeSortableEntry : (Player -> comparable) -> String -> Html Msg
+makeSortableEntry comparer label =
+    let
+        sortMsg sorter =
+            { tag = label
+            , sort = sorter comparer
+            }
+                |> ResortPlayers
+                |> LocalMsg
+    in
+        div []
+            [ a [ onClick (sortMsg compareByDesc) ] [ text " ▼ " ]
+            , a [ onClick (sortMsg compareByAsc) ] [ text " ▲ " ]
+            , text label
+            ]
+
+
 viewPlayerSortMenu : Html Msg
 viewPlayerSortMenu =
-    let
-        sortable compare label =
-            div []
-                [ a [ onClick (ResortPlayers (compareByDesc compare)) ] [ text " ▼ " ]
-                , a [ onClick (ResortPlayers (compareByAsc compare)) ] [ text " ▲ " ]
-                , text label
-                ]
-    in
-        div [ id "playerSort" ]
-            [ sortable .lastName "Last Name"
-            , sortable .firstName "First Name"
-            , sortable .height "Height"
-            , sortable .rating "Rating"
-            ]
+    div [ id "playerSort" ]
+        [ makeSortableEntry .lastName "Last Name"
+        , makeSortableEntry .firstName "First Name"
+        , makeSortableEntry .height "Height"
+        , makeSortableEntry .rating "Rating"
+        ]
 
 
 draftablePlayer : Player -> Html Msg

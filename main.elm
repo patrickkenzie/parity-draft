@@ -43,6 +43,7 @@ init savedModel location =
         localState =
             { currentView = DraftView
             , playerSearch = ""
+            , playerSorts = []
             , showMenu = False
             , hostingType = hostType
             }

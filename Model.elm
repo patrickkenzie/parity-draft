@@ -38,12 +38,19 @@ type alias LocalState =
     { currentView : TabView
     , hostingType : HostType
     , playerSearch : String
+    , playerSorts : List PlayerSortEntry
     , showMenu : Bool
     }
 
 
 type alias PlayerSort =
     Player -> Player -> Order
+
+
+type alias PlayerSortEntry =
+    { tag : String
+    , sort : PlayerSort
+    }
 
 
 initModel : LocalState -> Model
@@ -64,10 +71,6 @@ matchers =
         , UrlParser.map Host (s "host" </> UrlParser.string)
         , UrlParser.map View (s "view" </> UrlParser.string)
         ]
-
-
-
---
 
 
 parseLocation : Location -> HostType

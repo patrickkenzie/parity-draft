@@ -2,6 +2,7 @@ module Update exposing (..)
 
 import Teams exposing (..)
 import Players exposing (..)
+import List.Extra exposing (unique)
 import Model exposing (..)
 import Navigation exposing (Location)
 import Json.Decode exposing (string)
@@ -18,7 +19,6 @@ type Msg
     | FlipOrder
     | UndoDraft
     | RestartDraft
-    | ResortPlayers PlayerSort
     | MoveTeamUp Team
     | MoveTeamDown Team
     | ResetApp
@@ -29,6 +29,7 @@ type Msg
 type LocalMsg
     = ChangeView TabView
     | OnLocationChange Location
+    | ResortPlayers PlayerSortEntry
     | SearchPlayer String
     | ToggleMenu Bool
 
@@ -43,7 +44,6 @@ update rawMsg model =
 
                 _ ->
                     rawMsg
-
     in
         case msg of
             NoOp ->
@@ -64,9 +64,6 @@ update rawMsg model =
             RestartDraft ->
                 ( resetDraft model, uploadModel model )
 
-            ResortPlayers comparer ->
-                ( { model | undraftedPlayers = List.sortWith comparer model.undraftedPlayers }, Cmd.none )
-
             MoveTeamUp team ->
                 ( moveTeamUp team model, uploadModel model )
 
@@ -85,7 +82,9 @@ update rawMsg model =
                         m
 
                     Err e ->
-                        (Debug.log (toString e)) model, Cmd.none )
+                        (Debug.log (toString e)) model
+                , Cmd.none
+                )
 
 
 updateLocalMsg : LocalMsg -> LocalState -> LocalState
@@ -96,6 +95,9 @@ updateLocalMsg msg state =
 
         OnLocationChange location ->
             { state | hostingType = (parseLocation location) }
+
+        ResortPlayers entry ->
+            { state | playerSorts = List.Extra.uniqueBy .tag (entry :: state.playerSorts) }
 
         SearchPlayer search ->
             { state | playerSearch = search }
@@ -331,7 +333,7 @@ undraftPlayer model =
                     model.undraftedPlayers
 
         playersDrafted =
-            Maybe.withDefault [] ( List.tail model.draftedPlayers )
+            Maybe.withDefault [] (List.tail model.draftedPlayers)
     in
         ( playersWaiting, playersDrafted )
 
@@ -357,7 +359,6 @@ updateRound team model =
 
         waiting =
             Maybe.withDefault [] (List.tail model.waitingTeams)
-
     in
         if List.isEmpty waiting then
             ( drafted, waiting )
@@ -379,9 +380,6 @@ allowReadonlyMessage : Msg -> Msg
 allowReadonlyMessage m =
     case m of
         LocalMsg _ ->
-            m
-
-        ResortPlayers _ ->
             m
 
         RequestModelUpdate ->
