@@ -41,43 +41,43 @@ encodeTeam team =
 
 allTeams : List Team
 allTeams =
-    [ { gm = "Michelle Warren"
+    [ { gm = "Rachel Robichaud"
       , players = []
       , draftOrder = 1
       }
-    , { gm = "Kindha Gorman"
+    , { gm = "Adam MacDonald"
       , players = []
       , draftOrder = 2
       }
-    , { gm = "Jaime Boss"
+    , { gm = "Kindha Gorman"
       , players = []
       , draftOrder = 3
       }
-    , { gm = "Jessie Robinson"
+    , { gm = "Alessandro Colantonio"
       , players = []
       , draftOrder = 4
       }
-    , { gm = "Heather Wallace"
+    , { gm = "Jaime Boss"
       , players = []
       , draftOrder = 5
       }
-    , { gm = "Kate Cavallaro"
+    , { gm = "Natalie Mullin"
       , players = []
       , draftOrder = 6
       }
-    , { gm = "Katie Wood"
+    , { gm = "Heather Wallace"
       , players = []
       , draftOrder = 7
       }
-    , { gm = "Andrea Proulx"
+    , { gm = "Laura Storey"
       , players = []
       , draftOrder = 8
       }
-    , { gm = "Kate Achtell"
+    , { gm = "Travis Davidson"
       , players = []
       , draftOrder = 9
       }
-    , { gm = "Laura Storey"
+    , { gm = "Jon Rowe"
       , players = []
       , draftOrder = 10
       }
