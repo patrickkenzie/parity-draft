@@ -262,10 +262,6 @@ viewWaitingTeams draftedTeams waitingTeams =
             |> segment ("Drafting: " ++ teamName) "current"
 
 
-
---foldr : (sorts -> Lp -> Lp) -> Lp -> List sorts -> Lp
-
-
 applySorts : List PlayerSortEntry -> List Player -> List Player
 applySorts sorts players =
     List.foldr List.sortWith players (List.map .sort sorts)

@@ -55,7 +55,7 @@ type alias PlayerSortEntry =
 
 initModel : LocalState -> Model
 initModel localState =
-    { undraftedPlayers = Players.fullPlayerList
+    { undraftedPlayers = Players.fullPlayerList (List.length Teams.fullTeamList)
     , draftedPlayers = []
     , waitingTeams = Teams.fullTeamList
     , draftedTeams = []
