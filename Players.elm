@@ -143,11 +143,17 @@ buildPlaceholderPlayers teamCount parsedPlayers gender =
         playerCount =
             List.length (List.filter (isGender gender) parsedPlayers)
 
-        targetCount =
+        overCount =
             playerCount % teamCount
+
+        targetCount =
+            if overCount /= 0 then
+                teamCount - overCount
+            else
+                overCount
     in
         -- 1-index the range to force an empty list (and nicer display!)
-        List.map (createDummy gender) (List.range 1 (targetCount - 1))
+        List.map (createDummy gender) (List.range 1 targetCount)
 
 
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
