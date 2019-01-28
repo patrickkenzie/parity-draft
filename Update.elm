@@ -6,6 +6,8 @@ import List.Extra exposing (unique)
 import Model exposing (..)
 import Navigation exposing (Location)
 import Json.Decode exposing (string)
+import Random exposing (Seed, generate)
+import Random.List exposing (shuffle)
 import Http
 
 
@@ -21,7 +23,9 @@ type Msg
     | RestartDraft
     | MoveTeamUp Team
     | MoveTeamDown Team
+    | RandomizeDraftOrder
     | ResetApp
+    | UpdateDraftOrder (List Team)
 
 
 type LocalMsg
@@ -75,8 +79,14 @@ update rawMsg model =
             MoveTeamDown team ->
                 ( moveTeamDown team model, uploadModel model )
 
+            RandomizeDraftOrder ->
+                ( model, generate UpdateDraftOrder (shuffle model.waitingTeams) )
+
             ResetApp ->
                 ( initModel model.localState, uploadModel model )
+
+            UpdateDraftOrder teams ->
+                ( updateDraftOrder teams model, uploadModel model )
 
 
 updateLocalMsg : LocalMsg -> Model -> ( Model, Cmd Msg )
@@ -173,6 +183,15 @@ moveTeamDown team model =
             model
         else
             { model | waitingTeams = Teams.sortTeams updatedTeams }
+
+
+updateDraftOrder : List Team -> Model -> Model
+updateDraftOrder teams model =
+    let
+        update i t =
+            { t | draftOrder = i }
+    in
+        { model | waitingTeams = List.indexedMap update teams }
 
 
 draftPlayer : Player -> Model -> Model

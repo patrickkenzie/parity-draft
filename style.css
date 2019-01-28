@@ -194,13 +194,16 @@ button:not([disabled]):hover {
     padding: 1em;
 }
 
-#preDraft {
+.preDraft {
     max-width: 30em;
     margin: auto;
+    text-align: center;
+    font-size: x-large;
 }
 
-#preDraft li {
+.preDraft button {
     font-size: x-large;
+    margin-top: 1em;
 }
 
 .stat {

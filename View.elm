@@ -57,6 +57,7 @@ viewMenu model =
             [ h1 [] [ text "Menu" ]
             , ul []
                 [ menuItem FlipOrder "Flip Draft Order" (List.isEmpty model.draftedTeams)
+                , menuItem RandomizeDraftOrder "Randomize Draft Order" (List.isEmpty model.draftedTeams)
                 , menuItem UndoDraft "Undo Player Selection" (not (List.isEmpty model.draftedPlayers))
                 , menuItem RestartDraft "Restart Draft" True
                 , menuItem ResetApp "Reload Everything" True
@@ -144,10 +145,12 @@ viewDraftComplete model =
                     [ text " ▼ " ]
                 , text " )"
                 ]
+
     in
         if List.length model.draftedPlayers == 0 then
             [ h2 [] [ text "Draft Order" ]
-            , ol [ id "preDraft" ] (List.map viewPreDraft teams)
+            , ol [ class "preDraft" ] (List.map viewPreDraft teams)
+            , div [ class "preDraft" ] [ button [ onClick RandomizeDraftOrder ] [ text "Randomize!" ] ]
             ]
         else
             [ div [ id "draftResults" ] (List.map (viewTeamWithRoster True) teams) ]
