@@ -198,7 +198,7 @@ Melissa,Jess,Female,64,7
 Karen,Kavanagh,Female,64,7
 Justine,Price,Female,63,7
 Andrea,Dietz,Female,67,7
-Laura,Chambers Storey,Female,68,7
+Laura,Storey,Female,68,7
 Sherri,Ross,Female,65,7
 Stephanie,Verbit,Female,64,7
 Genevieve,Labelle,Female,70,7
