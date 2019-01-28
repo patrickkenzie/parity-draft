@@ -53,6 +53,10 @@ update rawMsg model =
 
                 _ ->
                     rawMsg
+
+        closeMenu model =
+            Tuple.first (updateLocalMsg (ToggleMenu False) model)
+
     in
         case msg of
             NoOp ->
@@ -65,13 +69,13 @@ update rawMsg model =
                 ( draftPlayer player model, uploadModel model )
 
             FlipOrder ->
-                ( { model | waitingTeams = List.reverse model.waitingTeams }, uploadModel model )
+                ( closeMenu { model | waitingTeams = List.reverse model.waitingTeams }, uploadModel model )
 
             UndoDraft ->
                 ( undo model, uploadModel model )
 
             RestartDraft ->
-                ( resetDraft model, uploadModel model )
+                ( closeMenu (resetDraft model), uploadModel model )
 
             MoveTeamUp team ->
                 ( moveTeamUp team model, uploadModel model )
@@ -83,10 +87,10 @@ update rawMsg model =
                 ( model, generate UpdateDraftOrder (shuffle model.waitingTeams) )
 
             ResetApp ->
-                ( initModel model.localState, uploadModel model )
+                ( closeMenu (initModel model.localState), uploadModel model )
 
             UpdateDraftOrder teams ->
-                ( updateDraftOrder teams model, uploadModel model )
+                ( closeMenu (updateDraftOrder teams model), uploadModel model )
 
 
 updateLocalMsg : LocalMsg -> Model -> ( Model, Cmd Msg )
