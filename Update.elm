@@ -232,7 +232,15 @@ assignDraftedPlayer player model =
 
         updatedWaiting =
             if List.isEmpty remainingGender then
-                List.reverse newWaiting
+                case List.head newWaiting of
+                    Just team ->
+                        if team.draftOrder == 1 then
+                            List.reverse newWaiting
+                        else
+                            newWaiting
+
+                    Nothing ->
+                        newWaiting
             else
                 newWaiting
 
