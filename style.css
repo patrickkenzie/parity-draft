@@ -95,6 +95,8 @@ ol {
     border-style: dotted;
     border-color: grey;
     border-width: thin thin 0;
+    user-select: none;
+    -moz-user-select: none;
 }
 
 .nav > div.active, .nav > div:hover {
@@ -127,6 +129,7 @@ ol {
     border-color: black;
     list-style-type: none;
     user-select: none;
+    -moz-user-select: none;
 }
 
 .male {
