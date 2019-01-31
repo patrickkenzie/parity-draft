@@ -211,6 +211,8 @@ Heather,Wallace,Female,64,6
 Michelle,Hill,Female,70,6
 Natalie,Mullin,Female,68,6
 Justine,Dagenais,Female,64,6
+Kama,Szereszewski,Female,63,6
+Deborah,Murphy,Female,65,6
 Elizabeth,Newgard,Female,67,5
 Elisa,Mantil,Female,69,5
 Kindha,Gorman,Female,63,5
@@ -219,7 +221,7 @@ Hope,Celani,Female,62,5
 Karin,Phillips,Female,67,5
 Andrea,Brabant,Female,63,5
 Jennifer,Saxe,Female,61,5
-Rachel,Hurdle,Female,79,5
+Rachel,Hurdle,Female,69,5
 Rachel,Lefebvre,Female,70,5
 Alix,Ranger,Female,67,5
 Erin,Courtney,Female,64,5
