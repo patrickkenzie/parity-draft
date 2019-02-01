@@ -66,31 +66,31 @@ update rawMsg model =
                 updateLocalMsg localMsg model
 
             Draft player ->
-                ( draftPlayer player model, uploadModel model )
+                uploadModel (draftPlayer player model)
 
             FlipOrder ->
-                ( closeMenu { model | waitingTeams = List.reverse model.waitingTeams }, uploadModel model )
+                uploadModel (closeMenu { model | waitingTeams = List.reverse model.waitingTeams })
 
             UndoDraft ->
-                ( undo model, uploadModel model )
+                uploadModel (undo model)
 
             RestartDraft ->
-                ( closeMenu (resetDraft model), uploadModel model )
+                uploadModel (closeMenu (resetDraft model))
 
             MoveTeamUp team ->
-                ( moveTeamUp team model, uploadModel model )
+                uploadModel (moveTeamUp team model)
 
             MoveTeamDown team ->
-                ( moveTeamDown team model, uploadModel model )
+                uploadModel (moveTeamDown team model)
 
             RandomizeDraftOrder ->
                 ( model, generate UpdateDraftOrder (shuffle model.waitingTeams) )
 
             ResetApp ->
-                ( closeMenu (initModel model.localState), uploadModel model )
+                uploadModel (closeMenu (initModel model.localState))
 
             UpdateDraftOrder teams ->
-                ( closeMenu (updateDraftOrder teams model), uploadModel model )
+                uploadModel (closeMenu (updateDraftOrder teams model))
 
 
 updateLocalMsg : LocalMsg -> Model -> ( Model, Cmd Msg )
@@ -427,15 +427,18 @@ loadModel state =
             Cmd.none
 
 
-uploadModel : Model -> Cmd Msg
+uploadModel : Model -> ( Model, Cmd Msg )
 uploadModel model =
-    case model.localState.hostingType of
-        Host id ->
-            Http.send (always NoOp)
-                (Http.post (draftUrl id) (Http.jsonBody (encodeModel model)) string)
+    let cmd =
+        case model.localState.hostingType of
+            Host id ->
+                Http.send (always NoOp)
+                    (Http.post (draftUrl id) (Http.jsonBody (encodeModel model)) string)
 
-        View _ ->
-            Cmd.none
+            View _ ->
+                Cmd.none
 
-        Local ->
-            Cmd.none
+            Local ->
+                Cmd.none
+    in
+        ( model, cmd )
