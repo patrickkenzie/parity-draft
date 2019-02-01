@@ -109,19 +109,20 @@ encodePlayer player =
         , ( "rating", E.int player.rating )
         ]
 
-
-fullPlayerList : Int -> List Player
-fullPlayerList teamCount =
+buildPlayerList : Int -> List Player -> List Player
+buildPlayerList teamCount players =
     let
-        parsedPlayers =
-            allPlayersParsed
-
         buildPlayers =
-            buildPlaceholderPlayers teamCount parsedPlayers
+            buildPlaceholderPlayers teamCount players
     in
-        (parsedPlayers ++ buildPlayers Female ++ buildPlayers Male)
+        (players ++ buildPlayers Female ++ buildPlayers Male)
             |> List.sortWith (compareByAsc .lastName)
             |> List.sortWith (compareByDesc .rating)
+
+
+defaultPlayerList : Int -> List Player
+defaultPlayerList teamCount =
+    buildPlayerList teamCount allPlayersParsed
 
 
 isGender : Gender -> Player -> Bool

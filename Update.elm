@@ -137,10 +137,16 @@ resetDraft model =
                 |> List.map resetRoster
                 |> Teams.sortTeams
 
+        players =
+            Players.buildPlayerList (List.length teams) (model.undraftedPlayers ++ (List.map Tuple.first model.draftedPlayers))
+
         newModel =
             initModel model.localState
     in
-        { newModel | waitingTeams = teams }
+        { newModel
+        | waitingTeams = teams
+        , undraftedPlayers = players
+        }
 
 
 moveTeamUp : Team -> Model -> Model
