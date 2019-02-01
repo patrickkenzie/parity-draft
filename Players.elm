@@ -135,7 +135,7 @@ buildPlaceholderPlayers teamCount parsedPlayers gender =
     let
         createDummy gender number =
             { firstName = (toString gender) ++ " Placeholder"
-            , lastName = "_" ++ (toString number)
+            , lastName = "_" ++ (String.padLeft 2 '0' (toString number))
             , gender = gender
             , height = 0
             , rating = 0
@@ -144,14 +144,8 @@ buildPlaceholderPlayers teamCount parsedPlayers gender =
         playerCount =
             List.length (List.filter (isGender gender) parsedPlayers)
 
-        overCount =
-            playerCount % teamCount
-
         targetCount =
-            if overCount /= 0 then
-                teamCount - overCount
-            else
-                overCount
+            (teamCount * 6) - playerCount
     in
         -- 1-index the range to force an empty list (and nicer display!)
         List.map (createDummy gender) (List.range 1 targetCount)
