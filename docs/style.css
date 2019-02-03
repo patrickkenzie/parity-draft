@@ -1,0 +1,292 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height:100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    line-height: 1.5;
+    font-family: Roboto,sans-serif;
+    font-weight: 400;
+    color: rgba(0,0,0,.87);
+    position: relative;
+}
+
+h1, h2, h3 {
+    margin: 0 0 0.5em;
+    border-bottom: solid 1px black;
+    text-align: center;
+}
+
+h3 {
+    font-weight: normal;
+}
+
+h1 {
+    background-color: lightgrey;
+    margin-bottom: 0;
+}
+
+#menuButton {
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    z-index: 20;
+}
+
+#menuBackdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 5;
+    background: rgb(0, 0, 0, 0.2);
+}
+
+#menu {
+    position: absolute;
+    left: 0;
+    width: 25%;
+    border-right: solid thin grey;
+    top: 0;
+    bottom: 0;
+    background-color: lightgrey;
+    z-index: 10;
+}
+
+#menu button {
+    width: 90%;
+    margin: 1em 5%;
+}
+
+ul, li.team {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+ol {
+    margin: 0;
+    padding: 0 2em;
+}
+
+.nav {
+    text-align: center;
+    background-color: lightgrey;
+    padding-top: 1em;
+    margin-bottom: 1em;
+}
+
+.nav > div {
+    text-align: center;
+    font-size: 1.2em;
+    padding: 0.2em 1em;
+    margin: 0 0.1em;
+    min-width: 15em;
+    cursor: pointer;
+    display: inline-block;
+    background-color: lightgrey;
+    border-radius: 5px 5px 0 0;
+    border-style: dotted;
+    border-color: grey;
+    border-width: thin thin 0;
+    user-select: none;
+    -moz-user-select: none;
+}
+
+.nav > div.active, .nav > div:hover {
+    background-color: white;
+}
+
+.nav > div:hover {
+    border-style: none solid;
+    border-size: 1px;
+    border-color: lightgrey;
+}
+
+.team li {
+    margin: 0;
+    padding: 0;
+}
+
+.players .female, .players .male, dd {
+    margin-bottom: 10px;
+    padding: 2px 5px;
+    border: solid 1px grey;
+    font-size: 0.8em;
+    border-radius: 5px;
+}
+
+.players .draftable {
+    padding: 10px;
+    font-weight: bold;
+    font-size: 1em;
+    border-color: black;
+    list-style-type: none;
+    user-select: none;
+    -moz-user-select: none;
+}
+
+.male {
+    background-color: #95d4e6;
+}
+
+.female {
+    background-color: #efd656;
+}
+
+.draftable:hover {
+    background-color: #95e6a9;
+    cursor: pointer;
+}
+
+dt {
+    margin-bottom: 1em;
+}
+
+.restartDraft {
+    text-align:center;
+}
+
+button {
+    border: solid thin lightgrey;
+    padding: 0.5em;
+    cursor: pointer;
+}
+
+button:not([disabled]):hover {
+    background-color: white;
+    border-color: grey;
+}
+
+.segment {
+    width: 40%;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+    padding: 0 1em;
+}
+
+.current, .latest {
+    width: 30%;
+}
+
+.content{
+    max-height: 700px;
+    overflow: auto;
+    margin-top: 1em;
+}
+
+#historyView > .segment {
+    margin: 0 5%;
+}
+
+#draftResults {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#draftResults .team {
+    flex-basis: 20%;
+    padding: 1em;
+}
+
+.preDraft {
+    max-width: 30em;
+    margin: auto;
+    text-align: center;
+    font-size: x-large;
+}
+
+.preDraft button {
+    font-size: x-large;
+    margin-top: 1em;
+}
+
+.stat {
+    font-size: 0.75em;
+    font-weight: normal;
+    text-align: right;
+    display: block;
+}
+
+.stat:after {
+    content: " ";
+    clear:both;
+}
+
+.gm {
+    font-size: 0.75em;
+}
+
+.playerConfig {
+    text-align: center;
+    position: relative;
+    padding: 0.5em;
+}
+
+#playerSortHeader {
+    position: absolute;
+    right: 0;
+}
+
+#playerSort {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color:white;
+    padding: 0.5em;
+    border: solid 1px lightgrey;
+    border-radius: 3px;
+    visibility: hidden;
+    transition-property: visibility;
+    transition-delay: 0.25s;
+    min-width: 12em;
+}
+
+#playerSort > div {
+    display: block;
+    text-align: left;
+    padding: 0.5em;
+}
+
+#playerSort a {
+    float: right;
+    padding: 0 0.5em;
+}
+
+#playerSortHeader:hover #playerSort {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+a {
+    cursor: pointer;
+}
+
+@media (max-width: 800px) {
+    .segment {
+        width: 50%;
+        max-width: 50%;
+    }
+
+    #historyView > .segment {
+        width: 50%;
+        margin: 0;
+    }
+
+    #draftResults > div {
+        width: 25%;
+    }
+}
+
+.currentTeam {
+    font-weight: bold;
+    font-size: larger;
+}
