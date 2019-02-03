@@ -118,7 +118,7 @@ viewDraftContent model =
 
 viewDraftInProgress : Model -> List (Html Msg)
 viewDraftInProgress model =
-    [ viewWaitingTeams model.draftedTeams model.waitingTeams
+    [ viewWaitingTeams (List.reverse model.draftedTeams) model.waitingTeams
 
     --, viewPlayerList "Players" draftablePlayer model.undraftedPlayers
     , viewUndraftedPlayerList model
