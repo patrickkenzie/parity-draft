@@ -1,12 +1,13 @@
 module Model exposing (..)
 
-import Players exposing (..)
-import Teams exposing (..)
-import Navigation exposing (Location)
-import UrlParser exposing (..)
-import Json.Encode as E exposing (..)
 import Json.Decode as D exposing (..)
 import Json.Decode.Pipeline as DP exposing (..)
+import Json.Encode as E exposing (..)
+import Players exposing (..)
+import Teams exposing (..)
+import Url exposing (..)
+import Url.Parser exposing (..)
+
 
 
 -- MODEL
@@ -66,16 +67,16 @@ initModel localState =
 
 matchers : Parser (HostType -> a) a
 matchers =
-    UrlParser.oneOf
-        [ UrlParser.map Local top
-        , UrlParser.map Host (s "host" </> UrlParser.string)
-        , UrlParser.map View (s "view" </> UrlParser.string)
+    Url.Parser.oneOf
+        [ Url.Parser.map Local top
+        , Url.Parser.map Host (s "host" </> Url.Parser.string)
+        , Url.Parser.map View (s "view" </> Url.Parser.string)
         ]
 
 
-parseLocation : Location -> HostType
+parseLocation : Url.Url -> HostType
 parseLocation location =
-    case parseHash matchers location of
+    case Url.Parser.parse matchers location of
         Just route ->
             route
 
@@ -85,7 +86,7 @@ parseLocation location =
 
 modelDecoder : LocalState -> D.Decoder Model
 modelDecoder localState =
-    DP.decode Model
+    D.succeed Model
         |> required "undraftedPlayers" (D.list Players.decodePlayer)
         |> required "draftedPlayers" (D.list decodeDraftedPlayer)
         |> required "waitingTeams" (D.list Teams.decodeTeam)
@@ -101,7 +102,7 @@ decodeModel value localState =
 
 decodeDraftedPlayer : Decoder ( Player, String )
 decodeDraftedPlayer =
-    D.map2 (,)
+    D.map2 (\a b -> ( a, b ))
         (field "player" Players.decodePlayer)
         (field "team" D.string)
 
@@ -109,10 +110,10 @@ decodeDraftedPlayer =
 encodeModel : Model -> E.Value
 encodeModel model =
     E.object
-        [ ( "undraftedPlayers", E.list (List.map Players.encodePlayer model.undraftedPlayers) )
-        , ( "draftedPlayers", E.list (List.map encodeDraftedPlayer model.draftedPlayers) )
-        , ( "waitingTeams", E.list (List.map Teams.encodeTeam model.waitingTeams) )
-        , ( "draftedTeams", E.list (List.map Teams.encodeTeam model.draftedTeams) )
+        [ ( "undraftedPlayers", E.list Players.encodePlayer model.undraftedPlayers )
+        , ( "draftedPlayers", E.list encodeDraftedPlayer model.draftedPlayers )
+        , ( "waitingTeams", E.list Teams.encodeTeam model.waitingTeams )
+        , ( "draftedTeams", E.list Teams.encodeTeam model.draftedTeams )
         , ( "round", E.int model.round )
         ]
 
@@ -123,7 +124,7 @@ encodeDraftedPlayer draftedPlayer =
         ( player, team ) =
             draftedPlayer
     in
-        E.object
-            [ ( "player", Players.encodePlayer player )
-            , ( "team", E.string team )
-            ]
+    E.object
+        [ ( "player", Players.encodePlayer player )
+        , ( "team", E.string team )
+        ]

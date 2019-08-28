@@ -1,8 +1,8 @@
-module Teams exposing (..)
+module Teams exposing (Team, allTeams, decodeTeam, encodeTeam, fullTeamList, sortTeams)
 
-import Players exposing (Player)
-import Json.Encode as E exposing (..)
 import Json.Decode as D exposing (..)
+import Json.Encode as E exposing (..)
+import Players exposing (Player)
 
 
 type alias Team =
@@ -34,7 +34,7 @@ encodeTeam : Team -> E.Value
 encodeTeam team =
     E.object
         [ ( "gm", E.string team.gm )
-        , ( "players", E.list (List.map Players.encodePlayer team.players) )
+        , ( "players", E.list Players.encodePlayer team.players )
         , ( "draftOrder", E.int team.draftOrder )
         ]
 

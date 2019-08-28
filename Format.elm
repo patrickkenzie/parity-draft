@@ -1,4 +1,4 @@
-module Format exposing (..)
+module Format exposing (chunksOfRight, formatHeight, formatRating)
 
 import String exposing (..)
 
@@ -10,20 +10,20 @@ formatHeight value =
             value // 12
 
         inches =
-            rem value 12
+            remainderBy 12 value
 
         feetDisplay =
-            (toString feet) ++ "'"
+            String.fromInt feet ++ "'"
 
         inchesDisplay =
-            (toString inches) ++ "\""
+            String.fromInt inches ++ "\""
     in
-        "height: " ++ feetDisplay ++ " " ++ inchesDisplay
+    "height: " ++ feetDisplay ++ " " ++ inchesDisplay
 
 
 formatRating : Int -> String
 formatRating rating =
-    "rating: " ++ (toString rating)
+    "rating: " ++ String.fromInt rating
 
 
 chunksOfRight : Int -> String -> List String
@@ -38,12 +38,15 @@ chunksOfRight k s =
         chunksOfR sub =
             if length sub > k2 then
                 right k sub :: chunksOfR (dropRight k sub)
+
             else
                 right k sub :: [ dropRight k sub ]
     in
-        if len > k2 then
-            List.reverse (chunksOfR s)
-        else if len > k then
-            dropRight k s :: [ right k s ]
-        else
-            [ s ]
+    if len > k2 then
+        List.reverse (chunksOfR s)
+
+    else if len > k then
+        dropRight k s :: [ right k s ]
+
+    else
+        [ s ]

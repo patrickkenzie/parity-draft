@@ -1,14 +1,15 @@
-module Update exposing (..)
+module Update exposing (LocalMsg(..), Msg(..), addPlayer, assignDraftedPlayer, draftPlayer, draftUrl, loadModel, moveTeamDown, moveTeamUp, resetDraft, unFlipDraftOrderIfRequired, undo, undoDraft, undraftPlayer, update, updateDraftOrder, updateLocalMsg, updateRound, uploadModel)
 
-import Teams exposing (..)
-import Players exposing (..)
+import Http
+import Json.Decode exposing (string)
 import List.Extra exposing (unique)
 import Model exposing (..)
-import Navigation exposing (Location)
-import Json.Decode exposing (string)
+import Players exposing (..)
 import Random exposing (Seed, generate)
 import Random.List exposing (shuffle)
-import Http
+import Teams exposing (..)
+import Url exposing (Url)
+
 
 
 -- UPDATE
@@ -31,7 +32,7 @@ type Msg
 type LocalMsg
     = ChangeView TabView
     | LoadModelUpdate (Result Http.Error Model)
-    | OnLocationChange Location
+    | OnLocationChange Url
     | RequestModelUpdate
     | ResortPlayers PlayerSortEntry
     | SearchPlayer String
@@ -49,48 +50,47 @@ update rawMsg model =
                             rawMsg
 
                         _ ->
-                            (Debug.log ("Blocking message: " ++ (toString rawMsg))) NoOp
+                            Debug.log ("Blocking message: " ++ Debug.toString rawMsg) NoOp
 
                 _ ->
                     rawMsg
 
-        closeMenu model =
-            Tuple.first (updateLocalMsg (ToggleMenu False) model)
-
+        closeMenu m =
+            Tuple.first (updateLocalMsg (ToggleMenu False) m)
     in
-        case msg of
-            NoOp ->
-                ( model, Cmd.none )
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
 
-            LocalMsg localMsg ->
-                updateLocalMsg localMsg model
+        LocalMsg localMsg ->
+            updateLocalMsg localMsg model
 
-            Draft player ->
-                uploadModel (draftPlayer player model)
+        Draft player ->
+            uploadModel (draftPlayer player model)
 
-            FlipOrder ->
-                uploadModel (closeMenu { model | waitingTeams = List.reverse model.waitingTeams })
+        FlipOrder ->
+            uploadModel (closeMenu { model | waitingTeams = List.reverse model.waitingTeams })
 
-            UndoDraft ->
-                uploadModel (undo model)
+        UndoDraft ->
+            uploadModel (undo model)
 
-            RestartDraft ->
-                uploadModel (closeMenu (resetDraft model))
+        RestartDraft ->
+            uploadModel (closeMenu (resetDraft model))
 
-            MoveTeamUp team ->
-                uploadModel (moveTeamUp team model)
+        MoveTeamUp team ->
+            uploadModel (moveTeamUp team model)
 
-            MoveTeamDown team ->
-                uploadModel (moveTeamDown team model)
+        MoveTeamDown team ->
+            uploadModel (moveTeamDown team model)
 
-            RandomizeDraftOrder ->
-                ( model, generate UpdateDraftOrder (shuffle model.waitingTeams) )
+        RandomizeDraftOrder ->
+            ( model, generate UpdateDraftOrder (shuffle model.waitingTeams) )
 
-            ResetApp ->
-                uploadModel (closeMenu (initModel model.localState))
+        ResetApp ->
+            uploadModel (closeMenu (initModel model.localState))
 
-            UpdateDraftOrder teams ->
-                uploadModel (closeMenu (updateDraftOrder teams model))
+        UpdateDraftOrder teams ->
+            uploadModel (closeMenu (updateDraftOrder teams model))
 
 
 updateLocalMsg : LocalMsg -> Model -> ( Model, Cmd Msg )
@@ -102,27 +102,27 @@ updateLocalMsg msg model =
         updateLocal state =
             ( { model | localState = state }, Cmd.none )
     in
-        case msg of
-            ChangeView tabView ->
-                updateLocal { localState | currentView = tabView }
+    case msg of
+        ChangeView tabView ->
+            updateLocal { localState | currentView = tabView }
 
-            LoadModelUpdate modelResult ->
-                ( Result.withDefault model modelResult, Cmd.none )
+        LoadModelUpdate modelResult ->
+            ( Result.withDefault model modelResult, Cmd.none )
 
-            OnLocationChange location ->
-                updateLocal { localState | hostingType = (parseLocation location) }
+        OnLocationChange location ->
+            updateLocal { localState | hostingType = parseLocation location }
 
-            RequestModelUpdate ->
-                ( model, loadModel localState )
+        RequestModelUpdate ->
+            ( model, loadModel localState )
 
-            ResortPlayers entry ->
-                updateLocal { localState | playerSorts = List.Extra.uniqueBy .tag (entry :: localState.playerSorts) }
+        ResortPlayers entry ->
+            updateLocal { localState | playerSorts = List.Extra.uniqueBy .tag (entry :: localState.playerSorts) }
 
-            SearchPlayer search ->
-                updateLocal { localState | playerSearch = search }
+        SearchPlayer search ->
+            updateLocal { localState | playerSearch = search }
 
-            ToggleMenu showMenu ->
-                updateLocal { localState | showMenu = showMenu }
+        ToggleMenu showMenu ->
+            updateLocal { localState | showMenu = showMenu }
 
 
 resetDraft : Model -> Model
@@ -138,15 +138,15 @@ resetDraft model =
                 |> Teams.sortTeams
 
         players =
-            Players.buildPlayerList (List.length teams) (model.undraftedPlayers ++ (List.map Tuple.first model.draftedPlayers))
+            Players.buildPlayerList (List.length teams) (model.undraftedPlayers ++ List.map Tuple.first model.draftedPlayers)
 
         newModel =
             initModel model.localState
     in
-        { newModel
+    { newModel
         | waitingTeams = teams
         , undraftedPlayers = players
-        }
+    }
 
 
 moveTeamUp : Team -> Model -> Model
@@ -155,21 +155,24 @@ moveTeamUp team model =
         teams =
             model.waitingTeams
 
-        update i t =
+        updateOrder i t =
             if i == team.draftOrder - 1 then
                 { t | draftOrder = t.draftOrder + 1 }
+
             else if i == team.draftOrder then
                 { t | draftOrder = t.draftOrder - 1 }
+
             else
                 t
 
         updatedTeams =
-            List.indexedMap update teams
+            List.indexedMap updateOrder teams
     in
-        if team.draftOrder == 0 then
-            model
-        else
-            { model | waitingTeams = Teams.sortTeams updatedTeams }
+    if team.draftOrder == 0 then
+        model
+
+    else
+        { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
 moveTeamDown : Team -> Model -> Model
@@ -178,37 +181,40 @@ moveTeamDown team model =
         teams =
             model.waitingTeams
 
-        update i t =
+        updateOrder i t =
             if i == team.draftOrder + 1 then
                 { t | draftOrder = t.draftOrder - 1 }
+
             else if i == team.draftOrder then
                 { t | draftOrder = t.draftOrder + 1 }
+
             else
                 t
 
         updatedTeams =
-            List.indexedMap update teams
+            List.indexedMap updateOrder teams
     in
-        if team.draftOrder == List.length model.waitingTeams then
-            model
-        else
-            { model | waitingTeams = Teams.sortTeams updatedTeams }
+    if team.draftOrder == List.length model.waitingTeams then
+        model
+
+    else
+        { model | waitingTeams = Teams.sortTeams updatedTeams }
 
 
 updateDraftOrder : List Team -> Model -> Model
 updateDraftOrder teams model =
     let
-        update i t =
+        updateOrder i t =
             { t | draftOrder = i }
     in
-        { model | waitingTeams = List.indexedMap update teams }
+    { model | waitingTeams = List.indexedMap updateOrder teams }
 
 
 draftPlayer : Player -> Model -> Model
 draftPlayer player model =
     let
         playerName =
-            (Players.playerName player)
+            Players.playerName player
 
         draftingGM =
             List.head model.waitingTeams
@@ -218,10 +224,11 @@ draftPlayer player model =
         gms =
             List.map .gm Teams.fullTeamList
     in
-        if (List.member playerName gms) && (draftingGM /= playerName) then
-            model
-        else
-            assignDraftedPlayer player model
+    if List.member playerName gms && (draftingGM /= playerName) then
+        model
+
+    else
+        assignDraftedPlayer player model
 
 
 assignDraftedPlayer : Player -> Model -> Model
@@ -246,11 +253,13 @@ assignDraftedPlayer player model =
                     Just team ->
                         if team.draftOrder == 1 then
                             List.reverse newWaiting
+
                         else
                             newWaiting
 
                     Nothing ->
                         newWaiting
+
             else
                 newWaiting
 
@@ -265,16 +274,17 @@ assignDraftedPlayer player model =
         round =
             if List.isEmpty newDrafted then
                 model.round + 1
+
             else
                 model.round
     in
-        { model
-            | undraftedPlayers = remaining
-            , draftedPlayers = ( player, draftingTeamName ) :: model.draftedPlayers
-            , waitingTeams = updatedWaiting
-            , draftedTeams = newDrafted
-            , round = round
-        }
+    { model
+        | undraftedPlayers = remaining
+        , draftedPlayers = ( player, draftingTeamName ) :: model.draftedPlayers
+        , waitingTeams = updatedWaiting
+        , draftedTeams = newDrafted
+        , round = round
+    }
 
 
 unFlipDraftOrderIfRequired : Model -> List Team -> List Team
@@ -285,15 +295,16 @@ unFlipDraftOrderIfRequired model teams =
                 gens =
                     List.map .gender ps
             in
-                List.member Female gens && List.member Male gens
+            List.member Female gens && List.member Male gens
 
         draftedPlayers =
             List.map Tuple.first model.draftedPlayers
     in
-        if multiGender draftedPlayers || multiGender model.undraftedPlayers then
-            teams
-        else
-            List.reverse teams
+    if multiGender draftedPlayers || multiGender model.undraftedPlayers then
+        teams
+
+    else
+        List.reverse teams
 
 
 undoDraft : Model -> Model
@@ -306,6 +317,7 @@ undoDraft model =
             unFlipDraftOrderIfRequired model
                 (if shouldUndoRound then
                     model.waitingTeams
+
                  else
                     model.draftedTeams
                 )
@@ -329,6 +341,7 @@ undoDraft model =
         teamsWaiting =
             if shouldUndoRound then
                 [ lastTeam ]
+
             else
                 lastTeam :: model.waitingTeams
 
@@ -341,16 +354,17 @@ undoDraft model =
         round =
             if shouldUndoRound then
                 model.round - 1
+
             else
                 model.round
     in
-        { model
-            | undraftedPlayers = playersWaiting
-            , draftedPlayers = playersDrafted
-            , waitingTeams = teamsWaiting
-            , draftedTeams = teamsDrafted
-            , round = round
-        }
+    { model
+        | undraftedPlayers = playersWaiting
+        , draftedPlayers = playersDrafted
+        , waitingTeams = teamsWaiting
+        , draftedTeams = teamsDrafted
+        , round = round
+    }
 
 
 undraftPlayer : Model -> ( List Player, List ( Player, String ) )
@@ -367,22 +381,23 @@ undraftPlayer model =
         playersDrafted =
             Maybe.withDefault [] (List.tail model.draftedPlayers)
     in
-        ( playersWaiting, playersDrafted )
+    ( playersWaiting, playersDrafted )
 
 
 undo : Model -> Model
 undo model =
     if List.isEmpty model.draftedPlayers then
         model
+
     else
         undoDraft model
 
 
 updateRound : Maybe Team -> Model -> ( List Team, List Team )
-updateRound team model =
+updateRound maybeTeam model =
     let
         drafted =
-            case team of
+            case maybeTeam of
                 Just team ->
                     team :: model.draftedTeams
 
@@ -392,20 +407,16 @@ updateRound team model =
         waiting =
             Maybe.withDefault [] (List.tail model.waitingTeams)
     in
-        if List.isEmpty waiting then
-            ( drafted, waiting )
-        else
-            ( waiting, drafted )
+    if List.isEmpty waiting then
+        ( drafted, waiting )
+
+    else
+        ( waiting, drafted )
 
 
 addPlayer : Player -> Maybe Team -> Maybe Team
-addPlayer player team =
-    case team of
-        Just team ->
-            Just { team | players = player :: team.players }
-
-        Nothing ->
-            team
+addPlayer player maybeTeam =
+    Maybe.map (\team -> { team | players = player :: team.players }) maybeTeam
 
 
 draftUrl : String -> String
@@ -429,16 +440,17 @@ loadModel state =
 
 uploadModel : Model -> ( Model, Cmd Msg )
 uploadModel model =
-    let cmd =
-        case model.localState.hostingType of
-            Host id ->
-                Http.send (always NoOp)
-                    (Http.post (draftUrl id) (Http.jsonBody (encodeModel model)) string)
+    let
+        cmd =
+            case model.localState.hostingType of
+                Host id ->
+                    Http.send (always NoOp)
+                        (Http.post (draftUrl id) (Http.jsonBody (encodeModel model)) string)
 
-            View _ ->
-                Cmd.none
+                View _ ->
+                    Cmd.none
 
-            Local ->
-                Cmd.none
+                Local ->
+                    Cmd.none
     in
-        ( model, cmd )
+    ( model, cmd )

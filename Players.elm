@@ -2,8 +2,8 @@ module Players exposing (..)
 
 import Csv exposing (..)
 import Csv.Decode exposing (..)
-import Json.Encode as E exposing (..)
 import Json.Decode as D exposing (..)
+import Json.Encode as E exposing (..)
 
 
 type alias Player =
@@ -54,24 +54,19 @@ parseGender gender =
             Err ("Invalid Gender: " ++ gender)
 
 
-genderEncoder : Gender -> E.Value
-genderEncoder gender =
+genderToString : Gender -> String
+genderToString gender =
     case gender of
-        Female ->
-            E.string "female"
-
-        Male ->
-            E.string "male"
-
-
-className : Player -> String
-className player =
-    case player.gender of
         Female ->
             "female"
 
         Male ->
             "male"
+
+
+className : Player -> String
+className player =
+    genderToString player.gender
 
 
 playerName : Player -> String
@@ -104,10 +99,11 @@ encodePlayer player =
     E.object
         [ ( "firstName", E.string player.firstName )
         , ( "lastName", E.string player.lastName )
-        , ( "gender", genderEncoder player.gender )
+        , ( "gender", E.string (genderToString player.gender) )
         , ( "height", E.int player.height )
         , ( "rating", E.int player.rating )
         ]
+
 
 buildPlayerList : Int -> List Player -> List Player
 buildPlayerList teamCount players =
@@ -115,9 +111,9 @@ buildPlayerList teamCount players =
         buildPlayers =
             buildPlaceholderPlayers teamCount players
     in
-        (players ++ buildPlayers Female ++ buildPlayers Male)
-            |> List.sortWith (compareByAsc .lastName)
-            |> List.sortWith (compareByDesc .rating)
+    (players ++ buildPlayers Female ++ buildPlayers Male)
+        |> List.sortWith (compareByAsc .lastName)
+        |> List.sortWith (compareByDesc .rating)
 
 
 defaultPlayerList : Int -> List Player
@@ -133,9 +129,9 @@ isGender gender player =
 buildPlaceholderPlayers : Int -> List Player -> Gender -> List Player
 buildPlaceholderPlayers teamCount parsedPlayers gender =
     let
-        createDummy gender number =
-            { firstName = (toString gender) ++ " Placeholder"
-            , lastName = "_" ++ (String.padLeft 2 '0' (toString number))
+        createDummy number =
+            { firstName = genderToString gender ++ " Placeholder"
+            , lastName = "_" ++ String.padLeft 2 '0' (String.fromInt number)
             , gender = gender
             , height = 0
             , rating = 0
@@ -147,8 +143,18 @@ buildPlaceholderPlayers teamCount parsedPlayers gender =
         targetCount =
             (teamCount * 6) - playerCount
     in
-        -- 1-index the range to force an empty list (and nicer display!)
-        List.map (createDummy gender) (List.range 1 targetCount)
+    -- 1-index the range to force an empty list (and nicer display!)
+    List.map createDummy (List.range 1 targetCount)
+
+
+parseInt : String -> Result String Int
+parseInt value =
+    case String.toInt value of
+        Just int ->
+            Result.Ok int
+
+        Nothing ->
+            Result.Err ("Invalid int: " ++ value)
 
 
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
@@ -157,8 +163,8 @@ playerDecoder =
         (next Result.Ok
             |> andMap (next Result.Ok)
             |> andMap (next parseGender)
-            |> andMap (next String.toInt)
-            |> andMap (next String.toInt)
+            |> andMap (next parseInt)
+            |> andMap (next parseInt)
         )
 
 

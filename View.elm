@@ -1,31 +1,36 @@
 module View exposing (view)
 
+import Browser
+import Format
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onWithOptions, defaultOptions)
-import Format
-import Update exposing (..)
+import Html.Events exposing (onClick, onInput)
+import Json.Decode as Json
 import Model exposing (..)
 import Players exposing (..)
 import Teams exposing (..)
-import Json.Decode as Json
+import Update exposing (..)
+
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    title
-        :: showMenuButton model.localState.showMenu
-        :: viewMenu model
-        :: viewTabNav model.localState.currentView
-        :: viewTabContent model
-        |> div []
+    { title = "Parity Draft"
+    , body =
+        [ pageTitle
+        , showMenuButton model.localState.showMenu
+        , viewMenu model
+        , viewTabNav model.localState.currentView
+        ]
+            ++ viewTabContent model
+    }
 
 
-title : Html Msg
-title =
+pageTitle : Html Msg
+pageTitle =
     h1 [] [ text "Parity Draft" ]
 
 
@@ -52,7 +57,7 @@ viewMenu model =
         ]
         [ div
             [ id "menu"
-            , onClickStopPropagation (NoOp)
+            , Html.Events.stopPropagationOn "" (Json.succeed ( NoOp, True ))
             ]
             [ h1 [] [ text "Menu" ]
             , ul []
@@ -66,9 +71,11 @@ viewMenu model =
         ]
 
 
-onClickStopPropagation : msg -> Attribute msg
-onClickStopPropagation msg =
-    onWithOptions "click" { defaultOptions | stopPropagation = True } (Json.succeed msg)
+
+--
+--onClickStopPropagation : msg -> Attribute msg
+--onClickStopPropagation msg =
+--Html.Events.custom "click" { defaultOptions | stopPropagation = True } (Json.succeed msg)
 
 
 viewTabNav : TabView -> Html Msg
@@ -79,20 +86,21 @@ viewTabNav currentView =
                 className =
                     if tabView == currentView then
                         "active"
+
                     else
                         ""
             in
-                div
-                    [ class className
-                    , onClick ((LocalMsg << ChangeView) tabView)
-                    ]
-                    [ text title ]
+            div
+                [ class className
+                , onClick ((LocalMsg << ChangeView) tabView)
+                ]
+                [ text title ]
     in
-        div [ class "nav" ]
-            [ buildTab DraftView "Draft"
-            , buildTab TeamView "Teams"
-            , buildTab HistoryView "History"
-            ]
+    div [ class "nav" ]
+        [ buildTab DraftView "Draft"
+        , buildTab TeamView "Teams"
+        , buildTab HistoryView "History"
+        ]
 
 
 viewTabContent : Model -> List (Html Msg)
@@ -112,6 +120,7 @@ viewDraftContent : Model -> List (Html Msg)
 viewDraftContent model =
     if List.isEmpty model.undraftedPlayers then
         viewDraftComplete model
+
     else
         viewDraftInProgress model
 
@@ -145,15 +154,15 @@ viewDraftComplete model =
                     [ text " ▼ " ]
                 , text " )"
                 ]
-
     in
-        if List.length model.draftedPlayers == 0 then
-            [ h2 [] [ text "Draft Order" ]
-            , ol [ class "preDraft" ] (List.map viewPreDraft teams)
-            , div [ class "preDraft" ] [ button [ onClick RandomizeDraftOrder ] [ text "Randomize!" ] ]
-            ]
-        else
-            [ div [ id "draftResults" ] (List.map (viewTeamWithRoster True) teams) ]
+    if List.length model.draftedPlayers == 0 then
+        [ h2 [] [ text "Draft Order" ]
+        , ol [ class "preDraft" ] (List.map viewPreDraft teams)
+        , div [ class "preDraft" ] [ button [ onClick RandomizeDraftOrder ] [ text "Randomize!" ] ]
+        ]
+
+    else
+        [ div [ id "draftResults" ] (List.map (viewTeamWithRoster True) teams) ]
 
 
 viewDraftHistory : Model -> List (Html Msg)
@@ -173,10 +182,10 @@ viewTeamsWithLatest round teams =
                 className =
                     Players.className player
             in
-                dd [ class className ] [ text (Players.playerName player) ]
+            dd [ class className ] [ text (Players.playerName player) ]
 
         title =
-            "Round " ++ (toString round)
+            "Round " ++ String.fromInt round
 
         viewPlayers team =
             case List.head team.players of
@@ -189,7 +198,7 @@ viewTeamsWithLatest round teams =
         teamList =
             List.map viewPlayers teams
     in
-        segment title "latest" [ dl [] teamList ]
+    segment title "latest" [ dl [] teamList ]
 
 
 viewTeamWithRoster : Bool -> Team -> Html Msg
@@ -202,13 +211,14 @@ viewTeamWithRoster format team =
         ( start, end ) =
             if format then
                 ( h3 [] [ text team.gm ], [] )
+
             else
                 ( text "", [] )
     in
-        start
-            :: [ ul [ class "players" ] viewPlayers ]
-            ++ end
-            |> div [ class "team" ]
+    start
+        :: [ ul [ class "players" ] viewPlayers ]
+        ++ end
+        |> div [ class "team" ]
 
 
 viewPlayerDetail : List (Attribute Msg) -> Bool -> Player -> Html Msg
@@ -220,10 +230,11 @@ viewPlayerDetail attributes details player =
                 , span [ class "stat" ] [ text (Format.formatRating player.rating) ]
                 , span [ class "stat" ] [ text (Format.formatHeight player.height) ]
                 ]
+
             else
                 [ text (Players.playerName player) ]
     in
-        li ([ class (Players.className player) ] ++ attributes) content
+    li ([ class (Players.className player) ] ++ attributes) content
 
 
 viewWaitingTeams : List Team -> List Team -> Html Msg
@@ -260,9 +271,9 @@ viewWaitingTeams draftedTeams waitingTeams =
         upNext =
             [ h3 [] [ text "Draft Order" ], teamList ]
     in
-        teamDisplay
-            :: upNext
-            |> segment ("Drafting: " ++ teamName) "current"
+    teamDisplay
+        :: upNext
+        |> segment ("Drafting: " ++ teamName) "current"
 
 
 applySorts : List PlayerSortEntry -> List Player -> List Player
@@ -283,6 +294,7 @@ viewUndraftedPlayerList model =
             List.filter matches
                 (if List.isEmpty females then
                     model.undraftedPlayers
+
                  else
                     females
                 )
@@ -303,25 +315,25 @@ viewUndraftedPlayerList model =
                 ]
                 []
     in
-        div
-            [ class "segment"
-            , class "undrafted"
+    div
+        [ class "segment"
+        , class "undrafted"
+        ]
+        [ header
+        , div
+            [ class "playerConfig" ]
+            [ playerSearch
+            , span [ id "playerSortHeader" ] [ text "[Change Sorting]", viewPlayerSortMenu ]
             ]
-            [ header
-            , div
-                [ class "playerConfig" ]
-                [ playerSearch
-                , span [ id "playerSortHeader" ] [ text "[Change Sorting]", viewPlayerSortMenu ]
-                ]
-            , div
-                [ class "content" ]
-                [ ol [ class "players" ] (List.map draftablePlayer players) ]
-            ]
+        , div
+            [ class "content" ]
+            [ ol [ class "players" ] (List.map draftablePlayer players) ]
+        ]
 
 
 viewPlayerList : String -> (a -> Html Msg) -> List a -> Html Msg
-viewPlayerList title view list =
-    segment title "" [ ol [ class "players" ] (List.map view list) ]
+viewPlayerList segTitle makeView list =
+    segment segTitle "" [ ol [ class "players" ] (List.map makeView list) ]
 
 
 viewDraftedPlayer : ( Player, String ) -> Html Msg
@@ -333,10 +345,10 @@ viewDraftedPlayer playerInfo =
         className =
             Players.className player
     in
-        li []
-            [ div [ class "gm" ] [ text gm ]
-            , div [ class className ] [ text (Players.playerName player) ]
-            ]
+    li []
+        [ div [ class "gm" ] [ text gm ]
+        , div [ class className ] [ text (Players.playerName player) ]
+        ]
 
 
 makeSortableEntry : (Player -> comparable) -> String -> Html Msg
@@ -349,11 +361,11 @@ makeSortableEntry comparer label =
                 |> ResortPlayers
                 |> LocalMsg
     in
-        div []
-            [ a [ onClick (sortMsg compareByDesc) ] [ text " ▼ " ]
-            , a [ onClick (sortMsg compareByAsc) ] [ text " ▲ " ]
-            , text label
-            ]
+    div []
+        [ a [ onClick (sortMsg compareByDesc) ] [ text " ▼ " ]
+        , a [ onClick (sortMsg compareByAsc) ] [ text " ▲ " ]
+        , text label
+        ]
 
 
 viewPlayerSortMenu : Html Msg
@@ -372,12 +384,12 @@ draftablePlayer player =
 
 
 segment : String -> String -> List (Html Msg) -> Html Msg
-segment title className list =
+segment segTitle className list =
     div
         [ class "segment"
         , class className
         ]
-        [ h2 [] [ text title ]
+        [ h2 [] [ text segTitle ]
         , div
             [ class "content" ]
             list

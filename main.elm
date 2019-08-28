@@ -1,22 +1,26 @@
-port module Main exposing (..)
+port module Main exposing (init, main, saveModel, subs, updateWithStorage)
 
-import Html
-import Teams exposing (..)
-import Players exposing (..)
-import Update exposing (Msg, update, loadModel)
-import Model exposing (..)
-import View
+import Browser
+import Browser.Navigation
 import Format
-import Navigation exposing (Location)
-import Json.Encode as J exposing (..)
+import Html
 import Json.Decode as D exposing (..)
-import Time exposing (every, second)
+import Json.Encode as J exposing (..)
+import Model exposing (..)
+import Players exposing (..)
+import Teams exposing (..)
+import Time exposing (every)
+import Update exposing (Msg, loadModel, update)
+import Url
+import View
 
 
 main : Program J.Value Model Msg
 main =
-    Navigation.programWithFlags (Update.LocalMsg << Update.OnLocationChange)
+    Browser.application
         { init = init
+        , onUrlChange = Update.LocalMsg << Update.OnLocationChange
+        , onUrlRequest = \_ -> Update.NoOp
         , view = View.view
         , update = updateWithStorage
         , subscriptions = subs
@@ -29,13 +33,13 @@ updateWithStorage msg model =
         ( newModel, cmds ) =
             update msg model
     in
-        ( newModel
-        , Cmd.batch [ saveModel (encodeModel newModel), cmds ]
-        )
+    ( newModel
+    , Cmd.batch [ saveModel (encodeModel newModel), cmds ]
+    )
 
 
-init : J.Value -> Location -> ( Model, Cmd Msg )
-init savedModel location =
+init : J.Value -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init savedModel location key =
     let
         hostType =
             Model.parseLocation location
@@ -59,12 +63,12 @@ init savedModel location =
                 Local ->
                     Cmd.none
     in
-        case decodeModel savedModel localState of
-            Just model ->
-                ( model, command )
+    case decodeModel savedModel localState of
+        Just model ->
+            ( model, command )
 
-            Nothing ->
-                ( initModel localState, command )
+        Nothing ->
+            ( initModel localState, command )
 
 
 
