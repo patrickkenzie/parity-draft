@@ -1,15 +1,25 @@
-module Teams exposing (Team, allTeams, decodeTeam, encodeTeam, fullTeamList, sortTeams)
+module Teams exposing (Team, TeamID, allTeams, decodeTeam, encodeTeam, fullTeamList, sortTeams)
 
 import Json.Decode as D exposing (..)
 import Json.Encode as E exposing (..)
 import Players exposing (Player)
 
 
+type alias TeamID =
+    Int
+
+
 type alias Team =
-    { gm : String
+    { id : TeamID
+    , gm : String
     , players : List Player
     , draftOrder : Int
     }
+
+
+makeTeam : Int -> String -> Team
+makeTeam order gm =
+    Team order gm [] order
 
 
 sortTeams : List Team -> List Team
@@ -24,7 +34,8 @@ fullTeamList =
 
 decodeTeam : Decoder Team
 decodeTeam =
-    D.map3 Team
+    D.map4 Team
+        (field "id" D.int)
         (field "gm" D.string)
         (field "players" (D.list Players.decodePlayer))
         (field "draftOrder" D.int)
@@ -33,7 +44,8 @@ decodeTeam =
 encodeTeam : Team -> E.Value
 encodeTeam team =
     E.object
-        [ ( "gm", E.string team.gm )
+        [ ( "id", E.int team.id )
+        , ( "gm", E.string team.gm )
         , ( "players", E.list Players.encodePlayer team.players )
         , ( "draftOrder", E.int team.draftOrder )
         ]
@@ -41,44 +53,19 @@ encodeTeam team =
 
 allTeams : List Team
 allTeams =
-    [ { gm = "Rachel Robichaud"
-      , players = []
-      , draftOrder = 1
-      }
-    , { gm = "Adam MacDonald"
-      , players = []
-      , draftOrder = 2
-      }
-    , { gm = "Kindha Gorman"
-      , players = []
-      , draftOrder = 3
-      }
-    , { gm = "Alessandro Colantonio"
-      , players = []
-      , draftOrder = 4
-      }
-    , { gm = "Jaime Boss"
-      , players = []
-      , draftOrder = 5
-      }
-    , { gm = "Natalie Mullin"
-      , players = []
-      , draftOrder = 6
-      }
-    , { gm = "Heather Wallace"
-      , players = []
-      , draftOrder = 7
-      }
-    , { gm = "Laura Storey"
-      , players = []
-      , draftOrder = 8
-      }
-    , { gm = "Travis Davidson"
-      , players = []
-      , draftOrder = 9
-      }
-    , { gm = "Jon Rowe"
-      , players = []
-      , draftOrder = 10
-      }
+    List.indexedMap makeTeam gms
+
+
+gms : List String
+gms =
+    [ "GM 0"
+    , "GM 1"
+    , "GM 2"
+    , "GM 3"
+    , "GM 4"
+    , "GM 5"
+    , "GM 6"
+    , "GM 7"
+    , "GM 8"
+    , "GM 9"
     ]

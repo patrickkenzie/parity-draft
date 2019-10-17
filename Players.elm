@@ -7,12 +7,17 @@ import Json.Encode as E exposing (..)
 
 
 type alias Player =
-    { firstName : String
+    { id : PlayerID
+    , firstName : String
     , lastName : String
     , gender : Gender
     , height : Int
     , rating : Int
     }
+
+
+type alias PlayerID =
+    Int
 
 
 type Gender
@@ -86,7 +91,8 @@ compareByDesc sort x y =
 
 decodePlayer : D.Decoder Player
 decodePlayer =
-    D.map5 Player
+    D.map6 Player
+        (D.field "id" D.int)
         (D.field "firstName" D.string)
         (D.field "lastName" D.string)
         (D.field "gender" genderDecoder)
@@ -97,7 +103,8 @@ decodePlayer =
 encodePlayer : Player -> E.Value
 encodePlayer player =
     E.object
-        [ ( "firstName", E.string player.firstName )
+        [ ( "id", E.int player.id )
+        , ( "firstName", E.string player.firstName )
         , ( "lastName", E.string player.lastName )
         , ( "gender", E.string (genderToString player.gender) )
         , ( "height", E.int player.height )
@@ -130,7 +137,8 @@ buildPlaceholderPlayers : Int -> List Player -> Gender -> List Player
 buildPlaceholderPlayers teamCount parsedPlayers gender =
     let
         createDummy number =
-            { firstName = genderToString gender ++ " Placeholder"
+            { id = playerCount + number
+            , firstName = genderToString gender ++ " Placeholder"
             , lastName = "_" ++ String.padLeft 2 '0' (String.fromInt number)
             , gender = gender
             , height = 0
@@ -160,7 +168,8 @@ parseInt value =
 playerDecoder : Csv.Decode.Decoder (Player -> a) a
 playerDecoder =
     Csv.Decode.map Player
-        (next Result.Ok
+        (next parseInt
+            |> andMap (next Result.Ok)
             |> andMap (next Result.Ok)
             |> andMap (next parseGender)
             |> andMap (next parseInt)
@@ -168,10 +177,23 @@ playerDecoder =
         )
 
 
+addIds : Csv.Csv -> Csv.Csv
+addIds csv =
+    let
+        mapper int value =
+            String.fromInt int :: value
+
+        idRecords =
+            List.indexedMap mapper csv.records
+    in
+    { csv | records = idRecords }
+
+
 allPlayersParsed : List Player
 allPlayersParsed =
     allPlayersRaw
         |> Csv.parse
+        |> addIds
         |> Csv.Decode.decodeCsv playerDecoder
         |> Result.withDefault []
 

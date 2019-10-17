@@ -325,7 +325,8 @@ undoDraft model =
         lastDraftedTeam =
             List.head teamList
                 |> Maybe.withDefault
-                    { gm = "gm"
+                    { id = 0
+                    , gm = "gm"
                     , players = []
                     , draftOrder = 0
                     }
