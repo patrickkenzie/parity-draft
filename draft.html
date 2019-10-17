@@ -14,7 +14,7 @@
 	try {
 		var storedModel = localStorage.getItem('saved-model');
 		var startModel = storedModel ? JSON.parse(storedModel) : null;
-		var elm = Elm.Main.fullscreen(startModel);
+		var elm = Elm.Main.init({ flags: startModel });
 		elm.ports.saveModel.subscribe(function(model) {
 				localStorage.setItem('saved-model', JSON.stringify(model));
 		});
