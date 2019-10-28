@@ -58,14 +58,14 @@ allTeams =
 
 gms : List String
 gms =
-    [ "GM 0"
-    , "GM 1"
-    , "GM 2"
-    , "GM 3"
-    , "GM 4"
-    , "GM 5"
-    , "GM 6"
-    , "GM 7"
-    , "GM 8"
-    , "GM 9"
+    [ "Kelsey Charie"
+    , "Micheal Davidson"
+    , "Laura Chambers Storey"
+    , "Kate Cavallaro"
+    , "John Haig"
+    , "Chris Sullivan"
+    , "Natalie Mullin"
+    , "Angela Mueller"
+    , "Mehmet Karman"
+    , "Morgan Howard"
     ]
