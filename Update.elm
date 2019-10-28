@@ -277,6 +277,12 @@ assignDraftedPlayer player model =
 
             else
                 model.round
+
+        localState =
+            model.localState
+
+        newLocalState =
+            { localState | playerSearch = "" }
     in
     { model
         | undraftedPlayers = remaining
@@ -284,6 +290,7 @@ assignDraftedPlayer player model =
         , waitingTeams = updatedWaiting
         , draftedTeams = newDrafted
         , round = round
+        , localState = newLocalState
     }
 
 
