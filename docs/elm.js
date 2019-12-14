@@ -5077,9 +5077,9 @@ var author$project$Model$Model = F6(
 	function (undraftedPlayers, draftedPlayers, waitingTeams, draftedTeams, round, localState) {
 		return {draftedPlayers: draftedPlayers, draftedTeams: draftedTeams, localState: localState, round: round, undraftedPlayers: undraftedPlayers, waitingTeams: waitingTeams};
 	});
-var author$project$Players$Player = F5(
-	function (firstName, lastName, gender, height, rating) {
-		return {firstName: firstName, gender: gender, height: height, lastName: lastName, rating: rating};
+var author$project$Players$Player = F8(
+	function (id, firstName, lastName, gender, height, rating, salary, hmk) {
+		return {firstName: firstName, gender: gender, height: height, hmk: hmk, id: id, lastName: lastName, rating: rating, salary: salary};
 	});
 var elm$json$Json$Decode$fail = _Json_fail;
 var author$project$Players$fromResult = function (result) {
@@ -5099,9 +5099,17 @@ var author$project$Players$parseGender = function (gender) {
 			return elm$core$Result$Ok(author$project$Players$Female);
 		case 'Female':
 			return elm$core$Result$Ok(author$project$Players$Female);
+		case 'woman':
+			return elm$core$Result$Ok(author$project$Players$Female);
+		case 'Woman':
+			return elm$core$Result$Ok(author$project$Players$Female);
 		case 'male':
 			return elm$core$Result$Ok(author$project$Players$Male);
 		case 'Male':
+			return elm$core$Result$Ok(author$project$Players$Male);
+		case 'open':
+			return elm$core$Result$Ok(author$project$Players$Male);
+		case 'Open':
 			return elm$core$Result$Ok(author$project$Players$Male);
 		default:
 			return elm$core$Result$Err('Invalid Gender: ' + gender);
@@ -5118,16 +5126,20 @@ var author$project$Players$genderDecoder = A2(
 	elm$json$Json$Decode$andThen,
 	A2(elm$core$Basics$composeL, author$project$Players$fromResult, author$project$Players$parseGender),
 	elm$json$Json$Decode$string);
+var elm$json$Json$Decode$float = _Json_decodeFloat;
 var elm$json$Json$Decode$int = _Json_decodeInt;
-var elm$json$Json$Decode$map5 = _Json_map5;
-var author$project$Players$decodePlayer = A6(
-	elm$json$Json$Decode$map5,
+var elm$json$Json$Decode$map8 = _Json_map8;
+var author$project$Players$decodePlayer = A9(
+	elm$json$Json$Decode$map8,
 	author$project$Players$Player,
+	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'firstName', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'lastName', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'gender', author$project$Players$genderDecoder),
 	A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int),
-	A2(elm$json$Json$Decode$field, 'rating', elm$json$Json$Decode$int));
+	A2(elm$json$Json$Decode$field, 'rating', elm$json$Json$Decode$int),
+	A2(elm$json$Json$Decode$field, 'salary', elm$json$Json$Decode$float),
+	A2(elm$json$Json$Decode$field, 'hmk', elm$json$Json$Decode$float));
 var author$project$Model$decodeDraftedPlayer = A3(
 	elm$json$Json$Decode$map2,
 	F2(
@@ -5136,15 +5148,16 @@ var author$project$Model$decodeDraftedPlayer = A3(
 		}),
 	A2(elm$json$Json$Decode$field, 'player', author$project$Players$decodePlayer),
 	A2(elm$json$Json$Decode$field, 'team', elm$json$Json$Decode$string));
-var author$project$Teams$Team = F3(
-	function (gm, players, draftOrder) {
-		return {draftOrder: draftOrder, gm: gm, players: players};
+var author$project$Teams$Team = F4(
+	function (id, gm, players, draftOrder) {
+		return {draftOrder: draftOrder, gm: gm, id: id, players: players};
 	});
 var elm$json$Json$Decode$list = _Json_decodeList;
-var elm$json$Json$Decode$map3 = _Json_map3;
-var author$project$Teams$decodeTeam = A4(
-	elm$json$Json$Decode$map3,
+var elm$json$Json$Decode$map4 = _Json_map4;
+var author$project$Teams$decodeTeam = A5(
+	elm$json$Json$Decode$map4,
 	author$project$Teams$Team,
+	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'gm', elm$json$Json$Decode$string),
 	A2(
 		elm$json$Json$Decode$field,
@@ -5194,7 +5207,33 @@ var author$project$Model$decodeModel = F2(
 				author$project$Model$modelDecoder(localState),
 				value));
 	});
-var author$project$Players$allPlayersRaw = '\nFirst Name,Last Name,Gender,Height,Skill Level\nAlisha,Zhao,Female,64,10\nJosee,Guibord,Female,64,9\nRachel,Robichaud,Female,65,8\nRenee,Gauvin,Female,69,8\nKate,Cavallaro,Female,67,8\nAshlin,Kelly,Female,67,8\nAndrea,Proulx,Female,62,8\nJessie,Robinson,Female,65,8\nSamantha,Breslauer,Female,64,8\nMelany,Bouchard,Female,70,8\nSandra,Shaddick,Female,69,8\nVanessa,Mann,Female,62,8\nJaime,Boss,Female,66,8\nDarlene,Riley,Female,60,7\nAngela,Mueller,Female,69,7\nMelissa,Jess,Female,64,7\nKaren,Kavanagh,Female,64,7\nJustine,Price,Female,63,7\nAndrea,Dietz,Female,67,7\nLaura,Storey,Female,68,7\nSherri,Ross,Female,65,7\nStephanie,Verbit,Female,64,7\nGenevieve,Labelle,Female,70,7\nCathy,Miedema,Female,63,7\nEmily,Kavanagh,Female,71,7\nKate,Achtell,Female,61,6\nNeena,Sidhu,Female,63,6\nStacey,Wowchuk,Female,62,6\nHeather,Wallace,Female,64,6\nMichelle,Hill,Female,70,6\nNatalie,Mullin,Female,68,6\nJustine,Dagenais,Female,64,6\nKama,Szereszewski,Female,63,6\nDeborah,Murphy,Female,65,6\nElizabeth,Newgard,Female,67,5\nElisa,Mantil,Female,69,5\nKindha,Gorman,Female,63,5\nMarie-Ange,Gravel,Female,66,5\nHope,Celani,Female,62,5\nKarin,Phillips,Female,67,5\nAndrea,Brabant,Female,63,5\nJennifer,Saxe,Female,61,5\nRachel,Hurdle,Female,69,5\nRachel,Lefebvre,Female,70,5\nAlix,Ranger,Female,67,5\nErin,Courtney,Female,64,5\nSarah,Pledge Dickson,Female,62,5\nJulia,Riddick,Female,70,4\nRachel,Ng,Female,60,3\nLinh,Pham-Vo,Female,62,3\nPatrick,Mapp,Male,73,10\nMartin,Cloake,Male,79,9\nMarcus,Bordage,Male,72,8\nLuca,Lafontaine,Male,68,8\nAdam,MacDonald,Male,66,8\nCraig,Anderson,Male,67,8\nChris,Sullivan,Male,72,8\nGeofford,Seaborn,Male,75,8\nTravis,Davidson,Male,72,8\nTom,Newman,Male,74,8\nChristopher,Keates,Male,75,8\nMark,Donahue,Male,72,8\nHadrian,Mertins-Kirkwood,Male,73,8\nBrian,Perry,Male,72,8\nHugh,Podmore,Male,71,8\nDouglas,Brierley,Male,70,7\nJamie,Wildgen,Male,72,7\nShubho Bo,Biswas,Male,66,7\nStephen,Close,Male,71,7\nAlessandro,Colantonio,Male,70,7\nNick,Amlin,Male,72,7\nGreg,Probe,Male,70,7\nMichael,O\'Hare,Male,72,7\nThomas,Ferguson,Male,74,7\nMehmet,Karman,Male,72,7\nJohn,Haig,Male,71,7\nSteve,Bisang,Male,69,7\nNicholas,Aghajanian,Male,68,7\nKelsey,Charie,Male,67,7\nMicheal,Davidson,Male,60,7\nDan,Thomson,Male,70,7\nNick,Theriault,Male,72,7\nJared,Cohen,Male,67,7\nChristopher,Castonguay,Male,71,7\nTrevor,Stocki,Male,36,6\nNick,Klimowicz,Male,74,6\nGreg,Kung,Male,73,6\nWing-Leung,Chan,Male,67,6\nMorgan,Howard,Male,73,6\nJon,Rowe,Male,73,6\nAllan,Godding,Male,75,6\nRob,Tyson,Male,70,6\nGiulian,De La Merced,Male,67,6\nJim,Robinson,Male,76,6\nSebastien,Belanger,Male,72,6\nPatrick,Kenzie,Male,66,6\nChristo,Kutrovsky,Male,66,6\nMark,Kalvaitis,Male,69,6\nJonathan,Pindur,Male,72,6\nThomas,Sattolo,Male,73,5\nJohn,Siwiec,Male,69,5\nMatthew,Schijns,Male,72,5\nJeff,Hunt,Male,69,5\nGraham,Brown,Male,70,5\nDavid,Townsend,Male,71,5\nJonathan,Champagne,Male,67,5\nGreg,Zuliani,Male,75,5\nAndre,Scott,Male,72,5\nYingdi,Wu,Male,66,3\nBrian,Kells,Male,72,3\n';
+var author$project$Players$addIds = function (csv) {
+	var mapper = F2(
+		function (_int, value) {
+			return A2(
+				elm$core$List$cons,
+				elm$core$String$fromInt(_int),
+				value);
+		});
+	var idRecords = A2(elm$core$List$indexedMap, mapper, csv.records);
+	return _Utils_update(
+		csv,
+		{
+			headers: A2(elm$core$List$cons, 'Id', csv.headers),
+			records: idRecords
+		});
+};
+var author$project$Players$allPlayersRaw = '\nFirst Name,Last Name,Gender,Height,Skill,Salary,HMK\nAlisha,Zhao,Woman,64,10,4662,6.7\nAlix,Ranger,Woman,67,6,1306,3.2\nAlyssa,Mainwood,Woman,68,5,,\nAndrea,Dietz,Woman,67,8,2202,3.2\nAngela,Mueller,Woman,69,7,3007,5.5\nCassie,Berquist,Woman,66,9,2078,4\nCharlotte,Mussells,Woman,66,4,,\nCorinne,Dunwoody,Woman,68,9,,\nDana,Strauss,Woman,65,7,,\nDeborah,Murphy,Woman,65,6,2696,4.9\nElisa,Mantil,Woman,69,5,1780,4.1\nErin,Courtney,Woman,64,6,2509,4\nGenevieve,Labelle,Woman,70,8,4112,5.8\nHannah,Lewis,Woman,68,6,,\nHeather,Wallace,Woman,64,6,4115,4.8\nIsabelle,Potvin,Woman,70,6,2359,3.6\nJaime,Boss,Woman,66,8,2426,3.1\nJosee,Guibord,Woman,64,9,4183,6.3\nJulia,Riddick,Woman,70,5,2408,4.3\nJustine,Dagenais,Woman,64,6,4228,6\nJustine,Price,Woman,63,7,4791,6.5\nKaleigh,Newson,Woman,62,6,,\nKama,Szereszewski,Woman,63,7,887,1.3\nKaren,Kavanagh,Woman,64,7,1872,3.4\nKate,Achtell,Woman,61,6,3983,6.2\nKate,Cavallaro,Woman,67,8,3012,3.4\nKatelyn,Fontaine,Woman,68,5,,\nKristyn,Berquist,Woman,64,5,1047,4\nLaura Chambers,Storey,Woman,68,7,2687,4.6\nLinh,Pham-Vo,Woman,62,3,967,2.9\nLiz,Love,Woman,66,7,,\nMarie-Ange,Gravel,Woman,66,6,2688,4.4\nMelissa,Jess,Woman,64,8,2610,5\nNatalie,Mullin,Woman,68,6,3784,4.6\nNeena,Sidhu,Woman,63,6,1857,4\nRachel,Hurdle,Woman,67,7,2672,4.1\nRachel,Lefebvre,Woman,70,5,1244,1.3\nRachel,Ng,Woman,60,5,3218,4.2\nSarah,Thompson,Woman,69,3,,\nStephanie,Jack,Woman,67,5,,\nAbe,Greenspoon,Open,69,6,,\nAinsley,Bernard,Open,70,4,,\nAlessandro,Colantonio,Open,70,7,4048,5.1\nAlessandro,Colonnier,Open,72,5,2986,5\nAlexandre,Tremblay-Larochelle,Open,69,6,,\nAlistair,Campbell,Open,69,8,,\nAllan,Godding,Open,75,6,3506,4.9\nAndre,Scott,Open,72,5,2862,4.6\nBenjamin,King,Open,70,4,,\nBrian,Kells,Open,72,3,2852,3.3\nBrian,Perry,Open,72,8,6413,8.1\nCameron,Kennedy,Open,72,8,,\nCharles,Knowles,Open,72,5,,\nChris,Sullivan,Open,72,8,4349,5.6\nChris,Tran,Open,69,6,,\nChristo,Kutrovsky,Open,66,6,2747,5.2\nChristopher,Castonguay,Open,71,7,3553,4\nChun,Chang,Open,69,5,,\nColin,Scarffe,Open,71,8,,\nCory,Boucher,Open,73,8,,\nCraig,Anderson,Open,67,8,5241,5.8\nDan,Thomson,Open,70,7,4060,6\nDante,LaFontaine,Open,72,7,,\nDavid,Townsend,Open,71,5,3495,6.5\nErik,L\'Abbe,Open,75,8,,\nEthan,Brady,Open,71,4,,\nEtienne,Pepin,Open,72,6,,\nGeoff,Solomon,Open,66,3,,\nGeofford,Seaborn,Open,75,8,3161,5.9\nGiulian,De La Merced,Open,67,5,3062,5.5\nGraham,Brown,Open,70,5,2118,3.6\nGreg,Probe,Open,70,7,2884,4.7\nHadrian,Mertins-Kirkwood,Open,73,8,6509,8\nHugh,Podmore,Open,71,8,5339,7.4\nJamie,Wildgen,Open,72,7,4390,6.3\nJay Thor,Turner,Open,70,6,2061,4.7\nJim,Robinson,Open,76,6,3300,4.9\nJohn,Haig,Open,71,7,4599,5.5\nJohn,Siwiec,Open,69,5,2078,3.9\nJon,Rowe,Open,73,6,4978,6.3\nJonathan,Champagne,Open,67,5,2189,3.5\nKelsey,Charie,Open,67,7,4747,6.4\nKevin,Hughes,Open,70,7,3639,5.4\nLance,Blackstock,Open,72,10,5070,7.1\nLuke,Krolak,Open,72,8,,\nMarcus,Bordage,Open,72,8,4697,6.4\nMark,Donahue,Open,72,8,3213,4.1\nMartin,Cloake,Open,79,9,3969,5.3\nMartin,Shiu,Open,68,8,,\nMathieu,Landry,Open,65,9,,\nMatthew,Schijns,Open,72,5,2812,5.5\nMehmet,Karman,Open,72,7,2839,4.4\nMichael,Colantonio,Open,70,5,3000,5.2\nMichael,O\'Hare,Open,72,7,4427,6.1\nMicheal,Davidson,Open,60,7,4534,6.6\nMike,Lee,Open,67,10,5095,6.4\nMorgan,Howard,Open,73,6,3608,5.5\nNicholas,Aghajanian,Open,68,7,3613,5.9\nNicholas,Belanger,Open,70,6,,\nNick,Amlin,Open,72,8,3739,5\nNick,Klimowicz,Open,74,6,3152,4.4\nNick,Theriault,Open,72,7,3872,6.2\nPascal,Michaud,Open,69,8,4253,5.9\nPatrick,Kenzie,Open,66,6,3248,5.3\nPatrick,Mapp,Open,73,10,5349,7.4\nPaul,Morrison,Open,56,5,,\nRyan,Mussell,Open,73,5,,\nSebastien,Belanger,Open,72,6,3569,5.7\nShubho Bo,Biswas,Open,66,7,3539,4.2\nSimon,Walker,Open,73,8,,\nSina,Dee,Open,66,7,,\nStephen,Close,Open,71,7,4081,6.2\nSteve,Bisang,Open,69,7,3527,5.4\nThomas,Ferguson,Open,74,7,4136,5.7\nThomas,Sattolo,Open,73,6,2103,3.4\nTom,Newman,Open,74,8,5076,7.2\nTravis,Davidson,Open,72,8,5759,7.6\nWing-Leung,Chan,Open,67,6,2405,3.8\nYingdi,Wu,Open,66,3,2303,3.1\nZach,St.Amour,Open,72,6,,\n';
+var elm$core$String$toFloat = _String_toFloat;
+var author$project$Players$parseFloat = function (value) {
+	var _n0 = elm$core$String$toFloat(value);
+	if (_n0.$ === 'Just') {
+		var _float = _n0.a;
+		return elm$core$Result$Ok(_float);
+	} else {
+		return elm$core$Result$Ok(0);
+	}
+};
 var elm$core$String$toInt = _String_toInt;
 var author$project$Players$parseInt = function (value) {
 	var _n0 = elm$core$String$toInt(value);
@@ -5311,17 +5350,26 @@ var author$project$Players$playerDecoder = A2(
 	author$project$Players$Player,
 	A2(
 		ericgj$elm_csv_decode$Csv$Decode$andMap,
-		ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseInt),
+		ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseFloat),
 		A2(
 			ericgj$elm_csv_decode$Csv$Decode$andMap,
-			ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseInt),
+			ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseFloat),
 			A2(
 				ericgj$elm_csv_decode$Csv$Decode$andMap,
-				ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseGender),
+				ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseInt),
 				A2(
 					ericgj$elm_csv_decode$Csv$Decode$andMap,
-					ericgj$elm_csv_decode$Csv$Decode$next(elm$core$Result$Ok),
-					ericgj$elm_csv_decode$Csv$Decode$next(elm$core$Result$Ok))))));
+					ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseInt),
+					A2(
+						ericgj$elm_csv_decode$Csv$Decode$andMap,
+						ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseGender),
+						A2(
+							ericgj$elm_csv_decode$Csv$Decode$andMap,
+							ericgj$elm_csv_decode$Csv$Decode$next(elm$core$Result$Ok),
+							A2(
+								ericgj$elm_csv_decode$Csv$Decode$andMap,
+								ericgj$elm_csv_decode$Csv$Decode$next(elm$core$Result$Ok),
+								ericgj$elm_csv_decode$Csv$Decode$next(author$project$Players$parseInt)))))))));
 var elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (result.$ === 'Ok') {
@@ -5674,7 +5722,8 @@ var author$project$Players$allPlayersParsed = A2(
 	A2(
 		ericgj$elm_csv_decode$Csv$Decode$decodeCsv,
 		author$project$Players$playerDecoder,
-		lovasoa$elm_csv$Csv$parse(author$project$Players$allPlayersRaw)));
+		author$project$Players$addIds(
+			lovasoa$elm_csv$Csv$parse(author$project$Players$allPlayersRaw))));
 var author$project$Players$genderToString = function (gender) {
 	if (gender.$ === 'Female') {
 		return 'female';
@@ -5715,23 +5764,33 @@ var elm$core$String$padLeft = F3(
 	});
 var author$project$Players$buildPlaceholderPlayers = F3(
 	function (teamCount, parsedPlayers, gender) {
+		var rosterCount = function () {
+			if (gender.$ === 'Female') {
+				return 4;
+			} else {
+				return 8;
+			}
+		}();
 		var playerCount = elm$core$List$length(
 			A2(
 				elm$core$List$filter,
 				author$project$Players$isGender(gender),
 				parsedPlayers));
-		var targetCount = (teamCount * 6) - playerCount;
+		var targetCount = (teamCount * rosterCount) - playerCount;
 		var createDummy = function (number) {
 			return {
 				firstName: author$project$Players$genderToString(gender) + ' Placeholder',
 				gender: gender,
 				height: 0,
+				hmk: 0,
+				id: playerCount + number,
 				lastName: '_' + A3(
 					elm$core$String$padLeft,
 					2,
 					_Utils_chr('0'),
 					elm$core$String$fromInt(number)),
-				rating: 0
+				rating: 0,
+				salary: 0
 			};
 		};
 		return A2(
@@ -5779,19 +5838,13 @@ var author$project$Players$buildPlayerList = F2(
 var author$project$Players$defaultPlayerList = function (teamCount) {
 	return A2(author$project$Players$buildPlayerList, teamCount, author$project$Players$allPlayersParsed);
 };
-var author$project$Teams$allTeams = _List_fromArray(
-	[
-		{draftOrder: 1, gm: 'Rachel Robichaud', players: _List_Nil},
-		{draftOrder: 2, gm: 'Adam MacDonald', players: _List_Nil},
-		{draftOrder: 3, gm: 'Kindha Gorman', players: _List_Nil},
-		{draftOrder: 4, gm: 'Alessandro Colantonio', players: _List_Nil},
-		{draftOrder: 5, gm: 'Jaime Boss', players: _List_Nil},
-		{draftOrder: 6, gm: 'Natalie Mullin', players: _List_Nil},
-		{draftOrder: 7, gm: 'Heather Wallace', players: _List_Nil},
-		{draftOrder: 8, gm: 'Laura Storey', players: _List_Nil},
-		{draftOrder: 9, gm: 'Travis Davidson', players: _List_Nil},
-		{draftOrder: 10, gm: 'Jon Rowe', players: _List_Nil}
-	]);
+var author$project$Teams$gms = _List_fromArray(
+	['Kelsey Charie', 'Micheal Davidson', 'Laura Chambers Storey', 'Kate Cavallaro', 'John Haig', 'Chris Sullivan', 'Natalie Mullin', 'Angela Mueller', 'Mehmet Karman', 'Morgan Howard']);
+var author$project$Teams$makeTeam = F2(
+	function (order, gm) {
+		return A4(author$project$Teams$Team, order, gm, _List_Nil, order);
+	});
+var author$project$Teams$allTeams = A2(elm$core$List$indexedMap, author$project$Teams$makeTeam, author$project$Teams$gms);
 var elm$core$List$sortBy = _List_sortBy;
 var author$project$Teams$sortTeams = function (teams) {
 	return A2(
@@ -7129,6 +7182,7 @@ var author$project$Main$subs = function (model) {
 	}
 };
 var author$project$Main$saveModel = _Platform_outgoingPort('saveModel', elm$core$Basics$identity);
+var elm$json$Json$Encode$float = _Json_wrap;
 var elm$json$Json$Encode$int = _Json_wrap;
 var elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -7149,6 +7203,9 @@ var author$project$Players$encodePlayer = function (player) {
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
+				'id',
+				elm$json$Json$Encode$int(player.id)),
+				_Utils_Tuple2(
 				'firstName',
 				elm$json$Json$Encode$string(player.firstName)),
 				_Utils_Tuple2(
@@ -7163,7 +7220,13 @@ var author$project$Players$encodePlayer = function (player) {
 				elm$json$Json$Encode$int(player.height)),
 				_Utils_Tuple2(
 				'rating',
-				elm$json$Json$Encode$int(player.rating))
+				elm$json$Json$Encode$int(player.rating)),
+				_Utils_Tuple2(
+				'salary',
+				elm$json$Json$Encode$float(player.salary)),
+				_Utils_Tuple2(
+				'hmk',
+				elm$json$Json$Encode$float(player.hmk))
 			]));
 };
 var author$project$Model$encodeDraftedPlayer = function (draftedPlayer) {
@@ -7194,6 +7257,9 @@ var author$project$Teams$encodeTeam = function (team) {
 	return elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
+				_Utils_Tuple2(
+				'id',
+				elm$json$Json$Encode$int(team.id)),
 				_Utils_Tuple2(
 				'gm',
 				elm$json$Json$Encode$string(team.gm)),
@@ -7294,6 +7360,10 @@ var author$project$Update$assignDraftedPlayer = F2(
 			elm$core$List$filter,
 			author$project$Players$isGender(player.gender),
 			remaining);
+		var localState = model.localState;
+		var newLocalState = _Utils_update(
+			localState,
+			{playerSearch: ''});
 		var draftingTeam = A2(
 			author$project$Update$addPlayer,
 			player,
@@ -7331,6 +7401,7 @@ var author$project$Update$assignDraftedPlayer = F2(
 					_Utils_Tuple2(player, draftingTeamName),
 					model.draftedPlayers),
 				draftedTeams: newDrafted,
+				localState: newLocalState,
 				round: round,
 				undraftedPlayers: remaining,
 				waitingTeams: updatedWaiting
@@ -7492,7 +7563,7 @@ var author$project$Update$undoDraft = function (model) {
 	var round = shouldUndoRound ? (model.round - 1) : model.round;
 	var lastDraftedTeam = A2(
 		elm$core$Maybe$withDefault,
-		{draftOrder: 0, gm: 'gm', players: _List_Nil},
+		{draftOrder: 0, gm: 'gm', id: 0, players: _List_Nil},
 		elm$core$List$head(teamList));
 	var remainingPlayers = A2(
 		elm$core$Maybe$withDefault,

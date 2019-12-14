@@ -1,3 +1,3 @@
-elm make main.elm --output docs/elm.js
+elm make Main.elm --output docs/elm.js
 
 
