@@ -58,14 +58,14 @@ allTeams =
 
 gms : List String
 gms =
-    [ "Kelsey Charie"
-    , "Micheal Davidson"
-    , "Laura Chambers Storey"
-    , "Kate Cavallaro"
-    , "John Haig"
-    , "Chris Sullivan"
-    , "Natalie Mullin"
-    , "Angela Mueller"
-    , "Mehmet Karman"
+    [ "Chris Sullivan"
+    , "Julia Riddick"
     , "Morgan Howard"
+    , "Alessandro Colantonio"
+    , "Natalie Mullin"
+    , "Marie-Ange Gravel"
+    , "Mehmet Karman"
+    , "Brian Perry"
+    , "Laura Chambers Storey"
+    , "Kindha Gorman"
     ]
